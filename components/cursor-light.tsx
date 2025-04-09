@@ -41,23 +41,13 @@ export default function CursorLight() {
       {isMouseInWindow && (
         <>
           <motion.div
-            className="pointer-events-none fixed inset-0 z-30 mix-blend-screen"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.4 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            style={{
-              background: `radial-gradient(circle 3000px at ${mousePosition.x}px ${mousePosition.y}px, rgba(0, 21, 255, 0.15), transparent 80%)`,
-            }}
-          />
-          <motion.div
-            className="pointer-events-none fixed inset-0 z-30"
+            className="pointer-events-none fixed inset-0 -z-[1]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.7 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             style={{
-              background: `radial-gradient(circle 2000px at ${mousePosition.x}px ${mousePosition.y}px, rgba(13, 0, 255, 0.2), transparent 50%)`,
+              background: `radial-gradient(circle 2000px at ${mousePosition.x}px ${mousePosition.y}px, rgba(46, 39, 255, 0.5), transparent 50%)`,
             }}
           />
         </>

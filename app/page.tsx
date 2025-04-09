@@ -111,7 +111,7 @@ export default function Home() {
             <h2 className="text-xl md:text-2xl font-medium text-muted-foreground">
               {profile?.title}
             </h2>
-            <p className="max-w-[600px] text-muted-foreground md:text-xl">
+            <p className="max-w-[600px] text-muted-background md:text-lg">
               {profile?.description}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">

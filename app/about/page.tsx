@@ -104,7 +104,7 @@ export default function AboutPage() {
             <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl mb-4">
               {translations.about.title}
             </h1>
-            <p className="text-muted-foreground text-lg mb-6">
+            <p className="text-muted-background md:text-lg mb-6">
               {profile?.description}
             </p>
             <div className="flex flex-wrap gap-2 justify-center md:justify-start">
