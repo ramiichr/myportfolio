@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getProfile, getSkills, getExperiences, getEducation } from "@/lib/api";
 import type { Profile, Skill, Experience, Education } from "@/types";
+import StackIcon from "tech-stack-icons";
 
 export default function AboutPage() {
   const { translations, language } = useLanguage();
@@ -153,7 +154,13 @@ export default function AboutPage() {
                             variant="secondary"
                             className="flex items-center gap-1"
                           >
-                            <span>{skill.icon}</span> {skill.name}
+                            {skill.icon !== "" && (
+                              <StackIcon
+                                name={skill.icon}
+                                className="w-4 h-4"
+                              />
+                            )}
+                            {skill.name}
                           </Badge>
                         ))}
                       </div>
@@ -180,7 +187,14 @@ export default function AboutPage() {
                       <p className="text-muted-foreground">{exp.company}</p>
                       <Badge variant="outline">{exp.period}</Badge>
                     </div>
-                    <p>{exp.description}</p>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {exp.location}
+                    </p>
+                    <ul className="text-sm list-disc list-inside mt-4 space-y-2">
+                      {exp.description.map((desc, i) => (
+                        <li key={i}>{desc}</li>
+                      ))}
+                    </ul>
                   </CardContent>
                 </Card>
               ))}
@@ -203,6 +217,14 @@ export default function AboutPage() {
                       <p className="text-muted-foreground">{edu.institution}</p>
                       <Badge variant="outline">{edu.period}</Badge>
                     </div>
+                    <p className="text-sm text-muted-foreground">
+                      {edu.location}
+                    </p>
+                    <ul className="text-sm list-disc list-inside mt-4 space-y-2">
+                      {edu.description.map((desc, i) => (
+                        <li key={i}>{desc}</li>
+                      ))}
+                    </ul>
                   </CardContent>
                 </Card>
               ))}

@@ -54,6 +54,7 @@ export const de = {
       "Füllen Sie das Formular aus, um mit mir in Kontakt zu treten.",
   },
   footer: {
+    name: "Rami Cheikh Rouhou",
     rights: "Alle Rechte vorbehalten",
   },
   theme: {

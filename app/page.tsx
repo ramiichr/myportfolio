@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { getProfile, getProjects, getSkills } from "@/lib/api";
 import type { Profile, Project, Skill } from "@/types";
+import StackIcon from "tech-stack-icons";
 
 export default function Home() {
   const { translations, language } = useLanguage();
@@ -214,40 +215,6 @@ export default function Home() {
                   }}
                 />
               </motion.div>
-
-              {/* Floating tech icons around the image */}
-              <TechIcon
-                icon="⚛️"
-                size="40px"
-                top="-10%"
-                left="20%"
-                delay={0.5}
-                duration={5}
-              />
-              <TechIcon
-                icon="🔷"
-                size="30px"
-                top="10%"
-                right="-5%"
-                delay={1.2}
-                duration={4}
-              />
-              <TechIcon
-                icon="🌐"
-                size="35px"
-                bottom="5%"
-                left="10%"
-                delay={0.8}
-                duration={4.5}
-              />
-              <TechIcon
-                icon="💻"
-                size="35px"
-                bottom="-5%"
-                right="20%"
-                delay={1.5}
-                duration={5.5}
-              />
             </motion.div>
           </div>
         </div>
@@ -279,9 +246,12 @@ export default function Home() {
               <motion.div
                 key={skill.name}
                 variants={item}
-                className="flex flex-col items-center justify-center p-4 rounded-lg bg-card border shadow-sm hover:shadow-md transition-shadow"
+                className="flex flex-col items-center justify-center p-4 rounded-lg bg-slate-300 bg-opacity-30 border shadow-sm hover:shadow-md transition-shadow"
               >
-                <span className="text-3xl mb-2">{skill.icon}</span>
+                {skill.icon !== "" && (
+                  <StackIcon name={skill.icon} className="w-10 h-10 mb-4" />
+                )}
+
                 <h3 className="font-medium">{skill.name}</h3>
               </motion.div>
             ))}
@@ -343,46 +313,5 @@ export default function Home() {
         </div>
       </section>
     </div>
-  );
-}
-
-// Floating tech icon component
-function TechIcon({ icon, size, top, right, bottom, left, delay, duration }) {
-  return (
-    <motion.div
-      className="absolute text-center flex items-center justify-center z-20"
-      style={{
-        fontSize: size,
-        top,
-        right,
-        bottom,
-        left,
-        filter: "drop-shadow(0 0 8px rgba(0,0,0,0.15))",
-      }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{
-        opacity: 1,
-        y: 0,
-        x: [0, 10, 0, -10, 0],
-        y: [0, -10, 0, 10, 0],
-      }}
-      transition={{
-        opacity: { duration: 0.5, delay },
-        x: {
-          repeat: Number.POSITIVE_INFINITY,
-          duration,
-          ease: "easeInOut",
-          delay,
-        },
-        y: {
-          repeat: Number.POSITIVE_INFINITY,
-          duration: duration * 1.2,
-          ease: "easeInOut",
-          delay,
-        },
-      }}
-    >
-      {icon}
-    </motion.div>
   );
 }

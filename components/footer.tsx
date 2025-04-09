@@ -1,17 +1,18 @@
-"use client"
+"use client";
 
-import { useLanguage } from "@/components/language-provider"
-import { Github, Linkedin, Twitter } from "lucide-react"
+import { useLanguage } from "@/components/language-provider";
+import { Github, Linkedin, Twitter } from "lucide-react";
 
 export default function Footer() {
-  const { translations } = useLanguage()
-  const currentYear = new Date().getFullYear()
+  const { translations } = useLanguage();
+  const currentYear = new Date().getFullYear();
 
   return (
     <footer className="border-t py-8 md:py-12">
       <div className="container flex flex-col items-center justify-between gap-4 md:flex-row">
         <p className="text-center text-sm text-muted-foreground md:text-left">
-          &copy; {currentYear} Your Name. {translations.footer.rights}.
+          &copy; {currentYear} {translations.footer.name}.{" "}
+          {translations.footer.rights}.
         </p>
         <div className="flex gap-4">
           <a
@@ -44,6 +45,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }
-

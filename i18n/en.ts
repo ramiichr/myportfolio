@@ -53,6 +53,7 @@ export const en = {
     formDescription: "Fill out the form below to get in touch with me.",
   },
   footer: {
+    name: "Rami Cheikh Rouhou",
     rights: "All Rights Reserved",
   },
   theme: {

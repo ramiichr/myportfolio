@@ -35,13 +35,16 @@ export interface Experience {
   position: string;
   company: string;
   period: string;
-  description: string;
+  location: string;
+  description: string[];
 }
 
 export interface Education {
   degree: string;
   institution: string;
   period: string;
+  location: string;
+  description: string[];
 }
 
 export interface LocalizedData {
