@@ -45,7 +45,7 @@ export default function Home() {
 
   // Track mouse position for parallax effect
   useEffect(() => {
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({
         x: e.clientX,
         y: e.clientY,
@@ -59,7 +59,7 @@ export default function Home() {
     };
   }, []);
 
-  const calculateMovement = (axis, strength = 1) => {
+  const calculateMovement = (axis: "x" | "y", strength = 1) => {
     const windowCenter =
       axis === "x" ? window.innerWidth / 2 : window.innerHeight / 2;
 
