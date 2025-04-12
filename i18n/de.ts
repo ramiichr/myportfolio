@@ -41,6 +41,7 @@ export const de = {
     title: "Kontakt aufnehmen",
     nameLabel: "Dein Name",
     emailLabel: "Deine E-Mail",
+    subjectLabel: "Betreff",
     messageLabel: "Deine Nachricht",
     sendButton: "Nachricht senden",
     success: "Nachricht erfolgreich gesendet!",

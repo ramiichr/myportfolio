@@ -41,6 +41,7 @@ export const en = {
     title: "Get In Touch",
     nameLabel: "Your Name",
     emailLabel: "Your Email",
+    subjectLabel: "Subject",
     messageLabel: "Your Message",
     sendButton: "Send Message",
     success: "Message sent successfully!",
