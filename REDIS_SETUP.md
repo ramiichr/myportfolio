@@ -1,6 +1,6 @@
-# Setting Up Redis for Website Traffic Dashboard
+# Setting Up Redis for Portfolio Analytics
 
-This document explains how to set up Redis for the website traffic dashboard in production on Vercel.
+This document explains how to set up Redis for the Portfolio Analytics in production on Vercel.
 
 ## Prerequisites
 

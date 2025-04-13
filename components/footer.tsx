@@ -3,9 +3,17 @@
 import { useLanguage } from "@/components/language-provider";
 import { Github, Linkedin, Twitter } from "lucide-react";
 
+import { usePathname } from "next/navigation";
+
 export default function Footer() {
   const { translations } = useLanguage();
   const currentYear = new Date().getFullYear();
+  const pathname = usePathname();
+
+  // Don't render footer on dashboard pages
+  if (pathname.startsWith("/dashboard")) {
+    return null;
+  }
 
   return (
     <footer className="border-t py-8 md:py-12">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -22,16 +22,27 @@ import {
   Cell,
 } from "recharts";
 
+interface VisitorData {
+  page: string;
+  referrer: string;
+  userAgent: string;
+  country?: string;
+  city?: string;
+  timestamp: number;
+}
+
 interface VisitorStats {
   totalPageviews: number;
   pageviewsByPage: Record<string, number>;
   pageviewsByDate: Record<string, number>;
   uniqueVisitors: Record<string, number>;
+  visitors?: VisitorData[];
 }
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<VisitorStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingVisitors, setLoadingVisitors] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [apiToken, setApiToken] = useState("");
 
@@ -44,10 +55,29 @@ export default function DashboardPage() {
     }
   }, []);
 
-  const fetchStats = async (token: string) => {
+  const [selectedDate, setSelectedDate] = useState<string>(
+    new Date().toISOString().split("T")[0]
+  );
+
+  const fetchStats = async (
+    token: string,
+    includeVisitors: boolean = false
+  ) => {
     try {
-      setLoading(true);
-      const response = await fetch("/api/track", {
+      if (includeVisitors) {
+        setLoadingVisitors(true);
+      } else {
+        setLoading(true);
+      }
+
+      const url = new URL("/api/track", window.location.origin);
+
+      if (includeVisitors) {
+        url.searchParams.set("visitors", "true");
+        url.searchParams.set("date", selectedDate);
+      }
+
+      const response = await fetch(url.toString(), {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -65,7 +95,11 @@ export default function DashboardPage() {
       setError("Failed to fetch visitor stats. Please check your API token.");
       console.error(err);
     } finally {
-      setLoading(false);
+      if (includeVisitors) {
+        setLoadingVisitors(false);
+      } else {
+        setLoading(false);
+      }
     }
   };
 
@@ -162,7 +196,7 @@ export default function DashboardPage() {
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="text-4xl font-bold mb-6">Website Traffic Dashboard</h1>
+      <h1 className="text-4xl font-bold mb-6">Portfolio Analytics</h1>
 
       {loading ? (
         <div className="flex justify-center items-center h-64">
@@ -257,6 +291,7 @@ export default function DashboardPage() {
               <TabsTrigger value="pageviews">Page Views</TabsTrigger>
               <TabsTrigger value="visitors">Unique Visitors</TabsTrigger>
               <TabsTrigger value="pages">Popular Pages</TabsTrigger>
+              <TabsTrigger value="visitor-list">Visitor List</TabsTrigger>
             </TabsList>
 
             <TabsContent value="pageviews" className="space-y-4">
@@ -353,6 +388,150 @@ export default function DashboardPage() {
                       <Tooltip />
                     </PieChart>
                   </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="visitor-list" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Visitor Information</CardTitle>
+                  <CardDescription className="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span>Detailed visitor information for selected date:</span>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="date"
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                        className="border rounded px-2 py-1 text-sm"
+                      />
+                      <button
+                        onClick={() => fetchStats(apiToken, true)}
+                        className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+                      >
+                        Load
+                      </button>
+                    </div>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {loadingVisitors ? (
+                    <div className="flex justify-center items-center h-64">
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                    </div>
+                  ) : !stats?.visitors ? (
+                    <div className="text-center py-4">
+                      <p>
+                        Click "Load" to fetch visitor data for the selected date
+                      </p>
+                    </div>
+                  ) : stats.visitors.length === 0 ? (
+                    <div className="text-center py-4">
+                      <p>No visitor data available for the selected date</p>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full border-collapse">
+                          <thead>
+                            <tr className="bg-gray-100 dark:bg-gray-800">
+                              <th className="px-4 py-2 text-left">Time</th>
+                              <th className="px-4 py-2 text-left">Page</th>
+                              <th className="px-4 py-2 text-left">Location</th>
+                              <th className="px-4 py-2 text-left hidden md:table-cell">
+                                Referrer
+                              </th>
+                              <th className="px-4 py-2 text-left hidden lg:table-cell">
+                                User Agent
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {stats.visitors.map((visitor, index) => (
+                              <tr
+                                key={index}
+                                className="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900"
+                              >
+                                <td className="px-4 py-2 whitespace-nowrap">
+                                  {new Date(
+                                    visitor.timestamp
+                                  ).toLocaleTimeString()}
+                                </td>
+                                <td className="px-4 py-2">
+                                  <span
+                                    className="inline-block max-w-[150px] truncate"
+                                    title={visitor.page}
+                                  >
+                                    {visitor.page === "/"
+                                      ? "Home"
+                                      : visitor.page}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-2 whitespace-nowrap">
+                                  {visitor.city && visitor.city !== "Unknown"
+                                    ? `${visitor.city}, ${visitor.country}`
+                                    : visitor.country}
+                                </td>
+                                <td className="px-4 py-2 hidden md:table-cell">
+                                  <span
+                                    className="inline-block max-w-[200px] truncate"
+                                    title={visitor.referrer}
+                                  >
+                                    {visitor.referrer}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-2 hidden lg:table-cell">
+                                  <span
+                                    className="inline-block max-w-[300px] truncate"
+                                    title={visitor.userAgent}
+                                  >
+                                    {visitor.userAgent}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <div className="md:hidden mt-4">
+                        <h3 className="font-medium text-sm mb-2">
+                          Tap a visitor to see more details:
+                        </h3>
+                        {stats?.visitors &&
+                          stats.visitors.map((visitor, index) => {
+                            return (
+                              <details
+                                key={index}
+                                className="mb-2 border rounded-md"
+                              >
+                                <summary className="p-3 cursor-pointer font-medium">
+                                  {new Date(
+                                    visitor.timestamp
+                                  ).toLocaleTimeString()}{" "}
+                                  -{" "}
+                                  {visitor.page === "/" ? "Home" : visitor.page}
+                                </summary>
+                                <div className="p-3 pt-0 text-sm space-y-2 border-t">
+                                  <p>
+                                    <span className="font-medium">
+                                      Referrer:
+                                    </span>{" "}
+                                    {visitor.referrer}
+                                  </p>
+                                  <p>
+                                    <span className="font-medium">
+                                      User Agent:
+                                    </span>{" "}
+                                    {visitor.userAgent}
+                                  </p>
+                                </div>
+                              </details>
+                            );
+                          })}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

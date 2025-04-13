@@ -103,6 +103,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Get query parameters
+    const url = new URL(request.url);
+    const getVisitors = url.searchParams.get("visitors") === "true";
+    const date =
+      url.searchParams.get("date") || new Date().toISOString().split("T")[0];
+
     // Get stats from Redis
     const totalPageviews = (await redis.get("total_pageviews")) || 0;
     const pageviewsByPage = (await redis.hgetall("pageviews_by_page")) || {};
@@ -122,11 +128,42 @@ export async function GET(request: NextRequest) {
       uniqueVisitorCounts[dateStr] = uniqueCount;
     }
 
+    // If visitors data is requested, fetch the visitor list for the specified date
+    let visitorsList: VisitorData[] = [];
+    if (getVisitors) {
+      const visitorKey = `visitors:${date}`;
+      const rawVisitorData = await redis.lrange(visitorKey, 0, 99); // Get up to 100 visitors
+
+      visitorsList = rawVisitorData
+        .map((item) => {
+          try {
+            // If item is already an object (not a string), return it directly
+            if (typeof item === "object" && item !== null) {
+              return item as VisitorData;
+            }
+
+            // If item is a string that looks like "[object Object]", skip it
+            if (typeof item === "string" && item === "[object Object]") {
+              console.warn("Skipping invalid data format: [object Object]");
+              return null;
+            }
+
+            // Otherwise parse it as JSON
+            return JSON.parse(item) as VisitorData;
+          } catch (e) {
+            console.error("Error parsing visitor data:", e, "Raw data:", item);
+            return null;
+          }
+        })
+        .filter(Boolean) as VisitorData[];
+    }
+
     return NextResponse.json({
       totalPageviews,
       pageviewsByPage,
       pageviewsByDate,
       uniqueVisitors: uniqueVisitorCounts,
+      visitors: getVisitors ? visitorsList : undefined,
     });
   } catch (error) {
     console.error("Error fetching visitor stats:", error);

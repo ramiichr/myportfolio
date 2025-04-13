@@ -23,6 +23,12 @@ if (
     hincrby: async () => 1,
     zrange: async () => [],
     zadd: async () => 1,
+    lpush: async () => 1,
+    ltrim: async () => 1,
+    expire: async () => 1,
+    sadd: async () => 1,
+    scard: async () => 0,
+    lrange: async () => [],
   } as unknown as Redis;
 
   if (process.env.NODE_ENV !== "production") {
