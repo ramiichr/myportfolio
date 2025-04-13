@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/components/language-provider";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import CursorLight from "@/components/cursor-light";
+import { PageTracker } from "@/components/page-tracker";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,6 +32,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <LanguageProvider>
+            <PageTracker />
             <div className="flex min-h-screen flex-col">
               <CursorLight />
               <Header />
