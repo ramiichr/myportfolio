@@ -410,5 +410,47 @@
     "timezone": "America/Los_Angeles",
     "latitude": 38.0088,
     "longitude": -122.1175
+  },
+  {
+    "id": "4afe8dc0-9975-4fa8-af3f-30ff0e197680",
+    "ip": "8.8.8.8",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "referrer": "http://localhost:3000/",
+    "timestamp": "2025-04-13T14:24:03.184Z",
+    "path": "/api/track-visitor",
+    "country": "US",
+    "region": "California",
+    "city": "Mountain View",
+    "timezone": "America/Los_Angeles",
+    "latitude": 38.0088,
+    "longitude": -122.1175
+  },
+  {
+    "id": "874e8767-d576-40a2-9376-2527d32570c7",
+    "ip": "8.8.8.8",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "referrer": "http://localhost:3000/",
+    "timestamp": "2025-04-13T14:24:06.422Z",
+    "path": "/api/track-visitor",
+    "country": "US",
+    "region": "California",
+    "city": "Mountain View",
+    "timezone": "America/Los_Angeles",
+    "latitude": 38.0088,
+    "longitude": -122.1175
+  },
+  {
+    "id": "13f17579-12ab-4569-9504-4dc53c199949",
+    "ip": "8.8.8.8",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "referrer": "http://localhost:3000/contact",
+    "timestamp": "2025-04-13T14:24:08.402Z",
+    "path": "/api/track-visitor",
+    "country": "US",
+    "region": "California",
+    "city": "Mountain View",
+    "timezone": "America/Los_Angeles",
+    "latitude": 38.0088,
+    "longitude": -122.1175
   }
 ]

@@ -71,15 +71,30 @@ export async function getEducation(lang: string): Promise<Education[]> {
 
 // Track visitor
 export async function trackVisitor(): Promise<void> {
-  // Only track in production or if explicitly enabled in development
+  // Always track in production, and in development if explicitly enabled
   if (
     process.env.NODE_ENV === "production" ||
     process.env.NEXT_PUBLIC_ENABLE_TRACKING === "true"
   ) {
     try {
-      await fetch(`${API_BASE_URL}/track-visitor`, {
-        method: "POST",
-      });
+      // Add a cache-busting parameter to prevent caching
+      const timestamp = new Date().getTime();
+      const response = await fetch(
+        `${API_BASE_URL}/track-visitor?t=${timestamp}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // Make sure the request isn't cached
+          cache: "no-store",
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Visitor tracking failed:", response.status, errorData);
+      }
     } catch (error) {
       // Silently fail to not disrupt user experience
       console.error("Failed to track visitor:", error);
@@ -99,6 +114,9 @@ export async function getVisitors(
   if (startDate) params.append("startDate", startDate);
   if (endDate) params.append("endDate", endDate);
 
+  // Add a cache-busting parameter
+  params.append("t", new Date().getTime().toString());
+
   if (params.toString()) {
     url += `?${params.toString()}`;
   }
@@ -107,6 +125,9 @@ export async function getVisitors(
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    // Make sure the request isn't cached
+    cache: "no-store",
+    next: { revalidate: 0 },
   });
 
   return handleResponse<Visitor[]>(response);
