@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getVisitors, deleteAllVisitors } from "@/lib/api";
+import { getVisitors, deleteAllVisitors, checkDeletionStatus } from "@/lib/api";
 import { Visitor } from "@/types";
 import {
   Card,
@@ -97,25 +97,51 @@ export default function VisitorDashboard() {
         // Clear all visitor data from localStorage
         if (typeof window !== "undefined") {
           // Clear main visitors list
-          localStorage.setItem("portfolio_visitors", JSON.stringify([]));
+          localStorage.removeItem("portfolio_visitors");
 
           // Also clear any backups to ensure complete deletion
+          localStorage.removeItem("portfolio_visitors_backup");
+          localStorage.removeItem("portfolio_visitors_persistent");
+
+          // Set a flag to indicate visitors were explicitly deleted
+          // This prevents auto-restoration from backups
+          localStorage.setItem("portfolio_visitors_deleted", "true");
+
+          // For extra safety, also set empty arrays
+          localStorage.setItem("portfolio_visitors", JSON.stringify([]));
           localStorage.setItem("portfolio_visitors_backup", JSON.stringify([]));
           localStorage.setItem(
             "portfolio_visitors_persistent",
             JSON.stringify([])
           );
 
-          // Set a flag to indicate visitors were explicitly deleted
-          // This prevents auto-restoration from backups
-          localStorage.setItem("portfolio_visitors_deleted", "true");
-
           // Also notify the server to delete visitors
           await deleteAllVisitors(token);
+
+          // Double-check the deletion status
+          try {
+            const status = await checkDeletionStatus(token);
+            console.log(
+              `Deletion verification: isDeleted=${status.isDeleted}, cacheSize=${status.cacheSize}`
+            );
+
+            if (!status.isDeleted || status.cacheSize > 0) {
+              console.warn(
+                "Warning: Server may not have fully deleted visitors"
+              );
+            }
+          } catch (statusError) {
+            console.error("Error checking deletion status:", statusError);
+          }
 
           // Update the UI
           setVisitors([]);
           setResetSuccess("All visitor data has been permanently deleted.");
+
+          // Force a refresh of the page after a short delay to ensure everything is reset
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
         }
       } catch (error) {
         setError("Failed to delete visitor data.");

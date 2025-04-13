@@ -28,7 +28,23 @@ export async function POST(request: NextRequest) {
     // Set the global flag to indicate visitors have been deleted
     global.visitorsDeleted = true;
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    // Clear the server-side visitor cache
+    // We need to access this from the visitors-vercel module
+    try {
+      // This is a more direct approach to ensure the cache is cleared
+      const visitorsModule = await import("@/lib/visitors-vercel");
+      if (typeof visitorsModule.clearVisitorCache === "function") {
+        visitorsModule.clearVisitorCache();
+      }
+    } catch (err) {
+      console.error("Failed to clear visitor cache:", err);
+    }
+
+    console.log("Server-side visitors deleted successfully");
+    return NextResponse.json(
+      { success: true, message: "All visitors deleted" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error deleting visitors:", error);
     return NextResponse.json(

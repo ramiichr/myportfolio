@@ -147,15 +147,69 @@ export async function getVisitors(
 export async function deleteAllVisitors(token: string): Promise<void> {
   const url = `${API_BASE_URL}/admin/delete-visitors`;
 
+  // Add a timestamp to prevent caching
+  const timestamp = new Date().getTime();
+  const urlWithTimestamp = `${url}?t=${timestamp}`;
+
+  try {
+    const response = await fetch(urlWithTimestamp, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      // Make sure the request isn't cached
+      cache: "no-store",
+    });
+
+    const result = await handleResponse(response);
+    console.log("Server response for visitor deletion:", result);
+
+    // Make a second request to verify deletion
+    const verifyResponse = await fetch(
+      `${API_BASE_URL}/admin/visitors?t=${timestamp + 1}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    const visitors = await handleResponse<Visitor[]>(verifyResponse);
+    console.log(
+      `Verification: Server has ${visitors.length} visitors after deletion`
+    );
+
+    // Also check the deletion status
+    await checkDeletionStatus(token);
+
+    return result;
+  } catch (error) {
+    console.error("Error during visitor deletion:", error);
+    throw error;
+  }
+}
+
+// Check the deletion status on the server
+export async function checkDeletionStatus(
+  token: string
+): Promise<{ isDeleted: boolean; cacheSize: number; timestamp: string }> {
+  const timestamp = new Date().getTime();
+  const url = `${API_BASE_URL}/admin/check-deletion?t=${timestamp}`;
+
   const response = await fetch(url, {
-    method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
     },
-    // Make sure the request isn't cached
     cache: "no-store",
   });
 
-  await handleResponse(response);
+  const result = await handleResponse<{
+    isDeleted: boolean;
+    cacheSize: number;
+    timestamp: string;
+  }>(response);
+  console.log("Deletion status:", result);
+  return result;
 }

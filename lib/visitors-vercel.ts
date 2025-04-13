@@ -32,6 +32,14 @@ export async function addVisitor(
     if (typeof window !== "undefined") {
       // We're on the client side
       try {
+        // Check if visitors have been explicitly deleted
+        const deletedFlag = localStorage.getItem("portfolio_visitors_deleted");
+        if (deletedFlag === "true") {
+          // If visitors were explicitly deleted, reset the flag when adding a new visitor
+          console.log("Resetting deletion flag when adding new visitor");
+          localStorage.setItem("portfolio_visitors_deleted", "false");
+        }
+
         // Get existing visitors from localStorage
         const existingVisitorsStr =
           localStorage.getItem("portfolio_visitors") || "[]";
@@ -100,6 +108,23 @@ export async function getVisitors(): Promise<Visitor[]> {
         // Check if visitors have been explicitly deleted
         const deletedFlag = localStorage.getItem("portfolio_visitors_deleted");
         if (deletedFlag === "true") {
+          console.log(
+            "Visitors were explicitly deleted, returning empty array"
+          );
+
+          // Double-check that all visitor data is cleared
+          localStorage.removeItem("portfolio_visitors");
+          localStorage.removeItem("portfolio_visitors_backup");
+          localStorage.removeItem("portfolio_visitors_persistent");
+
+          // Set empty arrays for safety
+          localStorage.setItem("portfolio_visitors", JSON.stringify([]));
+          localStorage.setItem("portfolio_visitors_backup", JSON.stringify([]));
+          localStorage.setItem(
+            "portfolio_visitors_persistent",
+            JSON.stringify([])
+          );
+
           // If visitors were explicitly deleted, don't restore from any backup
           return [];
         }
@@ -159,11 +184,19 @@ export async function getVisitors(): Promise<Visitor[]> {
       // We're on the server side
       // Check if visitors have been deleted using the global flag
       if (global.visitorsDeleted) {
+        console.log(
+          "Server-side visitors were explicitly deleted, returning empty array"
+        );
+
+        // Ensure the cache is cleared
+        visitorCache = [];
+
         return [];
       }
 
       // In development, use the in-memory cache
       // Make a deep copy to prevent accidental modifications
+      console.log(`Returning ${visitorCache.length} server-side visitors`);
       return [...visitorCache];
     }
   } catch (error) {
@@ -228,4 +261,20 @@ export function validateToken(token: string | null): boolean {
 
   const validToken = process.env.VISITOR_API_TOKEN;
   return token === validToken;
+}
+
+// Clear the visitor cache (used when deleting all visitors)
+export function clearVisitorCache(): void {
+  // Clear the in-memory cache
+  visitorCache = [];
+
+  // Set the global deletion flag
+  global.visitorsDeleted = true;
+
+  console.log("Visitor cache cleared successfully");
+}
+
+// Get the current size of the visitor cache
+export function getVisitorCacheSize(): number {
+  return visitorCache.length;
 }
