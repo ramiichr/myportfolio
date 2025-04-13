@@ -47,42 +47,6 @@ export interface Education {
   description: string[];
 }
 
-export interface Visitor {
-  id: string;
-  ip: string;
-  userAgent: string;
-  referrer: string | null;
-  timestamp: string;
-  path: string;
-  country?: string;
-  city?: string;
-  region?: string;
-  timezone?: string;
-  latitude?: number;
-  longitude?: number;
-}
-
-export interface ClickEvent {
-  id: string;
-  ip: string;
-  userAgent: string;
-  referrer: string | null;
-  timestamp: string;
-  elementId: string;
-  elementType: string;
-  elementText: string;
-  elementPath: string;
-  currentPath: string;
-  x: number;
-  y: number;
-  country?: string;
-  city?: string;
-  region?: string;
-  timezone?: string;
-  latitude?: number;
-  longitude?: number;
-}
-
 export interface LocalizedData {
   profile: {
     en: Profile;
