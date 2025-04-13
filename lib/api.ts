@@ -162,7 +162,7 @@ export async function deleteAllVisitors(token: string): Promise<void> {
       cache: "no-store",
     });
 
-    const result = await handleResponse(response);
+    const result = await handleResponse<any>(response);
     console.log("Server response for visitor deletion:", result);
 
     // Make a second request to verify deletion
@@ -184,7 +184,7 @@ export async function deleteAllVisitors(token: string): Promise<void> {
     // Also check the deletion status
     await checkDeletionStatus(token);
 
-    return result;
+    // Don't return anything since the function is declared to return void
   } catch (error) {
     console.error("Error during visitor deletion:", error);
     throw error;
