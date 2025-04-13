@@ -2,10 +2,17 @@
 
 import { useLanguage } from "@/components/language-provider";
 import { Github, Linkedin, Twitter } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
   const { translations } = useLanguage();
+  const pathname = usePathname();
   const currentYear = new Date().getFullYear();
+
+  // Hide footer on admin pages
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <footer className="border-t py-8 md:py-12">

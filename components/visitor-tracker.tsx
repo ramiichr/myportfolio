@@ -16,27 +16,41 @@ export default function VisitorTracker() {
       return;
     }
 
+    // Reset tracking attempted flag when path changes
+    if (lastTrackedPath.current !== pathname) {
+      trackingAttempted.current = false;
+    }
+
     // Only track if this is the first render or if the path has changed
     // This prevents duplicate tracking on client-side navigation
     if (isFirstRender.current || lastTrackedPath.current !== pathname) {
       // Add a small delay to ensure the page has fully loaded
       const trackingTimeout = setTimeout(() => {
-        // Track the visit
-        trackVisitor()
+        // Track the visit with the current pathname
+        trackVisitor(pathname)
           .then(() => {
-            console.log("Visit tracked successfully");
+            console.log(`Visit to ${pathname} tracked successfully`);
             trackingAttempted.current = true;
           })
           .catch((error) => {
             // Log error but don't disrupt user experience
-            console.error("Failed to track visitor:", error);
+            console.error(`Failed to track visitor for ${pathname}:`, error);
 
             // If first attempt failed, try once more after a delay
             if (!trackingAttempted.current) {
               setTimeout(() => {
-                trackVisitor().catch((retryError) => {
-                  console.error("Retry failed to track visitor:", retryError);
-                });
+                trackVisitor(pathname)
+                  .then(() => {
+                    console.log(
+                      `Retry: Visit to ${pathname} tracked successfully`
+                    );
+                  })
+                  .catch((retryError) => {
+                    console.error(
+                      `Retry failed to track visitor for ${pathname}:`,
+                      retryError
+                    );
+                  });
                 trackingAttempted.current = true;
               }, 2000);
             }
@@ -45,7 +59,7 @@ export default function VisitorTracker() {
         // Update tracking state
         isFirstRender.current = false;
         lastTrackedPath.current = pathname;
-      }, 1000); // Increased delay to ensure page is fully loaded
+      }, 500); // Reduced delay for faster tracking
 
       return () => clearTimeout(trackingTimeout);
     }

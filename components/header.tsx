@@ -1,30 +1,35 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useLanguage } from "@/components/language-provider"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { LanguageToggle } from "@/components/language-toggle"
-import { Menu, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useLanguage } from "@/components/language-provider";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageToggle } from "@/components/language-toggle";
+import { Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Header() {
-  const pathname = usePathname()
-  const { translations } = useLanguage()
-  const [menuOpen, setMenuOpen] = useState(false)
+  const pathname = usePathname();
+  const { translations } = useLanguage();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Hide header on admin pages
+  if (pathname.startsWith("/admin")) {
+    return null;
+  }
 
   const navigation = [
     { name: translations.navigation.home, href: "/" },
     { name: translations.navigation.about, href: "/about" },
     { name: translations.navigation.projects, href: "/projects" },
     { name: translations.navigation.contact, href: "/contact" },
-  ]
+  ];
 
   const toggleMenu = () => {
-    setMenuOpen(!menuOpen)
-  }
+    setMenuOpen(!menuOpen);
+  };
 
   return (
     <header className="fixed w-full bg-background/80 backdrop-blur-sm z-50 border-b">
@@ -43,7 +48,9 @@ export default function Header() {
                 key={item.name}
                 href={item.href}
                 className={`text-sm font-medium transition-colors hover:text-primary ${
-                  pathname === item.href ? "text-primary" : "text-muted-foreground"
+                  pathname === item.href
+                    ? "text-primary"
+                    : "text-muted-foreground"
                 }`}
               >
                 {item.name}
@@ -57,8 +64,18 @@ export default function Header() {
               <ThemeToggle />
             </div>
             {/* Mobile Menu Button - Only visible on small screens */}
-            <Button variant="ghost" size="icon" onClick={toggleMenu} className="md:hidden" aria-label="Toggle menu">
-              {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleMenu}
+              className="md:hidden"
+              aria-label="Toggle menu"
+            >
+              {menuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </Button>
           </div>
         </div>
@@ -79,7 +96,9 @@ export default function Header() {
                     key={item.name}
                     href={item.href}
                     className={`text-base font-medium py-2 transition-colors hover:text-primary ${
-                      pathname === item.href ? "text-primary" : "text-muted-foreground"
+                      pathname === item.href
+                        ? "text-primary"
+                        : "text-muted-foreground"
                     }`}
                     onClick={() => setMenuOpen(false)}
                   >
@@ -92,6 +111,5 @@ export default function Header() {
         </AnimatePresence>
       </div>
     </header>
-  )
+  );
 }
-

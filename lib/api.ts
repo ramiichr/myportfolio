@@ -70,7 +70,7 @@ export async function getEducation(lang: string): Promise<Education[]> {
 }
 
 // Track visitor
-export async function trackVisitor(): Promise<void> {
+export async function trackVisitor(path?: string): Promise<void> {
   // Always track in production, and in development if explicitly enabled
   if (
     process.env.NODE_ENV === "production" ||
@@ -79,6 +79,13 @@ export async function trackVisitor(): Promise<void> {
     try {
       // Add a cache-busting parameter to prevent caching
       const timestamp = new Date().getTime();
+
+      // Prepare the request body with the path if provided
+      const body: Record<string, string> = {};
+      if (path) {
+        body.path = path;
+      }
+
       const response = await fetch(
         `${API_BASE_URL}/track-visitor?t=${timestamp}`,
         {
@@ -86,6 +93,7 @@ export async function trackVisitor(): Promise<void> {
           headers: {
             "Content-Type": "application/json",
           },
+          body: Object.keys(body).length > 0 ? JSON.stringify(body) : undefined,
           // Make sure the request isn't cached
           cache: "no-store",
         }
@@ -94,10 +102,12 @@ export async function trackVisitor(): Promise<void> {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         console.error("Visitor tracking failed:", response.status, errorData);
+        throw new Error(`Tracking failed with status ${response.status}`);
       }
     } catch (error) {
-      // Silently fail to not disrupt user experience
+      // Log the error but don't disrupt user experience
       console.error("Failed to track visitor:", error);
+      throw error; // Re-throw to allow the caller to handle it
     }
   }
 }
@@ -131,4 +141,21 @@ export async function getVisitors(
   });
 
   return handleResponse<Visitor[]>(response);
+}
+
+// Delete all visitors (admin only)
+export async function deleteAllVisitors(token: string): Promise<void> {
+  const url = `${API_BASE_URL}/admin/delete-visitors`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    // Make sure the request isn't cached
+    cache: "no-store",
+  });
+
+  await handleResponse(response);
 }

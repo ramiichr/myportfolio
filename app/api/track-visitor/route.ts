@@ -30,8 +30,22 @@ export async function POST(request: NextRequest) {
 
     const userAgent = request.headers.get("user-agent") || "unknown";
     const referrer = request.headers.get("referer");
-    const url = new URL(request.url);
-    const path = url.pathname;
+
+    // Try to get the path from the request body first
+    let path: string;
+    try {
+      const body = await request.json().catch(() => ({}));
+      path = body.path || "/";
+    } catch (error) {
+      // If we can't parse the body or there's no path, use the URL pathname
+      const url = new URL(request.url);
+      path = url.pathname;
+
+      // If the path is the API endpoint itself, use the referrer or default to "/"
+      if (path.includes("/api/track-visitor")) {
+        path = referrer ? new URL(referrer).pathname : "/";
+      }
+    }
 
     // Get geolocation data
     let geoData = {};

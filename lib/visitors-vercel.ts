@@ -4,6 +4,16 @@ import type { Visitor } from "@/types";
 // In-memory cache for development
 let visitorCache: Visitor[] = [];
 
+// Access the global flag for tracking if visitors have been deleted
+declare global {
+  var visitorsDeleted: boolean;
+}
+
+// Initialize the global variable if it doesn't exist
+if (typeof global.visitorsDeleted === "undefined") {
+  global.visitorsDeleted = false;
+}
+
 // Add a new visitor
 export async function addVisitor(
   visitorData: Omit<Visitor, "id">
@@ -31,9 +41,18 @@ export async function addVisitor(
         existingVisitors.push(newVisitor);
 
         // Store back in localStorage (limited to recent visitors to avoid storage limits)
-        const recentVisitors = existingVisitors.slice(-100); // Keep only the last 100 visitors
+        const recentVisitors = existingVisitors.slice(-500); // Keep up to 500 visitors for better data retention
+
+        // Store in both the regular key and a persistent backup key
         localStorage.setItem(
           "portfolio_visitors",
+          JSON.stringify(recentVisitors)
+        );
+
+        // Also store in a persistent backup that won't be automatically cleared
+        // This serves as an automatic backup in case the main list is lost
+        localStorage.setItem(
+          "portfolio_visitors_persistent",
           JSON.stringify(recentVisitors)
         );
       } catch (error) {
@@ -41,13 +60,26 @@ export async function addVisitor(
       }
     } else {
       // We're on the server side
-      // In development, use the in-memory cache
+      // Check if visitors have been deleted
+      if (global.visitorsDeleted) {
+        // Reset the deleted flag when a new visitor is added
+        global.visitorsDeleted = false;
+        // Clear the cache before adding the new visitor
+        visitorCache = [];
+      }
+
+      // Add the new visitor to the in-memory cache
       visitorCache.push(newVisitor);
 
       // Keep only the last 1000 visitors in memory
       if (visitorCache.length > 1000) {
         visitorCache = visitorCache.slice(-1000);
       }
+
+      // Log the current visitor count for debugging
+      console.log(
+        `Server-side visitor cache now has ${visitorCache.length} visitors`
+      );
     }
 
     return newVisitor;
@@ -63,14 +95,57 @@ export async function getVisitors(): Promise<Visitor[]> {
     if (typeof window !== "undefined") {
       // We're on the client side
       try {
-        const visitorsStr = localStorage.getItem("portfolio_visitors") || "[]";
-        return JSON.parse(visitorsStr) as Visitor[];
+        // Check if visitors have been explicitly deleted
+        const deletedFlag = localStorage.getItem("portfolio_visitors_deleted");
+        if (deletedFlag === "true") {
+          // If visitors were explicitly deleted, don't restore from any backup
+          return [];
+        }
+
+        // First try to get from the main storage
+        const visitorsStr = localStorage.getItem("portfolio_visitors");
+
+        if (visitorsStr) {
+          const visitors = JSON.parse(visitorsStr) as Visitor[];
+
+          // If we have visitors in the main storage, return them
+          if (visitors.length > 0) {
+            return visitors;
+          }
+        }
+
+        // If main storage is empty or invalid, try to get from persistent backup
+        // BUT only if visitors weren't explicitly deleted
+        const persistentVisitorsStr = localStorage.getItem(
+          "portfolio_visitors_persistent"
+        );
+
+        if (persistentVisitorsStr) {
+          const persistentVisitors = JSON.parse(
+            persistentVisitorsStr
+          ) as Visitor[];
+
+          // If we have visitors in the persistent backup, restore them to the main storage
+          if (persistentVisitors.length > 0) {
+            // Restore the backup to the main storage
+            localStorage.setItem("portfolio_visitors", persistentVisitorsStr);
+            console.log("Restored visitors from persistent backup");
+            return persistentVisitors;
+          }
+        }
+
+        // If both storages are empty, return an empty array
+        return [];
       } catch (error) {
         console.error("Error retrieving visitors from localStorage:", error);
         return [];
       }
     } else {
       // We're on the server side
+      // Check if visitors have been deleted using the global flag
+      if (global.visitorsDeleted) {
+        return [];
+      }
       // In development, use the in-memory cache
       return [...visitorCache];
     }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getVisitors } from "@/lib/api";
+import { getVisitors, deleteAllVisitors } from "@/lib/api";
 import { Visitor } from "@/types";
 import {
   Card,
@@ -44,6 +44,7 @@ export default function VisitorDashboard() {
   const [endDate, setEndDate] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resetSuccess, setResetSuccess] = useState<string | null>(null);
 
   // Authenticate with token
   const handleAuthenticate = async () => {
@@ -67,6 +68,7 @@ export default function VisitorDashboard() {
   const handleFilterVisitors = async () => {
     setLoading(true);
     setError(null);
+    setResetSuccess(null);
 
     try {
       const data = await getVisitors(token, startDate, endDate);
@@ -79,7 +81,110 @@ export default function VisitorDashboard() {
     }
   };
 
-  // Check for saved token on component mount
+  // Delete all visitors
+  const handleDeleteAllVisitors = async () => {
+    // Show confirmation dialog before deleting
+    if (
+      window.confirm(
+        "Are you sure you want to delete ALL visitor data? This action cannot be undone."
+      )
+    ) {
+      setLoading(true);
+      setError(null);
+      setResetSuccess(null);
+
+      try {
+        // Clear all visitor data from localStorage
+        if (typeof window !== "undefined") {
+          // Clear main visitors list
+          localStorage.setItem("portfolio_visitors", JSON.stringify([]));
+
+          // Also clear any backups to ensure complete deletion
+          localStorage.setItem("portfolio_visitors_backup", JSON.stringify([]));
+          localStorage.setItem(
+            "portfolio_visitors_persistent",
+            JSON.stringify([])
+          );
+
+          // Set a flag to indicate visitors were explicitly deleted
+          // This prevents auto-restoration from backups
+          localStorage.setItem("portfolio_visitors_deleted", "true");
+
+          // Also notify the server to delete visitors
+          await deleteAllVisitors(token);
+
+          // Update the UI
+          setVisitors([]);
+          setResetSuccess("All visitor data has been permanently deleted.");
+        }
+      } catch (error) {
+        setError("Failed to delete visitor data.");
+        console.error("Delete error:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  // Manually persist the current visitors list
+  const handlePersistVisitorsList = () => {
+    setLoading(true);
+    setError(null);
+    setResetSuccess(null);
+
+    try {
+      // Create a backup of the current visitors in a different localStorage key
+      if (typeof window !== "undefined" && visitors.length > 0) {
+        // Store in a backup key that won't be automatically cleared
+        localStorage.setItem(
+          "portfolio_visitors_backup",
+          JSON.stringify(visitors)
+        );
+        setResetSuccess(
+          "Visitors list has been backed up successfully. You can restore it if needed."
+        );
+      } else {
+        setError("No visitors to backup.");
+      }
+    } catch (error) {
+      setError("Failed to backup visitors list.");
+      console.error("Backup error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Restore visitors from backup
+  const handleRestoreVisitorsList = () => {
+    setLoading(true);
+    setError(null);
+    setResetSuccess(null);
+
+    try {
+      // Restore from backup
+      if (typeof window !== "undefined") {
+        const backupStr = localStorage.getItem("portfolio_visitors_backup");
+        if (backupStr) {
+          const backupVisitors = JSON.parse(backupStr) as Visitor[];
+          localStorage.setItem(
+            "portfolio_visitors",
+            JSON.stringify(backupVisitors)
+          );
+          setVisitors(backupVisitors);
+          setResetSuccess("Visitors list has been restored successfully.");
+        } else {
+          setError("No backup found to restore.");
+        }
+      }
+    } catch (error) {
+      setError("Failed to restore visitors list.");
+      console.error("Restore error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Check for saved token on component mount and set up auto-refresh
   useEffect(() => {
     const savedToken = localStorage.getItem("visitorApiToken");
     if (savedToken) {
@@ -101,6 +206,45 @@ export default function VisitorDashboard() {
       };
 
       fetchVisitors();
+
+      // Set up an interval to refresh the visitors list every 5 seconds
+      // This ensures we see new visitors quickly
+      const refreshInterval = setInterval(async () => {
+        try {
+          // Fetch fresh data from the API instead of just using localStorage
+          const freshData = await getVisitors(savedToken);
+          setVisitors(freshData);
+          console.log(
+            "Refreshed visitor data from API:",
+            freshData.length,
+            "visitors"
+          );
+        } catch (error) {
+          console.error("Error refreshing visitor data:", error);
+
+          // Fallback to localStorage if API fails
+          if (typeof window !== "undefined") {
+            const visitorsStr = localStorage.getItem("portfolio_visitors");
+            if (visitorsStr) {
+              try {
+                const currentVisitors = JSON.parse(visitorsStr) as Visitor[];
+                // Only update if there are visitors to display
+                if (currentVisitors.length > 0) {
+                  setVisitors(currentVisitors);
+                }
+              } catch (error) {
+                console.error(
+                  "Error parsing visitors from localStorage:",
+                  error
+                );
+              }
+            }
+          }
+        }
+      }, 5000); // 5 seconds for more responsive updates
+
+      // Clean up the interval when the component unmounts
+      return () => clearInterval(refreshInterval);
     }
   }, []);
 
@@ -142,7 +286,7 @@ export default function VisitorDashboard() {
 
   if (!isAuthenticated) {
     return (
-      <div className="container mx-auto py-10">
+      <div className="container mx-auto py-10 mt-10">
         <Card className="max-w-md mx-auto">
           <CardHeader>
             <CardTitle>Admin Authentication</CardTitle>
@@ -178,19 +322,50 @@ export default function VisitorDashboard() {
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-6 pt-10">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Visitor Dashboard</h1>
-        <Button
-          variant="outline"
-          onClick={() => {
-            localStorage.removeItem("visitorApiToken");
-            setIsAuthenticated(false);
-            setToken("");
-          }}
-        >
-          Logout
-        </Button>
+        <div className="flex items-center gap-4">
+          <h1 className="text-3xl font-bold">Visitor Dashboard</h1>
+          <a
+            href="/"
+            className="text-sm text-muted-foreground hover:text-primary transition-colors"
+          >
+            ← Back to site
+          </a>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="default"
+            onClick={handlePersistVisitorsList}
+            disabled={loading || visitors.length === 0}
+          >
+            Backup Visitors
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={handleRestoreVisitorsList}
+            disabled={loading}
+          >
+            Restore Backup
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleDeleteAllVisitors}
+            disabled={loading}
+          >
+            Delete All Visitors
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              localStorage.removeItem("visitorApiToken");
+              setIsAuthenticated(false);
+              setToken("");
+            }}
+          >
+            Logout
+          </Button>
+        </div>
       </div>
 
       <Card className="mb-8">
@@ -225,6 +400,9 @@ export default function VisitorDashboard() {
             </div>
           </div>
           {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
+          {resetSuccess && (
+            <p className="text-sm text-green-500 mt-2">{resetSuccess}</p>
+          )}
         </CardContent>
       </Card>
 
