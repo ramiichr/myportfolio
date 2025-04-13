@@ -5,6 +5,7 @@ import type {
   Experience,
   Education,
   Visitor,
+  ClickEvent,
 } from "@/types";
 
 // Base URL for API calls
@@ -112,6 +113,55 @@ export async function trackVisitor(path?: string): Promise<void> {
   }
 }
 
+// Track click event
+export async function trackClickEvent(clickData: {
+  elementId: string;
+  elementType: string;
+  elementText: string;
+  elementPath: string;
+  currentPath: string;
+  x: number;
+  y: number;
+}): Promise<void> {
+  // Always track in production, and in development if explicitly enabled
+  if (
+    process.env.NODE_ENV === "production" ||
+    process.env.NEXT_PUBLIC_ENABLE_TRACKING === "true"
+  ) {
+    try {
+      // Add a cache-busting parameter to prevent caching
+      const timestamp = new Date().getTime();
+
+      const response = await fetch(
+        `${API_BASE_URL}/track-click?t=${timestamp}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(clickData),
+          // Make sure the request isn't cached
+          cache: "no-store",
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error(
+          "Click event tracking failed:",
+          response.status,
+          errorData
+        );
+        throw new Error(`Click tracking failed with status ${response.status}`);
+      }
+    } catch (error) {
+      // Log the error but don't disrupt user experience
+      console.error("Failed to track click event:", error);
+      throw error; // Re-throw to allow the caller to handle it
+    }
+  }
+}
+
 // Fetch visitor data (admin only)
 export async function getVisitors(
   token: string,
@@ -187,6 +237,66 @@ export async function deleteAllVisitors(token: string): Promise<void> {
     // Don't return anything since the function is declared to return void
   } catch (error) {
     console.error("Error during visitor deletion:", error);
+    throw error;
+  }
+}
+
+// Fetch click event data (admin only)
+export async function getClickEvents(
+  token: string,
+  startDate?: string,
+  endDate?: string
+): Promise<ClickEvent[]> {
+  let url = `${API_BASE_URL}/admin/click-events`;
+  const params = new URLSearchParams();
+
+  if (startDate) params.append("startDate", startDate);
+  if (endDate) params.append("endDate", endDate);
+
+  // Add a cache-busting parameter
+  params.append("t", new Date().getTime().toString());
+
+  if (params.toString()) {
+    url += `?${params.toString()}`;
+  }
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    // Make sure the request isn't cached
+    cache: "no-store",
+    next: { revalidate: 0 },
+  });
+
+  return handleResponse<ClickEvent[]>(response);
+}
+
+// Delete all click events (admin only)
+export async function deleteAllClickEvents(token: string): Promise<void> {
+  const url = `${API_BASE_URL}/admin/delete-click-events`;
+
+  // Add a timestamp to prevent caching
+  const timestamp = new Date().getTime();
+  const urlWithTimestamp = `${url}?t=${timestamp}`;
+
+  try {
+    const response = await fetch(urlWithTimestamp, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      // Make sure the request isn't cached
+      cache: "no-store",
+    });
+
+    const result = await handleResponse<any>(response);
+    console.log("Server response for click event deletion:", result);
+
+    // Don't return anything since the function is declared to return void
+  } catch (error) {
+    console.error("Error during click event deletion:", error);
     throw error;
   }
 }

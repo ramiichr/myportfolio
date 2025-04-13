@@ -1,17 +1,23 @@
 import { v4 as uuidv4 } from "uuid";
-import type { Visitor } from "@/types";
+import type { Visitor, ClickEvent } from "@/types";
 
 // In-memory cache for development
 let visitorCache: Visitor[] = [];
+let clickEventCache: ClickEvent[] = [];
 
-// Access the global flag for tracking if visitors have been deleted
+// Access the global flags for tracking if visitors and click events have been deleted
 declare global {
   var visitorsDeleted: boolean;
+  var clickEventsDeleted: boolean;
 }
 
-// Initialize the global variable if it doesn't exist
+// Initialize the global variables if they don't exist
 if (typeof global.visitorsDeleted === "undefined") {
   global.visitorsDeleted = false;
+}
+
+if (typeof global.clickEventsDeleted === "undefined") {
+  global.clickEventsDeleted = false;
 }
 
 // Add a new visitor
@@ -277,4 +283,235 @@ export function clearVisitorCache(): void {
 // Get the current size of the visitor cache
 export function getVisitorCacheSize(): number {
   return visitorCache.length;
+}
+
+// Add a new click event
+export async function addClickEvent(
+  clickData: Omit<ClickEvent, "id">
+): Promise<ClickEvent> {
+  const newClickEvent: ClickEvent = {
+    id: uuidv4(),
+    ...clickData,
+  };
+
+  // Log the click event data for debugging
+  console.log("Adding click event:", JSON.stringify(newClickEvent, null, 2));
+
+  try {
+    // In production, we'll use localStorage in the browser to store click event data
+    if (typeof window !== "undefined") {
+      // We're on the client side
+      try {
+        // Check if click events have been explicitly deleted
+        const deletedFlag = localStorage.getItem(
+          "portfolio_click_events_deleted"
+        );
+        if (deletedFlag === "true") {
+          // If click events were explicitly deleted, reset the flag when adding a new click event
+          console.log(
+            "Resetting click events deletion flag when adding new click event"
+          );
+          localStorage.setItem("portfolio_click_events_deleted", "false");
+        }
+
+        // Get existing click events from localStorage
+        const existingClickEventsStr =
+          localStorage.getItem("portfolio_click_events") || "[]";
+        const existingClickEvents = JSON.parse(
+          existingClickEventsStr
+        ) as ClickEvent[];
+
+        // Always add the new click event (we're allowing duplicates as requested)
+        existingClickEvents.push(newClickEvent);
+        console.log(
+          `Added click event for element: ${newClickEvent.elementType} - ${newClickEvent.elementText}`
+        );
+
+        // Store back in localStorage (limited to recent click events to avoid storage limits)
+        const recentClickEvents = existingClickEvents.slice(-1000); // Keep up to 1000 click events
+
+        // Store in both the regular key and a persistent backup key
+        localStorage.setItem(
+          "portfolio_click_events",
+          JSON.stringify(recentClickEvents)
+        );
+
+        // Also store in a persistent backup that won't be automatically cleared
+        localStorage.setItem(
+          "portfolio_click_events_persistent",
+          JSON.stringify(recentClickEvents)
+        );
+      } catch (error) {
+        console.error("Error storing click event in localStorage:", error);
+      }
+    } else {
+      // We're on the server side
+      // Check if click events have been deleted
+      if (global.clickEventsDeleted) {
+        // Reset the deleted flag when a new click event is added
+        global.clickEventsDeleted = false;
+        // Clear the cache before adding the new click event
+        clickEventCache = [];
+      }
+
+      // Always add the new click event to the in-memory cache (allowing duplicates)
+      clickEventCache.push(newClickEvent);
+      console.log(
+        `Added server-side click event for element: ${newClickEvent.elementType} - ${newClickEvent.elementText}`
+      );
+
+      // Keep only the last 2000 click events in memory
+      if (clickEventCache.length > 2000) {
+        clickEventCache = clickEventCache.slice(-2000);
+      }
+
+      // Log the current click event count for debugging
+      console.log(
+        `Server-side click event cache now has ${clickEventCache.length} click events`
+      );
+    }
+
+    return newClickEvent;
+  } catch (error) {
+    console.error("Error saving click event:", error);
+    throw new Error("Failed to save click event data");
+  }
+}
+
+// Get all click events
+export async function getClickEvents(): Promise<ClickEvent[]> {
+  try {
+    if (typeof window !== "undefined") {
+      // We're on the client side
+      try {
+        // Check if click events have been explicitly deleted
+        const deletedFlag = localStorage.getItem(
+          "portfolio_click_events_deleted"
+        );
+        if (deletedFlag === "true") {
+          console.log(
+            "Click events were explicitly deleted, returning empty array"
+          );
+
+          // Double-check that all click event data is cleared
+          localStorage.removeItem("portfolio_click_events");
+          localStorage.removeItem("portfolio_click_events_backup");
+          localStorage.removeItem("portfolio_click_events_persistent");
+
+          // Set empty arrays for safety
+          localStorage.setItem("portfolio_click_events", JSON.stringify([]));
+          localStorage.setItem(
+            "portfolio_click_events_backup",
+            JSON.stringify([])
+          );
+          localStorage.setItem(
+            "portfolio_click_events_persistent",
+            JSON.stringify([])
+          );
+
+          // If click events were explicitly deleted, don't restore from any backup
+          return [];
+        }
+
+        // First try to get from the main storage
+        const clickEventsStr = localStorage.getItem("portfolio_click_events");
+
+        if (clickEventsStr) {
+          const clickEvents = JSON.parse(clickEventsStr) as ClickEvent[];
+
+          // If we have click events in the main storage, return them (allowing duplicates)
+          if (
+            clickEvents &&
+            Array.isArray(clickEvents) &&
+            clickEvents.length > 0
+          ) {
+            return clickEvents;
+          }
+        }
+
+        // If main storage is empty or invalid, try to get from persistent backup
+        const persistentClickEventsStr = localStorage.getItem(
+          "portfolio_click_events_persistent"
+        );
+
+        if (persistentClickEventsStr) {
+          try {
+            const persistentClickEvents = JSON.parse(
+              persistentClickEventsStr
+            ) as ClickEvent[];
+
+            // If we have click events in the persistent backup, restore them to the main storage
+            if (
+              persistentClickEvents &&
+              Array.isArray(persistentClickEvents) &&
+              persistentClickEvents.length > 0
+            ) {
+              // Restore the backup to the main storage
+              localStorage.setItem(
+                "portfolio_click_events",
+                persistentClickEventsStr
+              );
+              console.log(
+                `Restored ${persistentClickEvents.length} click events from persistent backup`
+              );
+              return persistentClickEvents;
+            }
+          } catch (parseError) {
+            console.error(
+              "Error parsing persistent click events storage:",
+              parseError
+            );
+          }
+        }
+
+        // If both storages are empty, return an empty array
+        return [];
+      } catch (error) {
+        console.error(
+          "Error retrieving click events from localStorage:",
+          error
+        );
+        return [];
+      }
+    } else {
+      // We're on the server side
+      // Check if click events have been deleted using the global flag
+      if (global.clickEventsDeleted) {
+        console.log(
+          "Server-side click events were explicitly deleted, returning empty array"
+        );
+
+        // Ensure the cache is cleared
+        clickEventCache = [];
+
+        return [];
+      }
+
+      // In development, use the in-memory cache
+      // Make a deep copy to prevent accidental modifications
+      console.log(
+        `Returning ${clickEventCache.length} server-side click events`
+      );
+      return [...clickEventCache];
+    }
+  } catch (error) {
+    console.error("Error retrieving click events:", error);
+    return [];
+  }
+}
+
+// Clear the click event cache (used when deleting all click events)
+export function clearClickEventCache(): void {
+  // Clear the in-memory cache
+  clickEventCache = [];
+
+  // Set the global deletion flag
+  global.clickEventsDeleted = true;
+
+  console.log("Click event cache cleared successfully");
+}
+
+// Get the current size of the click event cache
+export function getClickEventCacheSize(): number {
+  return clickEventCache.length;
 }

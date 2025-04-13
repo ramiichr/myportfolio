@@ -9,6 +9,7 @@ import Header from "@/components/header";
 import Footer from "@/components/footer";
 import CursorLight from "@/components/cursor-light";
 import VisitorTracker from "@/components/visitor-tracker";
+import ClickTracker from "@/components/click-tracker";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -40,6 +41,7 @@ export default function RootLayout({
               <Footer />
               <Suspense fallback={null}>
                 <VisitorTracker />
+                <ClickTracker />
               </Suspense>
             </div>
           </LanguageProvider>
