@@ -47,6 +47,21 @@ export interface Education {
   description: string[];
 }
 
+export interface Visitor {
+  id: string;
+  ip: string;
+  userAgent: string;
+  referrer: string | null;
+  timestamp: string;
+  path: string;
+  country?: string;
+  city?: string;
+  region?: string;
+  timezone?: string;
+  latitude?: number;
+  longitude?: number;
+}
+
 export interface LocalizedData {
   profile: {
     en: Profile;

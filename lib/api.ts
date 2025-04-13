@@ -1,4 +1,11 @@
-import type { Profile, Project, Skill, Experience, Education } from "@/types";
+import type {
+  Profile,
+  Project,
+  Skill,
+  Experience,
+  Education,
+  Visitor,
+} from "@/types";
 
 // Base URL for API calls
 const API_BASE_URL = "/api";
@@ -60,4 +67,47 @@ export async function getExperiences(lang: string): Promise<Experience[]> {
 export async function getEducation(lang: string): Promise<Education[]> {
   const response = await fetch(`${API_BASE_URL}/education?lang=${lang}`);
   return handleResponse<Education[]>(response);
+}
+
+// Track visitor
+export async function trackVisitor(): Promise<void> {
+  // Only track in production or if explicitly enabled in development
+  if (
+    process.env.NODE_ENV === "production" ||
+    process.env.NEXT_PUBLIC_ENABLE_TRACKING === "true"
+  ) {
+    try {
+      await fetch(`${API_BASE_URL}/track-visitor`, {
+        method: "POST",
+      });
+    } catch (error) {
+      // Silently fail to not disrupt user experience
+      console.error("Failed to track visitor:", error);
+    }
+  }
+}
+
+// Fetch visitor data (admin only)
+export async function getVisitors(
+  token: string,
+  startDate?: string,
+  endDate?: string
+): Promise<Visitor[]> {
+  let url = `${API_BASE_URL}/admin/visitors`;
+  const params = new URLSearchParams();
+
+  if (startDate) params.append("startDate", startDate);
+  if (endDate) params.append("endDate", endDate);
+
+  if (params.toString()) {
+    url += `?${params.toString()}`;
+  }
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return handleResponse<Visitor[]>(response);
 }
