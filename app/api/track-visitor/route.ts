@@ -1,24 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
+import { VisitorData } from "@/types/visitor";
+import { addVisitor, getVisitors } from "@/lib/kv-storage";
+
+// For local development fallback
 import fs from "fs";
 import path from "path";
 
-// Define the visitor data structure
-interface VisitorData {
-  ip: string;
-  timestamp: string;
-  userAgent: string;
-  city?: string;
-  country?: string;
-  countryCode?: string;
-  region?: string;
-  timezone?: string;
-}
-
-// Path to store visitor data
+// Path to store visitor data locally (for development only)
 const dataFilePath = path.join(process.cwd(), "data", "visitors.json");
 
-// Ensure the data directory exists
+// Check if we're in development mode
+const isDevelopment = process.env.NODE_ENV === "development";
+
+// Ensure the data directory exists (for development only)
 const ensureDataDirectoryExists = () => {
+  if (!isDevelopment) return;
+
   const dataDir = path.join(process.cwd(), "data");
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
@@ -303,11 +300,13 @@ async function getLocationFromIp(ip: string): Promise<Partial<VisitorData>> {
 
 export async function POST(request: NextRequest) {
   try {
-    ensureDataDirectoryExists();
-
     // Get the visitor's IP address
+    // Vercel automatically sets x-forwarded-for and x-real-ip headers
     const forwardedFor = request.headers.get("x-forwarded-for");
-    const ip = forwardedFor ? forwardedFor.split(",")[0].trim() : "127.0.0.1";
+    const realIp = request.headers.get("x-real-ip");
+    const ip = forwardedFor
+      ? forwardedFor.split(",")[0].trim()
+      : realIp || "127.0.0.1";
 
     // Get user agent
     const userAgent = request.headers.get("user-agent") || "Unknown";
@@ -323,18 +322,26 @@ export async function POST(request: NextRequest) {
       ...locationData,
     };
 
-    // Read existing data
-    let visitors: VisitorData[] = [];
-    if (fs.existsSync(dataFilePath)) {
-      const fileContent = fs.readFileSync(dataFilePath, "utf-8");
-      visitors = JSON.parse(fileContent);
+    if (isDevelopment) {
+      // Development mode: use local file system
+      ensureDataDirectoryExists();
+
+      // Read existing data
+      let visitors: VisitorData[] = [];
+      if (fs.existsSync(dataFilePath)) {
+        const fileContent = fs.readFileSync(dataFilePath, "utf-8");
+        visitors = JSON.parse(fileContent);
+      }
+
+      // Add new visitor data
+      visitors.push(visitorData);
+
+      // Write back to file
+      fs.writeFileSync(dataFilePath, JSON.stringify(visitors, null, 2));
+    } else {
+      // Production mode: use Vercel KV
+      await addVisitor(visitorData);
     }
-
-    // Add new visitor data
-    visitors.push(visitorData);
-
-    // Write back to file
-    fs.writeFileSync(dataFilePath, JSON.stringify(visitors, null, 2));
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
@@ -349,17 +356,37 @@ export async function POST(request: NextRequest) {
 // Optional: Add a GET method to retrieve visitor data (protected in production)
 export async function GET(request: NextRequest) {
   try {
-    ensureDataDirectoryExists();
+    // Basic authentication check - you should implement a more secure method
+    // This is just a simple example using a token in the Authorization header
+    const authHeader = request.headers.get("authorization");
+    const isAuthorized =
+      process.env.VISITOR_API_TOKEN &&
+      authHeader === `Bearer ${process.env.VISITOR_API_TOKEN}`;
 
-    // In a production environment, you should add authentication here
-    // to ensure only authorized users can access this data
-
-    if (!fs.existsSync(dataFilePath)) {
-      return NextResponse.json({ visitors: [] });
+    // In production, require authentication
+    if (!isDevelopment && !isAuthorized) {
+      return NextResponse.json(
+        { error: "Unauthorized access" },
+        { status: 401 }
+      );
     }
 
-    const fileContent = fs.readFileSync(dataFilePath, "utf-8");
-    const visitors = JSON.parse(fileContent);
+    let visitors: VisitorData[] = [];
+
+    if (isDevelopment) {
+      // Development mode: use local file system
+      ensureDataDirectoryExists();
+
+      if (!fs.existsSync(dataFilePath)) {
+        return NextResponse.json({ visitors: [] });
+      }
+
+      const fileContent = fs.readFileSync(dataFilePath, "utf-8");
+      visitors = JSON.parse(fileContent);
+    } else {
+      // Production mode: use Vercel KV
+      visitors = await getVisitors();
+    }
 
     return NextResponse.json({ visitors });
   } catch (error: unknown) {

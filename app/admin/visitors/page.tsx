@@ -34,29 +34,79 @@ export default function VisitorsPage() {
   const [visitors, setVisitors] = useState<VisitorData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [token, setToken] = useState("");
+  const [authenticated, setAuthenticated] = useState(false);
+
+  // Function to fetch visitors data
+  const fetchVisitors = async (authToken?: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      // Add authorization header if token is provided
+      if (authToken || token) {
+        headers["Authorization"] = `Bearer ${authToken || token}`;
+      }
+
+      const response = await fetch("/api/track-visitor", {
+        headers,
+        cache: "no-store",
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setAuthenticated(false);
+          throw new Error("Unauthorized: Invalid token");
+        }
+        throw new Error(`Failed to fetch visitor data: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setVisitors(data.visitors || []);
+      setAuthenticated(true);
+
+      // Save token to localStorage if successful
+      if (authToken || token) {
+        localStorage.setItem("visitorApiToken", authToken || token);
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "An unknown error occurred"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Try to authenticate with token
+  const authenticate = () => {
+    if (token) {
+      fetchVisitors(token);
+    } else {
+      setError("Please enter an API token");
+    }
+  };
 
   useEffect(() => {
-    const fetchVisitors = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch("/api/track-visitor");
+    // Check if we have a saved token
+    const savedToken = localStorage.getItem("visitorApiToken");
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch visitor data");
-        }
-
-        const data = await response.json();
-        setVisitors(data.visitors || []);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "An unknown error occurred"
-        );
-      } finally {
+    if (savedToken) {
+      setToken(savedToken);
+      fetchVisitors(savedToken);
+    } else {
+      // In development, try without token
+      if (process.env.NODE_ENV === "development") {
+        fetchVisitors();
+      } else {
         setLoading(false);
+        setAuthenticated(false);
       }
-    };
-
-    fetchVisitors();
+    }
   }, []);
 
   // Count visitors by country
@@ -99,6 +149,52 @@ export default function VisitorsPage() {
     return date.toLocaleString();
   };
 
+  // Authentication UI
+  if (!authenticated && !loading) {
+    return (
+      <div className="container mx-auto py-10">
+        <Card>
+          <CardHeader>
+            <CardTitle>Visitor Statistics</CardTitle>
+            <CardDescription>
+              Please authenticate to view visitor data
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-4">
+              <div className="flex gap-2">
+                <input
+                  type="password"
+                  placeholder="Enter API token"
+                  value={token}
+                  onChange={(e) => setToken(e.target.value)}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 max-w-sm"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      authenticate();
+                    }
+                  }}
+                />
+                <button
+                  onClick={authenticate}
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+                >
+                  Authenticate
+                </button>
+              </div>
+              {error && <p className="text-red-500">{error}</p>}
+              <p className="text-sm text-muted-foreground">
+                In development mode, you can access this page without a token.
+                In production, you need to provide the API token set in your
+                environment variables.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="container mx-auto py-10">
@@ -112,7 +208,7 @@ export default function VisitorsPage() {
     );
   }
 
-  if (error) {
+  if (error && authenticated) {
     return (
       <div className="container mx-auto py-10">
         <Card>
@@ -122,6 +218,14 @@ export default function VisitorsPage() {
               Failed to load visitor data: {error}
             </CardDescription>
           </CardHeader>
+          <CardContent>
+            <button
+              onClick={() => fetchVisitors()}
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+            >
+              Try Again
+            </button>
+          </CardContent>
         </Card>
       </div>
     );
@@ -129,7 +233,28 @@ export default function VisitorsPage() {
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-6">Visitor Statistics</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Visitor Statistics</h1>
+        <div className="flex gap-2">
+          <button
+            onClick={() => fetchVisitors()}
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+            disabled={loading}
+          >
+            {loading ? "Refreshing..." : "Refresh Data"}
+          </button>
+          <button
+            onClick={() => {
+              localStorage.removeItem("visitorApiToken");
+              setAuthenticated(false);
+              setToken("");
+            }}
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 h-10 px-4 py-2"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <Card>

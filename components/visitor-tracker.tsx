@@ -30,6 +30,11 @@ export default function VisitorTracker() {
 
               // Mark as tracked in this session
               sessionStorage.setItem("visit_tracked", "true");
+
+              // Log success in development
+              if (process.env.NODE_ENV === "development") {
+                console.log("Visit tracked successfully");
+              }
             } catch (retryError) {
               console.warn(
                 "First tracking attempt failed, retrying once:",
@@ -39,7 +44,7 @@ export default function VisitorTracker() {
               // Wait a bit and retry once
               setTimeout(async () => {
                 try {
-                  await fetch("/api/track-visitor", {
+                  const retryResponse = await fetch("/api/track-visitor", {
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",
@@ -47,7 +52,18 @@ export default function VisitorTracker() {
                     cache: "no-store",
                   });
 
+                  if (!retryResponse.ok) {
+                    throw new Error(
+                      `HTTP error! status: ${retryResponse.status}`
+                    );
+                  }
+
                   sessionStorage.setItem("visit_tracked", "true");
+
+                  // Log retry success in development
+                  if (process.env.NODE_ENV === "development") {
+                    console.log("Visit tracked successfully after retry");
+                  }
                 } catch (finalError) {
                   // Give up after second attempt
                   console.error(
@@ -65,10 +81,12 @@ export default function VisitorTracker() {
       }
     };
 
-    // Only run in browser environment
-    if (typeof window !== "undefined") {
+    // Only run in browser environment and if not in test mode
+    if (typeof window !== "undefined" && process.env.NODE_ENV !== "test") {
       trackVisit();
     }
+
+    // No cleanup needed
   }, []);
 
   // This component doesn't render anything visible
