@@ -213,12 +213,19 @@ export default function VisitorDashboard() {
         try {
           // Fetch fresh data from the API instead of just using localStorage
           const freshData = await getVisitors(savedToken);
-          setVisitors(freshData);
-          console.log(
-            "Refreshed visitor data from API:",
-            freshData.length,
-            "visitors"
-          );
+
+          // Always update with the latest data
+          if (freshData && Array.isArray(freshData)) {
+            // Check if the length has changed for logging purposes
+            if (freshData.length !== visitors.length) {
+              console.log(
+                `Refreshed visitor data: ${visitors.length} → ${freshData.length} visitors`
+              );
+            }
+
+            // Always update the state with the latest data
+            setVisitors(freshData);
+          }
         } catch (error) {
           console.error("Error refreshing visitor data:", error);
 

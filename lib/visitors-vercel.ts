@@ -37,8 +37,9 @@ export async function addVisitor(
           localStorage.getItem("portfolio_visitors") || "[]";
         const existingVisitors = JSON.parse(existingVisitorsStr) as Visitor[];
 
-        // Add the new visitor
+        // Always add the new visitor (we're allowing duplicates as requested)
         existingVisitors.push(newVisitor);
+        console.log(`Added visitor for path: ${newVisitor.path}`);
 
         // Store back in localStorage (limited to recent visitors to avoid storage limits)
         const recentVisitors = existingVisitors.slice(-500); // Keep up to 500 visitors for better data retention
@@ -68,8 +69,9 @@ export async function addVisitor(
         visitorCache = [];
       }
 
-      // Add the new visitor to the in-memory cache
+      // Always add the new visitor to the in-memory cache (allowing duplicates)
       visitorCache.push(newVisitor);
+      console.log(`Added server-side visitor for path: ${newVisitor.path}`);
 
       // Keep only the last 1000 visitors in memory
       if (visitorCache.length > 1000) {
@@ -108,8 +110,8 @@ export async function getVisitors(): Promise<Visitor[]> {
         if (visitorsStr) {
           const visitors = JSON.parse(visitorsStr) as Visitor[];
 
-          // If we have visitors in the main storage, return them
-          if (visitors.length > 0) {
+          // If we have visitors in the main storage, return them (allowing duplicates)
+          if (visitors && Array.isArray(visitors) && visitors.length > 0) {
             return visitors;
           }
         }
@@ -121,16 +123,29 @@ export async function getVisitors(): Promise<Visitor[]> {
         );
 
         if (persistentVisitorsStr) {
-          const persistentVisitors = JSON.parse(
-            persistentVisitorsStr
-          ) as Visitor[];
+          try {
+            const persistentVisitors = JSON.parse(
+              persistentVisitorsStr
+            ) as Visitor[];
 
-          // If we have visitors in the persistent backup, restore them to the main storage
-          if (persistentVisitors.length > 0) {
-            // Restore the backup to the main storage
-            localStorage.setItem("portfolio_visitors", persistentVisitorsStr);
-            console.log("Restored visitors from persistent backup");
-            return persistentVisitors;
+            // If we have visitors in the persistent backup, restore them to the main storage
+            if (
+              persistentVisitors &&
+              Array.isArray(persistentVisitors) &&
+              persistentVisitors.length > 0
+            ) {
+              // Restore the backup to the main storage (allowing duplicates)
+              localStorage.setItem("portfolio_visitors", persistentVisitorsStr);
+              console.log(
+                `Restored ${persistentVisitors.length} visitors from persistent backup`
+              );
+              return persistentVisitors;
+            }
+          } catch (parseError) {
+            console.error(
+              "Error parsing persistent visitors storage:",
+              parseError
+            );
           }
         }
 
@@ -146,13 +161,33 @@ export async function getVisitors(): Promise<Visitor[]> {
       if (global.visitorsDeleted) {
         return [];
       }
+
       // In development, use the in-memory cache
+      // Make a deep copy to prevent accidental modifications
       return [...visitorCache];
     }
   } catch (error) {
     console.error("Error retrieving visitors:", error);
     return [];
   }
+}
+
+// Helper function to deduplicate visitors by ID
+function deduplicateVisitors(visitors: Visitor[]): Visitor[] {
+  // Use a Map to keep only the latest entry for each visitor ID
+  const visitorMap = new Map<string, Visitor>();
+
+  // Process in reverse order so the most recent entry for each ID is kept
+  // (assuming visitors are added chronologically)
+  for (let i = visitors.length - 1; i >= 0; i--) {
+    const visitor = visitors[i];
+    if (visitor && visitor.id && !visitorMap.has(visitor.id)) {
+      visitorMap.set(visitor.id, visitor);
+    }
+  }
+
+  // Convert back to array and reverse to maintain chronological order
+  return Array.from(visitorMap.values()).reverse();
 }
 
 // Get visitors filtered by date range
