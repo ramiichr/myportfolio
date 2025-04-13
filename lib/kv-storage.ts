@@ -1,11 +1,8 @@
-import { createClient } from "@vercel/redis";
+import Redis from "ioredis";
 import { VisitorData } from "@/types/visitor";
 
 // Create Redis client
-const redis = createClient({
-  url: process.env.REDIS_URL,
-  // The token is optional when using a connection URL that includes authentication
-});
+const redis = process.env.REDIS_URL ? new Redis(process.env.REDIS_URL) : null; // Will be null during build time when env vars aren't available
 
 // Key for storing visitor data
 const VISITORS_KEY = "visitors";
@@ -22,7 +19,12 @@ export async function addVisitor(visitorData: VisitorData): Promise<void> {
     visitors.push(visitorData);
 
     // Store back in Redis
-    await redis.set(VISITORS_KEY, JSON.stringify(visitors));
+    if (redis) {
+      await redis.set(VISITORS_KEY, JSON.stringify(visitors));
+    } else {
+      console.warn("Redis client not available, visitor data not stored");
+      // In development, you might want to store to a local file instead
+    }
   } catch (error: unknown) {
     console.error("Error adding visitor to Redis store:", error);
     throw error;
@@ -34,6 +36,11 @@ export async function addVisitor(visitorData: VisitorData): Promise<void> {
  */
 export async function getVisitors(): Promise<VisitorData[]> {
   try {
+    if (!redis) {
+      console.warn("Redis client not available, returning empty visitor list");
+      return [];
+    }
+
     // Get visitors from Redis store
     const visitorsJson = await redis.get(VISITORS_KEY);
 
