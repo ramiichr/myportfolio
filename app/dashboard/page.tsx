@@ -32,12 +32,21 @@ interface VisitorData {
   ip: string;
 }
 
+interface PaginationInfo {
+  totalVisitors: number;
+  currentPage: number;
+  pageSize: number;
+  totalPages: number;
+  hasMore: boolean;
+}
+
 interface VisitorStats {
   totalPageviews: number;
   pageviewsByPage: Record<string, number>;
   pageviewsByDate: Record<string, number>;
   uniqueVisitors: Record<string, number>;
   visitors?: VisitorData[];
+  pagination?: PaginationInfo;
 }
 
 export default function DashboardPage() {
@@ -46,6 +55,7 @@ export default function DashboardPage() {
   const [loadingVisitors, setLoadingVisitors] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [apiToken, setApiToken] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     // Get the API token from localStorage if available
@@ -62,7 +72,8 @@ export default function DashboardPage() {
 
   const fetchStats = async (
     token: string,
-    includeVisitors: boolean = false
+    includeVisitors: boolean = false,
+    page: number = 1
   ) => {
     try {
       if (includeVisitors) {
@@ -71,11 +82,15 @@ export default function DashboardPage() {
         setLoading(true);
       }
 
+      // Record start time for performance measurement
+      const startTime = performance.now();
+
       const url = new URL("/api/track", window.location.origin);
 
       if (includeVisitors) {
         url.searchParams.set("visitors", "true");
         url.searchParams.set("date", selectedDate);
+        url.searchParams.set("page", page.toString());
       }
 
       const response = await fetch(url.toString(), {
@@ -96,6 +111,16 @@ export default function DashboardPage() {
       setStats(data);
       // Save the token if it worked
       localStorage.setItem("visitorApiToken", token);
+
+      // Calculate and log the performance
+      const endTime = performance.now();
+      const loadTime = endTime - startTime;
+      console.log(`Data loaded in ${loadTime.toFixed(2)}ms`);
+
+      // If this is visitor data and load time is more than 1000ms, show a message
+      if (includeVisitors && loadTime > 1000) {
+        console.log("Visitor data load time exceeded 1 second target");
+      }
     } catch (err) {
       setError("Failed to fetch visitor stats. Please check your API token.");
       console.error(err);
@@ -410,7 +435,10 @@ export default function DashboardPage() {
                         className="border rounded px-2 py-1 text-sm"
                       />
                       <button
-                        onClick={() => fetchStats(apiToken, true)}
+                        onClick={() => {
+                          setCurrentPage(1); // Reset to page 1 when loading new data
+                          fetchStats(apiToken, true, 1);
+                        }}
                         className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
                       >
                         Load
@@ -420,8 +448,11 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   {loadingVisitors ? (
-                    <div className="flex justify-center items-center h-64">
+                    <div className="flex flex-col justify-center items-center h-64">
                       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                      <p className="mt-4 text-gray-600">
+                        Loading visitor data...
+                      </p>
                     </div>
                   ) : !stats?.visitors ? (
                     <div className="text-center py-4">
@@ -495,6 +526,102 @@ export default function DashboardPage() {
                         </table>
                       </div>
 
+                      {/* Pagination Controls */}
+                      {stats.pagination && (
+                        <div className="flex justify-between items-center mt-4 mb-2">
+                          <div className="text-sm text-gray-600">
+                            Showing{" "}
+                            {stats.pagination?.currentPage * 10 - 9 || 1} to{" "}
+                            {Math.min(
+                              stats.pagination?.currentPage * 10 || 10,
+                              stats.pagination?.totalVisitors || 0
+                            )}{" "}
+                            of {stats.pagination?.totalVisitors || 0} visitors
+                          </div>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => {
+                                const newPage = currentPage - 1;
+                                setCurrentPage(newPage);
+                                fetchStats(apiToken, true, newPage);
+                              }}
+                              disabled={currentPage <= 1}
+                              className={`px-3 py-1 rounded text-sm ${
+                                currentPage <= 1
+                                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                  : "bg-blue-600 text-white hover:bg-blue-700"
+                              }`}
+                            >
+                              Previous
+                            </button>
+
+                            {/* Page number buttons */}
+                            <div className="flex space-x-1">
+                              {Array.from(
+                                {
+                                  length: Math.min(
+                                    5,
+                                    stats.pagination?.totalPages || 1
+                                  ),
+                                },
+                                (_, i) => {
+                                  // Calculate which page numbers to show
+                                  let pageNum;
+                                  const totalPages =
+                                    stats.pagination?.totalPages || 1;
+                                  if (totalPages <= 5) {
+                                    // If 5 or fewer pages, show all pages
+                                    pageNum = i + 1;
+                                  } else if (currentPage <= 3) {
+                                    // If near the start, show pages 1-5
+                                    pageNum = i + 1;
+                                  } else if (currentPage >= totalPages - 2) {
+                                    // If near the end, show the last 5 pages
+                                    pageNum = totalPages - 4 + i;
+                                  } else {
+                                    // Otherwise show 2 before and 2 after current page
+                                    pageNum = currentPage - 2 + i;
+                                  }
+
+                                  return (
+                                    <button
+                                      key={pageNum}
+                                      onClick={() => {
+                                        setCurrentPage(pageNum);
+                                        fetchStats(apiToken, true, pageNum);
+                                      }}
+                                      className={`w-8 h-8 flex items-center justify-center rounded text-sm ${
+                                        currentPage === pageNum
+                                          ? "bg-blue-700 text-white font-bold"
+                                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                      }`}
+                                    >
+                                      {pageNum}
+                                    </button>
+                                  );
+                                }
+                              )}
+                            </div>
+
+                            <button
+                              onClick={() => {
+                                const newPage = currentPage + 1;
+                                setCurrentPage(newPage);
+                                fetchStats(apiToken, true, newPage);
+                              }}
+                              disabled={!stats.pagination?.hasMore}
+                              className={`px-3 py-1 rounded text-sm ${
+                                !stats.pagination?.hasMore
+                                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                  : "bg-blue-600 text-white hover:bg-blue-700"
+                              }`}
+                            >
+                              Next
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
                       <div className="md:hidden mt-4">
                         <h3 className="font-medium text-sm mb-2">
                           Tap a visitor to see more details:
@@ -546,6 +673,95 @@ export default function DashboardPage() {
                               </details>
                             );
                           })}
+
+                        {/* Mobile Pagination Controls */}
+                        {stats.pagination && (
+                          <div className="flex justify-between items-center mt-4">
+                            <div className="text-xs text-gray-600">
+                              Page {stats.pagination?.currentPage || 1} of{" "}
+                              {stats.pagination?.totalPages || 1}
+                            </div>
+                            <div className="flex space-x-1">
+                              <button
+                                onClick={() => {
+                                  const newPage = currentPage - 1;
+                                  setCurrentPage(newPage);
+                                  fetchStats(apiToken, true, newPage);
+                                }}
+                                disabled={currentPage <= 1}
+                                className={`px-2 py-1 rounded text-xs ${
+                                  currentPage <= 1
+                                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                    : "bg-blue-600 text-white hover:bg-blue-700"
+                                }`}
+                              >
+                                Prev
+                              </button>
+
+                              {/* Mobile page number buttons - show only 3 for mobile */}
+                              {Array.from(
+                                {
+                                  length: Math.min(
+                                    3,
+                                    stats.pagination?.totalPages || 1
+                                  ),
+                                },
+                                (_, i) => {
+                                  // Calculate which page numbers to show
+                                  let pageNum;
+                                  const totalPages =
+                                    stats.pagination?.totalPages || 1;
+                                  if (totalPages <= 3) {
+                                    // If 3 or fewer pages, show all pages
+                                    pageNum = i + 1;
+                                  } else if (currentPage <= 2) {
+                                    // If near the start, show pages 1-3
+                                    pageNum = i + 1;
+                                  } else if (currentPage >= totalPages - 1) {
+                                    // If near the end, show the last 3 pages
+                                    pageNum = totalPages - 2 + i;
+                                  } else {
+                                    // Otherwise show 1 before, current, and 1 after
+                                    pageNum = currentPage - 1 + i;
+                                  }
+
+                                  return (
+                                    <button
+                                      key={pageNum}
+                                      onClick={() => {
+                                        setCurrentPage(pageNum);
+                                        fetchStats(apiToken, true, pageNum);
+                                      }}
+                                      className={`w-6 h-6 flex items-center justify-center rounded text-xs ${
+                                        currentPage === pageNum
+                                          ? "bg-blue-700 text-white font-bold"
+                                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                      }`}
+                                    >
+                                      {pageNum}
+                                    </button>
+                                  );
+                                }
+                              )}
+
+                              <button
+                                onClick={() => {
+                                  const newPage = currentPage + 1;
+                                  setCurrentPage(newPage);
+                                  fetchStats(apiToken, true, newPage);
+                                }}
+                                disabled={!stats.pagination?.hasMore}
+                                className={`px-2 py-1 rounded text-xs ${
+                                  !stats.pagination?.hasMore
+                                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                    : "bg-blue-600 text-white hover:bg-blue-700"
+                                }`}
+                              >
+                                Next
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}

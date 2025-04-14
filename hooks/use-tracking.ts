@@ -10,6 +10,12 @@ export function usePageTracking() {
       return;
     }
 
+    // Skip tracking for the dashboard page
+    if (pathname.startsWith("/dashboard")) {
+      console.log("Skipping tracking for dashboard page");
+      return;
+    }
+
     // Track page view
     const trackPageView = async () => {
       try {

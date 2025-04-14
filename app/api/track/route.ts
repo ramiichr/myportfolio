@@ -134,6 +134,9 @@ export async function GET(request: NextRequest) {
     const getVisitors = url.searchParams.get("visitors") === "true";
     const date =
       url.searchParams.get("date") || new Date().toISOString().split("T")[0];
+    // Add pagination parameters
+    const page = parseInt(url.searchParams.get("page") || "1", 10);
+    const pageSize = 10; // Fixed page size of 10 items
 
     // Get stats from Redis
     const totalPageviews = (await redis.get("total_pageviews")) || 0;
@@ -156,43 +159,41 @@ export async function GET(request: NextRequest) {
 
     // If visitors data is requested, fetch the visitor list for the specified date
     let visitorsList: VisitorData[] = [];
+    let totalVisitors = 0;
+
     if (getVisitors) {
       const visitorKey = `visitors:${date}`;
-      const rawVisitorData = await redis.lrange(visitorKey, 0, 99); // Get up to 100 visitors
 
-      console.log(
-        `Retrieved ${rawVisitorData.length} visitor records for ${date}`
+      // Get total count of visitors for pagination
+      totalVisitors = await redis.llen(visitorKey);
+
+      // Calculate start and end indices for pagination
+      const startIndex = (page - 1) * pageSize;
+      const endIndex = startIndex + pageSize - 1;
+
+      // Only fetch the requested page of visitors
+      const rawVisitorData = await redis.lrange(
+        visitorKey,
+        startIndex,
+        endIndex
       );
 
-      // For debugging - log the first raw visitor data item
-      if (rawVisitorData.length > 0) {
-        console.log("Sample raw visitor data:", rawVisitorData[0]);
+      console.log(
+        `Retrieved ${rawVisitorData.length} visitor records for ${date} (page ${page})`
+      );
 
-        try {
-          const parsedSample = JSON.parse(rawVisitorData[0]);
-          console.log("Parsed sample data:", parsedSample);
-          console.log("IP in parsed sample:", parsedSample.ip);
-        } catch (e) {
-          console.error("Error parsing sample data:", e);
-        }
-      }
+      // Process the visitor data with optimized parsing
+      const startTime = Date.now();
 
       visitorsList = rawVisitorData
-        .map((item, index) => {
+        .map((item) => {
           try {
-            // Log every 10th item for debugging
-            if (index % 10 === 0) {
-              console.log(`Processing item ${index}, type: ${typeof item}`);
-            }
-
             // If item is already an object (not a string), return it directly
             if (typeof item === "object" && item !== null) {
               const visitorObj = item as any;
-              console.log(`Item ${index} is already an object:`, visitorObj);
 
               // Ensure IP is present (for backward compatibility)
               if (!visitorObj.ip) {
-                console.log(`Adding missing IP to item ${index}`);
                 visitorObj.ip = "127.0.0.1"; // Use localhost IP as fallback
               }
               return visitorObj as VisitorData;
@@ -200,39 +201,29 @@ export async function GET(request: NextRequest) {
 
             // If item is a string that looks like "[object Object]", skip it
             if (typeof item === "string" && item === "[object Object]") {
-              console.warn(
-                `Skipping invalid data format at index ${index}: [object Object]`
-              );
               return null;
             }
 
             // Otherwise parse it as JSON
             const parsedItem = JSON.parse(item) as VisitorData;
 
-            if (index % 10 === 0) {
-              console.log(`Parsed item ${index}:`, parsedItem);
-            }
-
             // Ensure IP is present (for backward compatibility)
             if (!parsedItem.ip) {
-              console.log(`Adding missing IP to parsed item ${index}`);
               parsedItem.ip = "127.0.0.1"; // Use localhost IP as fallback
             }
 
             return parsedItem;
           } catch (e) {
-            console.error(
-              `Error parsing visitor data at index ${index}:`,
-              e,
-              "Raw data:",
-              item
-            );
+            console.error("Error parsing visitor data:", e);
             return null;
           }
         })
         .filter(Boolean) as VisitorData[];
 
-      console.log(`Processed ${visitorsList.length} valid visitor records`);
+      const processingTime = Date.now() - startTime;
+      console.log(
+        `Processed ${visitorsList.length} visitor records in ${processingTime}ms`
+      );
     }
 
     // Log a sample of processed visitor data if available
@@ -246,6 +237,15 @@ export async function GET(request: NextRequest) {
       pageviewsByDate,
       uniqueVisitors: uniqueVisitorCounts,
       visitors: getVisitors ? visitorsList : undefined,
+      pagination: getVisitors
+        ? {
+            totalVisitors,
+            currentPage: page,
+            pageSize,
+            totalPages: Math.ceil(totalVisitors / pageSize),
+            hasMore: page * pageSize < totalVisitors,
+          }
+        : undefined,
     });
   } catch (error) {
     console.error("Error fetching visitor stats:", error);
