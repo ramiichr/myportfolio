@@ -56,6 +56,40 @@ function getTodayDate(): string {
 }
 
 /**
+ * Helper function to authenticate API requests
+ */
+function authenticateRequest(request: NextRequest): {
+  isAuthenticated: boolean;
+  response?: NextResponse;
+} {
+  const authHeader = request.headers.get("authorization");
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return {
+      isAuthenticated: false,
+      response: NextResponse.json(
+        { success: false, error: "Invalid authorization header format" },
+        { status: 401 }
+      ),
+    };
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  if (!token || token !== process.env.VISITOR_API_TOKEN) {
+    return {
+      isAuthenticated: false,
+      response: NextResponse.json(
+        { success: false, error: "Unauthorized access" },
+        { status: 401 }
+      ),
+    };
+  }
+
+  return { isAuthenticated: true };
+}
+
+/**
  * Helper function to parse visitor data from Redis
  */
 function parseVisitorData(item: any): VisitorData | null {
@@ -182,12 +216,10 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
-    // Verify API token
-    const authHeader = request.headers.get("authorization");
-    const token = authHeader?.split(" ")[1];
-
-    if (token !== process.env.VISITOR_API_TOKEN) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // Authenticate the request
+    const auth = authenticateRequest(request);
+    if (!auth.isAuthenticated) {
+      return auth.response;
     }
 
     // Get query parameters
@@ -257,6 +289,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({
+      success: true,
       totalPageviews,
       pageviewsByPage,
       pageviewsByDate,
@@ -267,7 +300,53 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("Error fetching visitor stats:", error);
     return NextResponse.json(
-      { error: "Failed to fetch visitor stats" },
+      { success: false, message: "Failed to fetch visitor stats" },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * DELETE handler for clearing all visitor data
+ */
+export async function DELETE(request: NextRequest) {
+  try {
+    // Authenticate the request
+    const auth = authenticateRequest(request);
+    if (!auth.isAuthenticated) {
+      return auth.response;
+    }
+
+    // Get all keys related to visitor tracking
+    const keys = await redis.keys(`${REDIS_KEYS.VISITORS_PREFIX}*`);
+    const uniqueVisitorKeys = await redis.keys(
+      `${REDIS_KEYS.UNIQUE_VISITORS_PREFIX}*`
+    );
+
+    // Delete all visitor data
+    const deletePromises = [
+      // Reset counters
+      redis.set(REDIS_KEYS.TOTAL_PAGEVIEWS, 0),
+      redis.del(REDIS_KEYS.PAGEVIEWS_BY_PAGE),
+      redis.del(REDIS_KEYS.PAGEVIEWS_BY_DATE),
+
+      // Delete visitor lists
+      ...keys.map((key) => redis.del(key)),
+
+      // Delete unique visitor sets
+      ...uniqueVisitorKeys.map((key) => redis.del(key)),
+    ];
+
+    await Promise.all(deletePromises);
+
+    return NextResponse.json({
+      success: true,
+      message: "All visitor data has been successfully deleted",
+    });
+  } catch (error) {
+    console.error("Error deleting visitor data:", error);
+    return NextResponse.json(
+      { success: false, message: "Failed to delete visitor data" },
       { status: 500 }
     );
   }

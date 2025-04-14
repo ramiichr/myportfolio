@@ -55,16 +55,78 @@ export default function DashboardPage() {
   const [loadingVisitors, setLoadingVisitors] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [apiToken, setApiToken] = useState("");
+  const [inputToken, setInputToken] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState(false);
 
   useEffect(() => {
     // Get the API token from localStorage if available
     const storedToken = localStorage.getItem("visitorApiToken");
     if (storedToken) {
       setApiToken(storedToken);
+      setInputToken(storedToken);
       fetchStats(storedToken);
     }
   }, []);
+
+  // Handle logout functionality
+  const handleLogout = () => {
+    // Clear the API token from localStorage
+    localStorage.removeItem("visitorApiToken");
+    // Reset the state
+    setApiToken("");
+    setInputToken("");
+    setStats(null);
+    setError(null);
+  };
+
+  // Handle delete all data functionality
+  const handleDeleteAllData = async () => {
+    // If not yet confirmed, show confirmation UI
+    if (!deleteConfirmation) {
+      setDeleteConfirmation(true);
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+
+      const response = await fetch("/api/track", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${apiToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete visitor data");
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Reset stats after successful deletion
+        setStats({
+          totalPageviews: 0,
+          pageviewsByPage: {},
+          pageviewsByDate: {},
+          uniqueVisitors: {},
+        });
+
+        // Show success message (could be enhanced with a toast notification)
+        console.log("All visitor data has been deleted successfully");
+      } else {
+        throw new Error(result.message || "Failed to delete visitor data");
+      }
+    } catch (err) {
+      console.error("Error deleting visitor data:", err);
+      setError("Failed to delete visitor data. Please try again.");
+    } finally {
+      setIsDeleting(false);
+      setDeleteConfirmation(false);
+    }
+  };
 
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split("T")[0]
@@ -99,12 +161,15 @@ export default function DashboardPage() {
         },
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch visitor stats");
-      }
-
       const data = await response.json();
       console.log("Received visitor data:", data);
+
+      if (!response.ok || data.success === false) {
+        throw new Error(
+          data.message || data.error || "Failed to fetch visitor stats"
+        );
+      }
+
       if (includeVisitors && data.visitors) {
         console.log("Visitor details:", data.visitors);
       }
@@ -121,9 +186,21 @@ export default function DashboardPage() {
       if (includeVisitors && loadTime > 1000) {
         console.log("Visitor data load time exceeded 1 second target");
       }
-    } catch (err) {
-      setError("Failed to fetch visitor stats. Please check your API token.");
-      console.error(err);
+    } catch (err: any) {
+      // Get a more specific error message if available
+      const errorMessage =
+        err.message ||
+        "Failed to fetch visitor stats. Please check your API token.";
+      setError(errorMessage);
+      console.error("API Error:", err);
+
+      // If the token is invalid, don't save it to localStorage
+      if (
+        errorMessage.includes("Unauthorized") ||
+        errorMessage.includes("Invalid")
+      ) {
+        localStorage.removeItem("visitorApiToken");
+      }
     } finally {
       if (includeVisitors) {
         setLoadingVisitors(false);
@@ -135,7 +212,10 @@ export default function DashboardPage() {
 
   const handleSubmitToken = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchStats(apiToken);
+    setError(null); // Clear any previous errors
+    setLoading(true); // Show loading state immediately
+    setApiToken(inputToken);
+    fetchStats(inputToken);
   };
 
   // Prepare data for charts
@@ -204,8 +284,8 @@ export default function DashboardPage() {
                 <input
                   id="apiToken"
                   type="password"
-                  value={apiToken}
-                  onChange={(e) => setApiToken(e.target.value)}
+                  value={inputToken}
+                  onChange={(e) => setInputToken(e.target.value)}
                   className="w-full p-2 border rounded-md"
                   placeholder="Enter your API token"
                 />
@@ -234,13 +314,48 @@ export default function DashboardPage() {
       ) : error ? (
         <Card>
           <CardContent className="pt-6">
-            <div className="text-red-500">{error}</div>
-            <button
-              onClick={() => setApiToken("")}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            <div
+              className={`${error.includes("successfully") ? "text-green-500" : "text-red-500"}`}
             >
-              Change API Token
-            </button>
+              {error}
+            </div>
+            {!error.includes("successfully") && (
+              <div className="mt-4 space-y-4">
+                <div className="space-y-2">
+                  <label
+                    htmlFor="apiTokenRetry"
+                    className="text-sm font-medium"
+                  >
+                    API Token
+                  </label>
+                  <input
+                    id="apiTokenRetry"
+                    type="password"
+                    value={inputToken}
+                    onChange={(e) => setInputToken(e.target.value)}
+                    className="w-full p-2 border rounded-md"
+                    placeholder="Enter your API token"
+                  />
+                </div>
+                <div className="flex space-x-4">
+                  <button
+                    onClick={handleSubmitToken}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  >
+                    Try Again
+                  </button>
+                  <button
+                    onClick={() => {
+                      setApiToken("");
+                      setError(null);
+                    }}
+                    className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       ) : (
@@ -770,13 +885,52 @@ export default function DashboardPage() {
             </TabsContent>
           </Tabs>
 
-          <div className="mt-4 text-right">
-            <button
-              onClick={() => setApiToken("")}
-              className="text-sm text-blue-600 hover:underline"
-            >
-              Change API Token
-            </button>
+          <div className="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-gray-50 rounded-lg">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+              >
+                Logout
+              </button>
+              <button
+                onClick={() => setApiToken("")}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Change API Token
+              </button>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-2">
+              {deleteConfirmation ? (
+                <>
+                  <span className="text-sm text-red-600 font-medium">
+                    Are you sure?
+                  </span>
+                  <button
+                    onClick={() => setDeleteConfirmation(false)}
+                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+                    disabled={isDeleting}
+                  >
+                    Cancel
+                  </button>
+                </>
+              ) : null}
+              <button
+                onClick={handleDeleteAllData}
+                className={`px-4 py-2 ${
+                  deleteConfirmation
+                    ? "bg-red-600 hover:bg-red-700"
+                    : "bg-red-500 hover:bg-red-600"
+                } text-white rounded-md transition-colors flex items-center gap-2`}
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <div className="animate-spin h-4 w-4 border-2 border-white rounded-full border-t-transparent"></div>
+                ) : null}
+                {deleteConfirmation ? "Confirm Delete" : "Delete All Data"}
+              </button>
+            </div>
           </div>
         </>
       )}
