@@ -1,37 +1,41 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
+// Paths that should be excluded from tracking
+const EXCLUDED_PATHS = ["/dashboard"];
+
+/**
+ * Custom hook for tracking page views
+ *
+ * This hook sends page view data to the tracking API when a user visits a page.
+ * It skips tracking for excluded paths and when tracking is disabled.
+ */
 export function usePageTracking() {
   const pathname = usePathname();
+  const lastTrackedPath = useRef<string | null>(null);
 
   useEffect(() => {
-    // Skip tracking if disabled
+    // Skip if this path was already tracked (prevents duplicate tracking on re-renders)
+    if (lastTrackedPath.current === pathname) {
+      return;
+    }
+
+    // Update the last tracked path
+    lastTrackedPath.current = pathname;
+
+    // Skip tracking if disabled via environment variable
     if (process.env.NEXT_PUBLIC_ENABLE_TRACKING !== "true") {
       return;
     }
 
-    // Skip tracking for the dashboard page
-    if (pathname.startsWith("/dashboard")) {
-      console.log("Skipping tracking for dashboard page");
+    // Skip tracking for excluded paths
+    if (EXCLUDED_PATHS.some((path) => pathname.startsWith(path))) {
       return;
     }
 
     // Track page view
     const trackPageView = async () => {
       try {
-        // Try to get client IP for debugging purposes
-        let clientIp = null;
-        try {
-          // This is just for debugging - the server should determine the real IP
-          const ipResponse = await fetch("https://api.ipify.org?format=json");
-          if (ipResponse.ok) {
-            const ipData = await ipResponse.json();
-            clientIp = ipData.ip;
-          }
-        } catch (ipError) {
-          console.log("Could not determine client IP:", ipError);
-        }
-
         await fetch("/api/track", {
           method: "POST",
           headers: {
@@ -39,12 +43,13 @@ export function usePageTracking() {
           },
           body: JSON.stringify({
             page: pathname,
-            clientIp: clientIp, // Include client IP for debugging
           }),
         });
       } catch (error) {
         // Silent fail - don't affect user experience if tracking fails
-        console.error("Failed to track page view:", error);
+        if (process.env.NODE_ENV !== "production") {
+          console.error("Failed to track page view:", error);
+        }
       }
     };
 

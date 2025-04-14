@@ -36,9 +36,16 @@ export const portfolioData: LocalizedData = {
       {
         id: "portfolio-website",
         title: "Portfolio Website",
-        description: "To Do...",
+        description:
+          "A modern, responsive portfolio website built with Next.js and TypeScript. Features include internationalization (English/German), dark/light mode, animations with Framer Motion, and a dashboard for visitor analytics using Redis.",
         image: "/portfolio.png?height=200&width=350",
-        tags: ["Next.js", "Three.js", "Framer Motion", "Tailwind CSS"],
+        tags: [
+          "Next.js",
+          "TypeScript",
+          "Framer Motion",
+          "Tailwind CSS",
+          "Redis",
+        ],
         link: "https://rami-cheikhrouhou.vercel.app/",
         github: "https://github.com/ramiichr/myportfolio",
         category: "web",
@@ -47,9 +54,16 @@ export const portfolioData: LocalizedData = {
       {
         id: "exchange-flow",
         title: "Exchange Flow",
-        description: "To Do...",
+        description:
+          "A currency converter application that provides real-time exchange rates for over 150 currencies. Features include historical rate charts, currency comparison, and a clean, intuitive interface with responsive design for all devices.",
         image: "/exchangeflow.png?height=200&width=350",
-        tags: ["Next.js", "Three.js", "Framer Motion", "Tailwind CSS"],
+        tags: [
+          "Next.js",
+          "React Query",
+          "Chart.js",
+          "Tailwind CSS",
+          "API Integration",
+        ],
         link: "https://exchange-flow.vercel.app/",
         github: "https://github.com/ramiichr/CurrencyConverter",
         category: "web",
@@ -58,9 +72,16 @@ export const portfolioData: LocalizedData = {
       {
         id: "weather-forecast-app",
         title: "Weather Forecast App",
-        description: "To Do...",
+        description:
+          "A comprehensive weather application that provides current conditions and 7-day forecasts for any location. Features include interactive maps, hourly forecasts, air quality index, and severe weather alerts with a responsive design.",
         image: "/weather.png?height=200&width=350",
-        tags: ["Next.js", "Three.js", "Framer Motion", "Tailwind CSS"],
+        tags: [
+          "React",
+          "OpenWeather API",
+          "Leaflet Maps",
+          "CSS Modules",
+          "Responsive Design",
+        ],
         link: "https://weather-forecast-liveapp.vercel.app/",
         github: "https://github.com/ramiichr/WeatherForecastApp",
         category: "web",
@@ -71,9 +92,16 @@ export const portfolioData: LocalizedData = {
       {
         id: "portfolio-website",
         title: "Portfolio Website",
-        description: "To Do...",
+        description:
+          "Eine moderne, responsive Portfolio-Website, entwickelt mit Next.js und TypeScript. Zu den Funktionen gehören Internationalisierung (Englisch/Deutsch), Dark/Light-Modus, Animationen mit Framer Motion und ein Dashboard für Besucheranalysen mit Redis.",
         image: "/portfolio.png?height=200&width=350",
-        tags: ["Next.js", "Three.js", "Framer Motion", "Tailwind CSS"],
+        tags: [
+          "Next.js",
+          "TypeScript",
+          "Framer Motion",
+          "Tailwind CSS",
+          "Redis",
+        ],
         link: "https://rami-cheikhrouhou.vercel.app/",
         github: "https://github.com/ramiichr/myportfolio",
         category: "web",
@@ -82,9 +110,16 @@ export const portfolioData: LocalizedData = {
       {
         id: "exchange-flow",
         title: "Exchange Flow",
-        description: "To Do...",
+        description:
+          "Eine Währungsumrechner-Anwendung, die Echtzeit-Wechselkurse für über 150 Währungen bietet. Zu den Funktionen gehören historische Kursdiagramme, Währungsvergleiche und eine übersichtliche, intuitive Benutzeroberfläche mit responsivem Design für alle Geräte.",
         image: "/exchangeflow.png?height=200&width=350",
-        tags: ["Next.js", "Three.js", "Framer Motion", "Tailwind CSS"],
+        tags: [
+          "Next.js",
+          "React Query",
+          "Chart.js",
+          "Tailwind CSS",
+          "API Integration",
+        ],
         link: "https://exchange-flow.vercel.app/",
         github: "https://github.com/ramiichr/CurrencyConverter",
         category: "web",
@@ -93,9 +128,16 @@ export const portfolioData: LocalizedData = {
       {
         id: "weather-forecast-app",
         title: "Weather Forecast App",
-        description: "To Do...",
+        description:
+          "Eine umfassende Wetter-Anwendung, die aktuelle Bedingungen und 7-Tage-Vorhersagen für jeden Ort bietet. Zu den Funktionen gehören interaktive Karten, stündliche Vorhersagen, Luftqualitätsindex und Unwetterwarnungen mit einem responsiven Design.",
         image: "/weather.png?height=200&width=350",
-        tags: ["Next.js", "Three.js", "Framer Motion", "Tailwind CSS"],
+        tags: [
+          "React",
+          "OpenWeather API",
+          "Leaflet Maps",
+          "CSS Modules",
+          "Responsive Design",
+        ],
         link: "https://weather-forecast-liveapp.vercel.app/",
         github: "https://github.com/ramiichr/WeatherForecastApp",
         category: "web",

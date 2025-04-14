@@ -3,61 +3,95 @@ import type { Profile, Project, Skill, Experience, Education } from "@/types";
 // Base URL for API calls
 const API_BASE_URL = "/api";
 
-// Helper function to handle API responses
+/**
+ * Helper function to handle API responses with improved error handling
+ */
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "An error occurred while fetching data");
+    try {
+      const error = await response.json();
+      throw new Error(
+        error.message || `Error ${response.status}: ${response.statusText}`
+      );
+    } catch (e) {
+      // If parsing JSON fails, throw with status code
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
   }
+
   return response.json() as Promise<T>;
 }
 
-// Fetch profile data
+/**
+ * Helper function to build URL with query parameters
+ */
+function buildUrl(
+  endpoint: string,
+  params: Record<string, string | boolean | undefined>
+): string {
+  const url = new URL(`${API_BASE_URL}/${endpoint}`, window.location.origin);
+
+  // Add all defined parameters to the URL
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined) {
+      url.searchParams.append(key, String(value));
+    }
+  });
+
+  return url.toString();
+}
+
+/**
+ * Fetch profile data
+ */
 export async function getProfile(lang: string): Promise<Profile> {
-  const response = await fetch(`${API_BASE_URL}/profile?lang=${lang}`);
+  const url = buildUrl("profile", { lang });
+  const response = await fetch(url);
   return handleResponse<Profile>(response);
 }
 
-// Fetch projects data with optional filters
+/**
+ * Fetch projects data with optional filters
+ */
 export async function getProjects(
   lang: string,
   category?: string,
   featured?: boolean
 ): Promise<Project[]> {
-  let url = `${API_BASE_URL}/projects?lang=${lang}`;
+  const params: Record<string, string | boolean | undefined> = {
+    lang,
+    category: category !== "all" ? category : undefined,
+    featured,
+  };
 
-  if (category && category !== "all") {
-    url += `&category=${category}`;
-  }
-
-  if (featured) {
-    url += "&featured=true";
-  }
-
+  const url = buildUrl("projects", params);
   const response = await fetch(url);
   return handleResponse<Project[]>(response);
 }
 
-// Fetch skills data with optional category filter
+/**
+ * Fetch skills data with optional category filter
+ */
 export async function getSkills(category?: string): Promise<Skill[]> {
-  let url = `${API_BASE_URL}/skills`;
-
-  if (category) {
-    url += `?category=${category}`;
-  }
-
+  const url = buildUrl("skills", { category });
   const response = await fetch(url);
   return handleResponse<Skill[]>(response);
 }
 
-// Fetch experiences data
+/**
+ * Fetch experiences data
+ */
 export async function getExperiences(lang: string): Promise<Experience[]> {
-  const response = await fetch(`${API_BASE_URL}/experiences?lang=${lang}`);
+  const url = buildUrl("experiences", { lang });
+  const response = await fetch(url);
   return handleResponse<Experience[]>(response);
 }
 
-// Fetch education data
+/**
+ * Fetch education data
+ */
 export async function getEducation(lang: string): Promise<Education[]> {
-  const response = await fetch(`${API_BASE_URL}/education?lang=${lang}`);
+  const url = buildUrl("education", { lang });
+  const response = await fetch(url);
   return handleResponse<Education[]>(response);
 }
