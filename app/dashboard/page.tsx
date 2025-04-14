@@ -29,6 +29,7 @@ interface VisitorData {
   country?: string;
   city?: string;
   timestamp: number;
+  ip: string;
 }
 
 interface VisitorStats {
@@ -88,6 +89,10 @@ export default function DashboardPage() {
       }
 
       const data = await response.json();
+      console.log("Received visitor data:", data);
+      if (includeVisitors && data.visitors) {
+        console.log("Visitor details:", data.visitors);
+      }
       setStats(data);
       // Save the token if it worked
       localStorage.setItem("visitorApiToken", token);
@@ -158,7 +163,6 @@ export default function DashboardPage() {
   if (!apiToken) {
     return (
       <div className="container mx-auto py-10">
-        <h1 className="text-4xl font-bold mb-6">Dashboard</h1>
         <Card>
           <CardHeader>
             <CardTitle>Authentication Required</CardTitle>
@@ -438,11 +442,11 @@ export default function DashboardPage() {
                               <th className="px-4 py-2 text-left">Time</th>
                               <th className="px-4 py-2 text-left">Page</th>
                               <th className="px-4 py-2 text-left">Location</th>
+                              <th className="px-4 py-2 text-left">
+                                IP Address
+                              </th>
                               <th className="px-4 py-2 text-left hidden md:table-cell">
                                 Referrer
-                              </th>
-                              <th className="px-4 py-2 text-left hidden lg:table-cell">
-                                User Agent
                               </th>
                             </tr>
                           </thead>
@@ -472,20 +476,17 @@ export default function DashboardPage() {
                                     ? `${visitor.city}, ${visitor.country}`
                                     : visitor.country}
                                 </td>
-                                <td className="px-4 py-2 hidden md:table-cell">
+                                <td className="px-4 py-2 whitespace-nowrap">
+                                  {visitor.ip && visitor.ip !== "Unknown"
+                                    ? visitor.ip
+                                    : "127.0.0.1"}
+                                </td>
+                                <td className="px-4 py-2 whitespace-nowrap">
                                   <span
                                     className="inline-block max-w-[200px] truncate"
                                     title={visitor.referrer}
                                   >
                                     {visitor.referrer}
-                                  </span>
-                                </td>
-                                <td className="px-4 py-2 hidden lg:table-cell">
-                                  <span
-                                    className="inline-block max-w-[300px] truncate"
-                                    title={visitor.userAgent}
-                                  >
-                                    {visitor.userAgent}
                                   </span>
                                 </td>
                               </tr>
@@ -513,6 +514,22 @@ export default function DashboardPage() {
                                   {visitor.page === "/" ? "Home" : visitor.page}
                                 </summary>
                                 <div className="p-3 pt-0 text-sm space-y-2 border-t">
+                                  <p>
+                                    <span className="font-medium">
+                                      Location:
+                                    </span>{" "}
+                                    {visitor.city && visitor.city !== "Unknown"
+                                      ? `${visitor.city}, ${visitor.country}`
+                                      : visitor.country}
+                                  </p>
+                                  <p>
+                                    <span className="font-medium">
+                                      IP Address:
+                                    </span>{" "}
+                                    {visitor.ip && visitor.ip !== "Unknown"
+                                      ? visitor.ip
+                                      : "127.0.0.1"}
+                                  </p>
                                   <p>
                                     <span className="font-medium">
                                       Referrer:

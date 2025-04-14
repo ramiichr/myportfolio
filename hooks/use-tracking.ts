@@ -13,6 +13,19 @@ export function usePageTracking() {
     // Track page view
     const trackPageView = async () => {
       try {
+        // Try to get client IP for debugging purposes
+        let clientIp = null;
+        try {
+          // This is just for debugging - the server should determine the real IP
+          const ipResponse = await fetch("https://api.ipify.org?format=json");
+          if (ipResponse.ok) {
+            const ipData = await ipResponse.json();
+            clientIp = ipData.ip;
+          }
+        } catch (ipError) {
+          console.log("Could not determine client IP:", ipError);
+        }
+
         await fetch("/api/track", {
           method: "POST",
           headers: {
@@ -20,6 +33,7 @@ export function usePageTracking() {
           },
           body: JSON.stringify({
             page: pathname,
+            clientIp: clientIp, // Include client IP for debugging
           }),
         });
       } catch (error) {

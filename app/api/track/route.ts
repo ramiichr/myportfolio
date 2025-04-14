@@ -10,6 +10,7 @@ interface VisitorData {
   country?: string;
   city?: string;
   timestamp: number;
+  ip: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -37,10 +38,21 @@ export async function POST(request: NextRequest) {
     const headersList = await headers();
     const userAgent = headersList.get("user-agent") || "Unknown";
     const referrer = headersList.get("referer") || "Direct";
-    const ip =
+
+    // Get the client IP address from various headers
+    let ip =
       request.headers.get("x-forwarded-for") ||
       headersList.get("x-forwarded-for") ||
-      "Unknown";
+      request.headers.get("x-real-ip") ||
+      headersList.get("x-real-ip") ||
+      "127.0.0.1"; // Use localhost IP as fallback instead of "Unknown"
+
+    // If the IP is a comma-separated list, take the first one (client IP)
+    if (ip && ip.includes(",")) {
+      ip = ip.split(",")[0].trim();
+    }
+
+    console.log("Captured IP address:", ip);
 
     // Get geo information if available (from Vercel headers)
     const country = request.headers.get("x-vercel-ip-country") || "Unknown";
@@ -57,7 +69,11 @@ export async function POST(request: NextRequest) {
       country,
       city,
       timestamp,
+      ip,
     };
+
+    console.log("Storing visitor data with IP:", ip);
+    console.log("Full visitor data:", JSON.stringify(visitorData));
 
     // Increment total page views
     await redis.incr("total_pageviews");
@@ -70,7 +86,17 @@ export async function POST(request: NextRequest) {
 
     // Store visitor data in a time-series list (limit to last 1000 entries)
     const visitorKey = `visitors:${date}`;
-    await redis.lpush(visitorKey, JSON.stringify(visitorData));
+
+    // Make sure IP is included in the data before storing
+    const visitorDataWithIP = {
+      ...visitorData,
+      ip: ip || "127.0.0.1", // Ensure IP is always set
+    };
+
+    // Log what we're storing
+    console.log("Storing in Redis:", JSON.stringify(visitorDataWithIP));
+
+    await redis.lpush(visitorKey, JSON.stringify(visitorDataWithIP));
     await redis.ltrim(visitorKey, 0, 999);
 
     // Set expiration for the visitor data (30 days)
@@ -134,28 +160,84 @@ export async function GET(request: NextRequest) {
       const visitorKey = `visitors:${date}`;
       const rawVisitorData = await redis.lrange(visitorKey, 0, 99); // Get up to 100 visitors
 
+      console.log(
+        `Retrieved ${rawVisitorData.length} visitor records for ${date}`
+      );
+
+      // For debugging - log the first raw visitor data item
+      if (rawVisitorData.length > 0) {
+        console.log("Sample raw visitor data:", rawVisitorData[0]);
+
+        try {
+          const parsedSample = JSON.parse(rawVisitorData[0]);
+          console.log("Parsed sample data:", parsedSample);
+          console.log("IP in parsed sample:", parsedSample.ip);
+        } catch (e) {
+          console.error("Error parsing sample data:", e);
+        }
+      }
+
       visitorsList = rawVisitorData
-        .map((item) => {
+        .map((item, index) => {
           try {
+            // Log every 10th item for debugging
+            if (index % 10 === 0) {
+              console.log(`Processing item ${index}, type: ${typeof item}`);
+            }
+
             // If item is already an object (not a string), return it directly
             if (typeof item === "object" && item !== null) {
-              return item as VisitorData;
+              const visitorObj = item as any;
+              console.log(`Item ${index} is already an object:`, visitorObj);
+
+              // Ensure IP is present (for backward compatibility)
+              if (!visitorObj.ip) {
+                console.log(`Adding missing IP to item ${index}`);
+                visitorObj.ip = "127.0.0.1"; // Use localhost IP as fallback
+              }
+              return visitorObj as VisitorData;
             }
 
             // If item is a string that looks like "[object Object]", skip it
             if (typeof item === "string" && item === "[object Object]") {
-              console.warn("Skipping invalid data format: [object Object]");
+              console.warn(
+                `Skipping invalid data format at index ${index}: [object Object]`
+              );
               return null;
             }
 
             // Otherwise parse it as JSON
-            return JSON.parse(item) as VisitorData;
+            const parsedItem = JSON.parse(item) as VisitorData;
+
+            if (index % 10 === 0) {
+              console.log(`Parsed item ${index}:`, parsedItem);
+            }
+
+            // Ensure IP is present (for backward compatibility)
+            if (!parsedItem.ip) {
+              console.log(`Adding missing IP to parsed item ${index}`);
+              parsedItem.ip = "127.0.0.1"; // Use localhost IP as fallback
+            }
+
+            return parsedItem;
           } catch (e) {
-            console.error("Error parsing visitor data:", e, "Raw data:", item);
+            console.error(
+              `Error parsing visitor data at index ${index}:`,
+              e,
+              "Raw data:",
+              item
+            );
             return null;
           }
         })
         .filter(Boolean) as VisitorData[];
+
+      console.log(`Processed ${visitorsList.length} valid visitor records`);
+    }
+
+    // Log a sample of processed visitor data if available
+    if (getVisitors && visitorsList.length > 0) {
+      console.log("Sample processed visitor data:", visitorsList[0]);
     }
 
     return NextResponse.json({
