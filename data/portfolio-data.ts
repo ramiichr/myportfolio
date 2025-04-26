@@ -34,23 +34,25 @@ export const portfolioData: LocalizedData = {
   projects: {
     en: [
       {
-        id: "portfolio-website",
-        title: "Portfolio Website",
+        id: "chat-app",
+        title: "ChatApp",
         description:
-          "A modern, responsive portfolio website built with Next.js and TypeScript. Features include internationalization (English/German), dark/light mode, animations with Framer Motion, and a dashboard for visitor analytics using Redis.",
-        image: "/portfolio.png?height=200&width=350",
+          "A feature-rich real-time chat application with text, voice, and video capabilities. Features include real-time messaging, user authentication, voice & video calls, responsive design, user status indicators, and message history.",
+        image: "/chatapp.png?height=200&width=350",
         tags: [
-          "Next.js",
-          "TypeScript",
-          "Framer Motion",
-          "Tailwind CSS",
-          "Redis",
+          "React",
+          "Node.js",
+          "Socket.io",
+          "MongoDB",
+          "Express",
+          "TailwindCSS",
         ],
-        link: "https://rami-cheikhrouhou.vercel.app/",
-        github: "https://github.com/ramiichr/myportfolio",
+        link: "https://chat-app-connecthub.vercel.app/",
+        github: "https://github.com/ramiichr/ChatApp",
         category: "web",
         featured: true,
       },
+
       {
         id: "exchange-flow",
         title: "Exchange Flow",
@@ -87,13 +89,11 @@ export const portfolioData: LocalizedData = {
         category: "web",
         featured: true,
       },
-    ],
-    de: [
       {
         id: "portfolio-website",
         title: "Portfolio Website",
         description:
-          "Eine moderne, responsive Portfolio-Website, entwickelt mit Next.js und TypeScript. Zu den Funktionen gehören Internationalisierung (Englisch/Deutsch), Dark/Light-Modus, Animationen mit Framer Motion und ein Dashboard für Besucheranalysen mit Redis.",
+          "A modern, responsive portfolio website built with Next.js and TypeScript. Features include internationalization (English/German), dark/light mode, animations with Framer Motion, and a dashboard for visitor analytics using Redis.",
         image: "/portfolio.png?height=200&width=350",
         tags: [
           "Next.js",
@@ -104,6 +104,27 @@ export const portfolioData: LocalizedData = {
         ],
         link: "https://rami-cheikhrouhou.vercel.app/",
         github: "https://github.com/ramiichr/myportfolio",
+        category: "web",
+        featured: true,
+      },
+    ],
+    de: [
+      {
+        id: "chat-app",
+        title: "ChatApp",
+        description:
+          "Eine funktionsreiche Echtzeit-Chat-Anwendung mit Text-, Sprach- und Videofunktionen. Zu den Funktionen gehören Echtzeit-Messaging, Benutzerauthentifizierung, Sprach- und Videoanrufe, responsives Design, Benutzerstatusanzeigen und Nachrichtenverlauf.",
+        image: "/chatapp.png?height=200&width=350",
+        tags: [
+          "React",
+          "Node.js",
+          "Socket.io",
+          "MongoDB",
+          "Express",
+          "TailwindCSS",
+        ],
+        link: "https://chat-app-connecthub.vercel.app/",
+        github: "https://github.com/ramiichr/ChatApp",
         category: "web",
         featured: true,
       },
@@ -140,6 +161,24 @@ export const portfolioData: LocalizedData = {
         ],
         link: "https://weather-forecast-liveapp.vercel.app/",
         github: "https://github.com/ramiichr/WeatherForecastApp",
+        category: "web",
+        featured: true,
+      },
+      {
+        id: "portfolio-website",
+        title: "Portfolio Website",
+        description:
+          "Eine moderne, responsive Portfolio-Website, entwickelt mit Next.js und TypeScript. Zu den Funktionen gehören Internationalisierung (Englisch/Deutsch), Dark/Light-Modus, Animationen mit Framer Motion und ein Dashboard für Besucheranalysen mit Redis.",
+        image: "/portfolio.png?height=200&width=350",
+        tags: [
+          "Next.js",
+          "TypeScript",
+          "Framer Motion",
+          "Tailwind CSS",
+          "Redis",
+        ],
+        link: "https://rami-cheikhrouhou.vercel.app/",
+        github: "https://github.com/ramiichr/myportfolio",
         category: "web",
         featured: true,
       },
