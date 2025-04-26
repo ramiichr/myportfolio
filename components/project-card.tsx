@@ -64,13 +64,17 @@ export default function ProjectCard({
         </CardContent>
         <CardFooter className="flex justify-between">
           <Button variant="outline" size="sm" asChild>
-            <Link href={project.github}>
+            <Link
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Github className="mr-2 h-4 w-4" />
               {translations.projects.viewCode}
             </Link>
           </Button>
           <Button size="sm" asChild>
-            <Link href={project.link}>
+            <Link href={project.link} target="_blank" rel="noopener noreferrer">
               <ExternalLink className="mr-2 h-4 w-4" />
               {translations.projects.viewProject}
             </Link>

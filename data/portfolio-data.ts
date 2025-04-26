@@ -34,8 +34,8 @@ export const portfolioData: LocalizedData = {
   projects: {
     en: [
       {
-        id: "chat-app",
-        title: "ChatApp",
+        id: "connecthub",
+        title: "ConnectHub",
         description:
           "A feature-rich real-time chat application with text, voice, and video capabilities. Features include real-time messaging, user authentication, voice & video calls, responsive design, user status indicators, and message history.",
         image: "/chatapp.png?height=200&width=350",
@@ -110,8 +110,8 @@ export const portfolioData: LocalizedData = {
     ],
     de: [
       {
-        id: "chat-app",
-        title: "ChatApp",
+        id: "connecthub",
+        title: "ConnectHub",
         description:
           "Eine funktionsreiche Echtzeit-Chat-Anwendung mit Text-, Sprach- und Videofunktionen. Zu den Funktionen gehören Echtzeit-Messaging, Benutzerauthentifizierung, Sprach- und Videoanrufe, responsives Design, Benutzerstatusanzeigen und Nachrichtenverlauf.",
         image: "/chatapp.png?height=200&width=350",
