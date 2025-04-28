@@ -37,6 +37,9 @@ export const de = {
       data: "Datenvisualisierung",
     },
   },
+  skills: {
+    level: "Niveau: {level}/5",
+  },
   contact: {
     title: "Kontakt aufnehmen",
     nameLabel: "Dein Name",

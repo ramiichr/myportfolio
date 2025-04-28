@@ -1,6 +1,6 @@
 import type React from "react";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Caveat } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/components/language-provider";
@@ -10,11 +10,19 @@ import CursorLight from "@/components/cursor-light";
 import { PageTracker } from "@/components/page-tracker";
 
 const inter = Inter({ subsets: ["latin"] });
+const caveat = Caveat({
+  subsets: ["latin"],
+  variable: "--font-caveat",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "My Portfolio",
   description:
     "Professional web developer portfolio showcasing my projects and skills",
+  icons: {
+    icon: "/rami.png",
+  },
 };
 
 export default function RootLayout({
@@ -24,7 +32,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${inter.className} ${caveat.variable}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

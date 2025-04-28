@@ -246,13 +246,69 @@ export default function Home() {
               <motion.div
                 key={skill.name}
                 variants={item}
-                className="flex flex-col items-center justify-center p-4 rounded-lg bg-slate-300 bg-opacity-30 border shadow-sm hover:shadow-md transition-shadow"
+                className="group relative flex flex-col items-center justify-center p-6 rounded-xl overflow-hidden backdrop-blur-effect skill-card-glow"
+                style={{
+                  background:
+                    "linear-gradient(135deg, rgba(var(--card), 0.8), rgba(var(--card), 0.4))",
+                  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+                }}
               >
+                {/* Animated background */}
+                <div
+                  className="absolute inset-0 bg-gradient-to-br from-primary/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+                  style={{
+                    clipPath: `circle(${skill.level * 20}% at 100% 0)`,
+                  }}
+                ></div>
+
+                {/* Skill icon with animated glow */}
                 {skill.icon !== "" && (
-                  <StackIcon name={skill.icon} className="w-10 h-10 mb-4" />
+                  <div className="relative mb-5 z-10">
+                    <div className="absolute -inset-3 bg-gradient-to-r from-primary/60 to-primary/20 rounded-full blur-lg opacity-0 group-hover:opacity-70 transition-opacity duration-700"></div>
+                    <div className="relative flex items-center justify-center w-16 h-16 rounded-full bg-background border border-primary/20 group-hover:border-primary/50 transition-colors duration-300">
+                      <StackIcon
+                        name={skill.icon}
+                        className="w-8 h-8 text-primary"
+                      />
+                    </div>
+                  </div>
                 )}
 
-                <h3 className="font-medium">{skill.name}</h3>
+                {/* Skill name */}
+                <h3 className="font-medium text-lg mb-4 z-10">{skill.name}</h3>
+
+                {/* Skill level indicator - circular progress */}
+                <div className="relative w-full h-2 bg-secondary/30 rounded-full overflow-hidden z-10">
+                  <div
+                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-primary/70 rounded-full"
+                    style={{
+                      width: `${(skill.level / 5) * 100}%`,
+                      boxShadow: "0 0 10px rgba(var(--primary), 0.5)",
+                    }}
+                  ></div>
+                </div>
+
+                {/* Animated dots based on skill level */}
+                <div className="flex justify-center mt-3 z-10">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={`w-2 h-2 mx-1 rounded-full transition-all duration-300 ${
+                        i < skill.level
+                          ? "bg-primary scale-100"
+                          : "bg-secondary/50 scale-75"
+                      }`}
+                    ></div>
+                  ))}
+                </div>
+
+                {/* Skill level text */}
+                <div className="mt-2 text-xs text-muted-foreground z-10">
+                  {translations.skills.level.replace(
+                    "{level}",
+                    skill.level.toString()
+                  )}
+                </div>
               </motion.div>
             ))}
           </motion.div>

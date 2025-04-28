@@ -104,3 +104,36 @@ button,
 [role="button"] {
   cursor: pointer;
 }
+
+/* Fix for backdrop-filter in Safari */
+@supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+  .backdrop-blur-effect {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+}
+
+/* Skill card glow effect */
+.skill-card-glow::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(
+    45deg,
+    hsl(var(--primary)) 0%,
+    transparent 30%,
+    transparent 70%,
+    hsl(var(--primary)) 100%
+  );
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.skill-card-glow:hover::before {
+  opacity: 0.4;
+}

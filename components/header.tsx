@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLanguage } from "@/components/language-provider";
@@ -37,7 +38,7 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Link href="/" className="font-bold text-xl">
-              <span>Portfolio</span>
+              <span className="font-caveat text-2xl">Rami Cheikh Rouhou</span>
             </Link>
           </div>
 

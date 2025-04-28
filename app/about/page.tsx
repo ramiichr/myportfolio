@@ -52,13 +52,16 @@ export default function AboutPage() {
   };
 
   // Group skills by category
-  const skillsByCategory = skills.reduce((acc, skill) => {
-    if (!acc[skill.category]) {
-      acc[skill.category] = [];
-    }
-    acc[skill.category].push(skill);
-    return acc;
-  }, {} as Record<string, Skill[]>);
+  const skillsByCategory = skills.reduce(
+    (acc, skill) => {
+      if (!acc[skill.category]) {
+        acc[skill.category] = [];
+      }
+      acc[skill.category].push(skill);
+      return acc;
+    },
+    {} as Record<string, Skill[]>
+  );
 
   if (loading) {
     return (
@@ -138,30 +141,90 @@ export default function AboutPage() {
             >
               {Object.entries(skillsByCategory).map(
                 ([category, categorySkills]) => (
-                  <Card key={category}>
+                  <Card
+                    key={category}
+                    className="hover:shadow-md transition-all duration-300 hover:border-primary/30"
+                  >
                     <CardContent className="pt-6">
                       <h3 className="text-lg font-bold mb-4">
                         {category === "frontend"
                           ? translations.about.frontend
                           : category === "backend"
-                          ? translations.about.backend
-                          : translations.about.tools}
+                            ? translations.about.backend
+                            : translations.about.tools}
                       </h3>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-col space-y-2">
                         {categorySkills.map((skill) => (
-                          <Badge
+                          <div
                             key={skill.name}
-                            variant="secondary"
-                            className="flex items-center gap-1"
+                            className="relative overflow-hidden group"
                           >
-                            {skill.icon !== "" && (
-                              <StackIcon
-                                name={skill.icon}
-                                className="w-4 h-4"
-                              />
-                            )}
-                            {skill.name}
-                          </Badge>
+                            <div
+                              className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent rounded-lg"
+                              style={{
+                                width: `${(skill.level / 5) * 100}%`,
+                                transition: "all 0.5s ease",
+                              }}
+                            ></div>
+                            <div className="relative z-10 p-4 border border-border/50 rounded-lg backdrop-blur-sm group-hover:border-primary/50 transition-all">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  {skill.icon !== "" ? (
+                                    <div className="relative">
+                                      <div className="absolute -inset-1 bg-gradient-to-r from-primary to-primary/50 rounded-full blur-sm opacity-70 group-hover:opacity-100 transition-opacity"></div>
+                                      <div className="relative bg-background p-2 rounded-full">
+                                        <div className="w-9 h-9 flex items-center justify-center rounded-full bg-background">
+                                          <StackIcon
+                                            name={skill.icon}
+                                            className="w-5 h-5 text-primary"
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="w-9 h-9 rounded-full bg-background"></div>
+                                  )}
+                                  <span className="font-medium text-sm  text-foreground">
+                                    {skill.name}
+                                  </span>
+                                </div>
+
+                                <div className="flex items-center">
+                                  <div className="relative h-8 w-8">
+                                    <svg
+                                      viewBox="0 0 36 36"
+                                      className="h-8 w-8 stroke-primary/30"
+                                    >
+                                      <path
+                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none"
+                                        strokeWidth="3"
+                                        strokeLinecap="round"
+                                      />
+                                    </svg>
+                                    <svg
+                                      viewBox="0 0 36 36"
+                                      className="absolute inset-0 h-8 w-8 stroke-primary"
+                                    >
+                                      <path
+                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        fill="none"
+                                        strokeWidth="3"
+                                        strokeLinecap="round"
+                                        strokeDasharray="100"
+                                        strokeDashoffset={
+                                          100 - (skill.level / 5) * 100
+                                        }
+                                      />
+                                    </svg>
+                                    <div className="absolute inset-0 flex items-center justify-center text-xs font-medium">
+                                      {skill.level}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         ))}
                       </div>
                     </CardContent>
