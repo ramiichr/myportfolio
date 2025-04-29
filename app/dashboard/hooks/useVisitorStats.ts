@@ -24,9 +24,16 @@ export const useVisitorStats = (): UseVisitorStatsReturn => {
   const [loadingVisitors, setLoadingVisitors] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  // Initialize with today's date
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
+
+  // Create a safe setter for the date that won't cause a page refresh
+  const safeSetSelectedDate = useCallback((date: string) => {
+    // Prevent any default behavior that might cause a page refresh
+    setSelectedDate(date);
+  }, []);
 
   const resetError = useCallback(() => setError(null), []);
 
@@ -116,7 +123,7 @@ export const useVisitorStats = (): UseVisitorStatsReturn => {
     currentPage,
     setCurrentPage,
     selectedDate,
-    setSelectedDate,
+    setSelectedDate: safeSetSelectedDate, // Use our safe setter instead
     fetchStats,
     resetError,
   };

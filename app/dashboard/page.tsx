@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Import custom hooks
@@ -24,6 +24,9 @@ import {
 } from "./components/charts/index";
 
 export default function DashboardPage() {
+  // State to track the active tab
+  const [activeTab, setActiveTab] = useState("pageviews");
+
   // Authentication state and methods
   const {
     apiToken,
@@ -76,15 +79,34 @@ export default function DashboardPage() {
   };
 
   // Handle loading visitors for a specific date
-  const handleLoadVisitors = () => {
-    setCurrentPage(1); // Reset to page 1 when loading new data
-    fetchStats(apiToken, true, 1);
+  const handleLoadVisitors = (e?: React.MouseEvent) => {
+    // Prevent any default form submission and stop propagation
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    // Reset to page 1 when loading new data
+    setCurrentPage(1);
+
+    // Make sure we're on the visitor-list tab
+    setActiveTab("visitor-list");
+
+    // Use setTimeout to ensure this happens outside the current event cycle
+    setTimeout(() => {
+      fetchStats(apiToken, true, 1);
+    }, 0);
   };
 
   // Handle page change in visitor list
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    fetchStats(apiToken, true, page);
+    setActiveTab("visitor-list"); // Ensure we stay on the visitor list tab
+
+    // Use setTimeout to ensure this happens outside the current event cycle
+    setTimeout(() => {
+      fetchStats(apiToken, true, page);
+    }, 0);
   };
 
   // If not authenticated, show login form
@@ -125,7 +147,11 @@ export default function DashboardPage() {
           {stats && <StatsCards stats={stats} />}
 
           {/* Tabs for different chart views */}
-          <Tabs defaultValue="pageviews" className="space-y-4">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="space-y-4"
+          >
             <TabsList>
               <TabsTrigger value="pageviews">Page Views</TabsTrigger>
               <TabsTrigger value="visitors">Unique Visitors</TabsTrigger>
@@ -150,7 +176,11 @@ export default function DashboardPage() {
                 visitors={stats?.visitors || []}
                 pagination={stats?.pagination}
                 selectedDate={selectedDate}
-                onDateChange={setSelectedDate}
+                onDateChange={(date) => {
+                  // Prevent default behavior, set the date, and ensure we stay on the visitor-list tab
+                  setSelectedDate(date);
+                  setActiveTab("visitor-list"); // Ensure we stay on the visitor list tab
+                }}
                 onLoadClick={handleLoadVisitors}
                 currentPage={currentPage}
                 onPageChange={handlePageChange}

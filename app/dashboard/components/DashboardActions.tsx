@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 interface DashboardActionsProps {
   onLogout: () => void;
@@ -20,6 +21,12 @@ export const DashboardActions: React.FC<DashboardActionsProps> = ({
   return (
     <div className="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-gray-50 rounded-lg">
       <div className="flex flex-col sm:flex-row gap-2">
+        <Link
+          href="/"
+          className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center justify-center"
+        >
+          Go to Portfolio
+        </Link>
         <button
           onClick={onLogout}
           className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
