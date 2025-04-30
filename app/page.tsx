@@ -44,7 +44,11 @@ export default function Home() {
   const hasError = profileError || projectsError || skillsError;
 
   if (isLoading) {
-    return <LoadingSpinner size="lg" />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="md" />
+      </div>
+    );
   }
 
   if (hasError) {
