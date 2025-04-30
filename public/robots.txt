@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /projects
+Allow: /contact
+Disallow: /dashboard
+Disallow: /api
+
+Sitemap: https://rami-cheikhrouhou.vercel.app/sitemap.xml

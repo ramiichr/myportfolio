@@ -137,3 +137,66 @@ button,
 .skill-card-glow:hover::before {
   opacity: 0.4;
 }
+
+/* Mobile menu and responsive styles */
+@media (max-width: 768px) {
+  .header-blur {
+    -webkit-backdrop-filter: saturate(180%) blur(8px);
+    backdrop-filter: saturate(180%) blur(8px);
+  }
+
+  .mobile-nav-item {
+    position: relative;
+    width: 100%;
+  }
+
+  .mobile-nav-item::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: hsl(var(--primary));
+    transition: width 0.3s ease;
+  }
+
+  .mobile-nav-item:hover::after,
+  .mobile-nav-item[data-active="true"]::after {
+    width: 100%;
+  }
+}
+
+/* Improved tap targets for mobile */
+@media (max-width: 768px) {
+  a,
+  button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.5rem;
+  }
+
+  button[data-compact="true"] {
+    min-height: unset;
+    min-width: unset;
+    padding: unset;
+  }
+}
+
+/* Smooth transitions for all interactive elements */
+a,
+button,
+input,
+select,
+textarea {
+  transition-property: color, background-color, border-color, fill, stroke,
+    opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Prevent content shift on mobile menu open */
+.prevent-scroll {
+  overflow: hidden;
+  height: 100vh;
+}

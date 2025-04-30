@@ -1,0 +1,27 @@
+{
+  "name": "Rami Cheikh Rouhou - Frontend Developer Portfolio",
+  "short_name": "Rami's Portfolio",
+  "description": "Frontend Developer portfolio showcasing web development projects and skills",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#3b82f6",
+  "icons": [
+    {
+      "src": "/rami.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/rami.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "orientation": "portrait",
+  "categories": ["portfolio", "web development", "frontend", "backend"],
+  "lang": "en",
+  "dir": "ltr"
+}

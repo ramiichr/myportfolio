@@ -27,60 +27,83 @@ export default function ProjectCard({
   translations,
   index,
 }: ProjectCardProps) {
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 },
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+    <motion.article
+      variants={item}
+      className="group"
+      itemScope
+      itemType="http://schema.org/CreativeWork"
     >
-      <Card className="overflow-hidden group h-full flex flex-col">
-        <div className="overflow-hidden">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Image
-              src={project.image || "/placeholder.svg"}
-              alt={project.title}
-              width={350}
-              height={200}
-              className="w-full h-48 object-cover"
-            />
-          </motion.div>
+      <Card className="overflow-hidden h-full transition-all hover:shadow-lg">
+        <div className="relative aspect-video overflow-hidden">
+          <Image
+            src={project.image}
+            alt={`Screenshot of ${project.title}`}
+            className="object-cover transition-transform group-hover:scale-105"
+            fill
+            priority={index < 3}
+            itemProp="image"
+          />
         </div>
-        <CardHeader>
-          <CardTitle>{project.title}</CardTitle>
-          <CardDescription>{project.description}</CardDescription>
-        </CardHeader>
-        <CardContent className="flex-grow">
+        <CardContent className="space-y-4 p-6">
+          <div>
+            <h3
+              className="font-bold tracking-tight text-xl mb-2"
+              itemProp="name"
+            >
+              {project.title}
+            </h3>
+            <p className="text-muted-foreground" itemProp="description">
+              {project.description}
+            </p>
+          </div>
           <div className="flex flex-wrap gap-2">
             {project.tags.map((tag) => (
-              <Badge key={tag} variant="secondary">
+              <Badge key={tag} variant="secondary" itemProp="keywords">
                 {tag}
               </Badge>
             ))}
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button variant="outline" size="sm" asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            aria-label={`View source code for ${project.title}`}
+          >
             <Link
               href={project.github}
               target="_blank"
               rel="noopener noreferrer"
+              itemProp="codeRepository"
             >
               <Github className="mr-2 h-4 w-4" />
               {translations.projects.viewCode}
             </Link>
           </Button>
-          <Button size="sm" asChild>
-            <Link href={project.link} target="_blank" rel="noopener noreferrer">
+          <Button
+            size="sm"
+            asChild
+            aria-label={`View live demo of ${project.title}`}
+          >
+            <Link
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              itemProp="url"
+            >
               <ExternalLink className="mr-2 h-4 w-4" />
               {translations.projects.viewProject}
             </Link>
           </Button>
         </CardFooter>
       </Card>
-    </motion.div>
+    </motion.article>
   );
 }

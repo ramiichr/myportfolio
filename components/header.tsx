@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -15,6 +15,20 @@ export default function Header() {
   const pathname = usePathname();
   const { translations } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    // Toggle body scroll class when menu opens/closes
+    if (menuOpen) {
+      document.body.classList.add("prevent-scroll");
+    } else {
+      document.body.classList.remove("prevent-scroll");
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove("prevent-scroll");
+    };
+  }, [menuOpen]);
 
   // Don't render header on dashboard pages
   if (pathname.startsWith("/dashboard")) {
@@ -33,17 +47,19 @@ export default function Header() {
   };
 
   return (
-    <header className="fixed w-full bg-background/80 backdrop-blur-sm z-50 border-b">
-      <div className="mx-auto max-w-7xl px-6 py-4">
-        <div className="flex items-center justify-between">
+    <header className="fixed w-full bg-background/80 backdrop-blur-sm z-50 border-b supports-[backdrop-filter]:bg-background/60">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <Link href="/" className="font-bold text-xl">
-              <span className="font-caveat text-2xl">Rami Cheikh Rouhou</span>
+            <Link href="/" className="flex items-center space-x-2">
+              <span className="font-caveat text-xl sm:text-2xl">
+                Rami Cheikh Rouhou
+              </span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:space-x-8">
+          <div className="hidden md:flex md:items-center md:space-x-6 lg:space-x-8">
             {navigation.map((item) => (
               <Link
                 key={item.name}
@@ -59,29 +75,29 @@ export default function Header() {
             ))}
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-1 sm:gap-2">
               <LanguageToggle />
               <ThemeToggle />
             </div>
-            {/* Mobile Menu Button - Only visible on small screens */}
+            {/* Mobile Menu Button */}
             <Button
               variant="ghost"
               size="icon"
               onClick={toggleMenu}
-              className="md:hidden"
+              className="inline-flex md:hidden items-center justify-center rounded-md p-2 hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
               aria-label="Toggle menu"
             >
               {menuOpen ? (
-                <X className="h-6 w-6" />
+                <X className="h-5 w-5" />
               ) : (
-                <Menu className="h-6 w-6" />
+                <Menu className="h-5 w-5" />
               )}
             </Button>
           </div>
         </div>
 
-        {/* Mobile Navigation - Only visible on small screens when toggled */}
+        {/* Mobile Menu */}
         <AnimatePresence>
           {menuOpen && (
             <motion.div
