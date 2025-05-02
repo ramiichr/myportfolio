@@ -47,7 +47,7 @@ export default function CursorLight() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             style={{
-              background: `radial-gradient(circle 2000px at ${mousePosition.x}px ${mousePosition.y}px, rgba(137, 126, 255, 0.5), transparent 50%)`,
+              background: `radial-gradient(circle 2000px at ${mousePosition.x}px ${mousePosition.y}px, rgba(21, 0, 255, 0.258), transparent 50%)`,
             }}
           />
         </>
