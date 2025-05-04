@@ -1,12 +1,27 @@
-"use client"
+"use client";
 
-import { useLanguage } from "@/components/language-provider"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Globe } from "lucide-react"
+import { useLanguage } from "@/components/language-provider";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Globe } from "lucide-react";
 
 export function LanguageToggle() {
-  const { language, setLanguage, translations } = useLanguage()
+  const { language, setLanguage, translations } = useLanguage();
+
+  const handleLanguageChange = (newLang: "en" | "de") => {
+    const root = document.querySelector("[data-language]");
+    root?.setAttribute("data-language-switching", "true");
+
+    setTimeout(() => {
+      setLanguage(newLang);
+      root?.removeAttribute("data-language-switching");
+    }, 200);
+  };
 
   return (
     <DropdownMenu>
@@ -17,14 +32,19 @@ export function LanguageToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setLanguage("en")} className={language === "en" ? "bg-accent" : ""}>
+        <DropdownMenuItem
+          onClick={() => handleLanguageChange("en")}
+          className={language === "en" ? "bg-accent" : ""}
+        >
           <span>{translations.language.en}</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setLanguage("de")} className={language === "de" ? "bg-accent" : ""}>
+        <DropdownMenuItem
+          onClick={() => handleLanguageChange("de")}
+          className={language === "de" ? "bg-accent" : ""}
+        >
           <span>{translations.language.de}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }
-

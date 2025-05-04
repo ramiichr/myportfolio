@@ -18,6 +18,15 @@ body {
   transition: var(--transition-theme);
 }
 
+/* Add language transition animations */
+[data-language] * {
+  transition: opacity 0.2s ease-out;
+}
+
+[data-language-switching="true"] * {
+  opacity: 0.5;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

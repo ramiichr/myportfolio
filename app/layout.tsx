@@ -160,17 +160,19 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ErrorBoundary>
-            <LanguageProvider>
-              <PageTracker />
-              <div className="flex min-h-screen flex-col">
-                <CursorLight />
-                <Header />
-                <main className="flex-1">{children}</main>
-                <Footer />
-              </div>
-            </LanguageProvider>
-          </ErrorBoundary>
+          <LanguageProvider>
+            <div data-language>
+              <ErrorBoundary>
+                <PageTracker />
+                <div className="flex min-h-screen flex-col">
+                  <CursorLight />
+                  <Header />
+                  <main className="flex-1">{children}</main>
+                  <Footer />
+                </div>
+              </ErrorBoundary>
+            </div>
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

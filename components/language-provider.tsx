@@ -1,55 +1,84 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { en } from "@/i18n/en";
+import { de } from "@/i18n/de";
 
-import { createContext, useContext, useState, useEffect } from "react"
-import { en } from "@/i18n/en"
-import { de } from "@/i18n/de"
-
-type Language = "en" | "de"
-type Translations = typeof en
+type Language = "en" | "de";
+type Translations = typeof en;
 
 interface LanguageContextType {
-  language: Language
-  translations: Translations
-  setLanguage: (language: Language) => void
+  language: Language;
+  translations: Translations;
+  setLanguage: (language: Language) => void;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
+const LanguageContext = createContext<LanguageContextType | undefined>(
+  undefined
+);
+
+const preloadedTranslations = {
+  en,
+  de,
+};
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState<Language>("en")
-  const [translations, setTranslations] = useState<Translations>(en)
+  const [mounted, setMounted] = useState(false);
+  const [language, setLanguage] = useState<Language>("en");
+  const [translations, setTranslations] = useState<Translations>(en);
 
   useEffect(() => {
+    setMounted(true);
     // Load saved language preference from localStorage if available
-    const savedLanguage = localStorage.getItem("language") as Language
+    const savedLanguage = localStorage.getItem("language") as Language;
     if (savedLanguage && (savedLanguage === "en" || savedLanguage === "de")) {
-      setLanguage(savedLanguage)
+      setLanguage(savedLanguage);
+      setTranslations(preloadedTranslations[savedLanguage]);
     } else {
       // Try to detect browser language
-      const browserLang = navigator.language.split("-")[0]
+      const browserLang = navigator.language.split("-")[0];
       if (browserLang === "de") {
-        setLanguage("de")
+        setLanguage("de");
+        setTranslations(preloadedTranslations.de);
       }
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
+    if (!mounted) return;
     // Update translations when language changes
-    setTranslations(language === "en" ? en : de)
+    setTranslations(preloadedTranslations[language]);
     // Save language preference
-    localStorage.setItem("language", language)
-  }, [language])
+    localStorage.setItem("language", language);
+  }, [language, mounted]);
 
-  return <LanguageContext.Provider value={{ language, translations, setLanguage }}>{children}</LanguageContext.Provider>
+  // During SSR and initial mount, return English translations
+  if (!mounted) {
+    return (
+      <LanguageContext.Provider
+        value={{
+          language: "en",
+          translations: en,
+          setLanguage: () => undefined,
+        }}
+      >
+        {children}
+      </LanguageContext.Provider>
+    );
+  }
+
+  return (
+    <LanguageContext.Provider value={{ language, translations, setLanguage }}>
+      {children}
+    </LanguageContext.Provider>
+  );
 }
 
 export function useLanguage() {
-  const context = useContext(LanguageContext)
+  const context = useContext(LanguageContext);
   if (context === undefined) {
-    throw new Error("useLanguage must be used within a LanguageProvider")
+    throw new Error("useLanguage must be used within a LanguageProvider");
   }
-  return context
+  return context;
 }
-

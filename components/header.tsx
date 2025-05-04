@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLanguage } from "@/components/language-provider";
@@ -14,9 +13,17 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function Header() {
   const pathname = usePathname();
   const { translations } = useLanguage();
+  const [mounted, setMounted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // Ensure we're mounted before rendering interactive elements
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     // Toggle body scroll class when menu opens/closes
     if (menuOpen) {
       document.body.classList.add("prevent-scroll");
@@ -28,7 +35,7 @@ export default function Header() {
     return () => {
       document.body.classList.remove("prevent-scroll");
     };
-  }, [menuOpen]);
+  }, [menuOpen, mounted]);
 
   // Don't render header on dashboard pages
   if (pathname.startsWith("/dashboard")) {
@@ -42,9 +49,26 @@ export default function Header() {
     { name: translations.navigation.contact, href: "/contact" },
   ];
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
+  const toggleMenu = useCallback(() => {
+    setMenuOpen((prev) => !prev);
+  }, []);
+
+  // If not mounted, render a simpler version without interactive elements
+  if (!mounted) {
+    return (
+      <header className="fixed w-full bg-background/80 backdrop-blur-sm z-50 border-b supports-[backdrop-filter]:bg-background/60">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center">
+              <span className="font-caveat text-xl sm:text-2xl">
+                Rami Cheikh Rouhou
+              </span>
+            </div>
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="fixed w-full bg-background/80 backdrop-blur-sm z-50 border-b supports-[backdrop-filter]:bg-background/60">
