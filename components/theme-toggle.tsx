@@ -23,30 +23,48 @@ const colorThemes: { name: ColorTheme; label: string }[] = [
   { name: "orange", label: "Orange" },
 ];
 
+const COLOR_THEME_KEY = "color-theme";
+
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const { translations } = useLanguage();
   const [mounted, setMounted] = useState(false);
-  const [colorTheme, setColorTheme] = useState("blue");
+  const [colorTheme, setColorTheme] = useState<ColorTheme>("blue");
 
-  // Ensure component is mounted to avoid hydration mismatch
+  // Initialize theme synchronously if possible
   useEffect(() => {
+    const savedColorTheme =
+      (localStorage.getItem(COLOR_THEME_KEY) as ColorTheme) || "blue";
+    // Apply theme immediately on mount
+    setColorTheme(savedColorTheme);
+    document.documentElement.setAttribute("data-theme", savedColorTheme);
     setMounted(true);
-    // Get the initial color theme from data-theme attribute
-    const initialColorTheme =
-      document.documentElement.getAttribute("data-theme") || "blue";
-    setColorTheme(initialColorTheme);
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === COLOR_THEME_KEY) {
+        const newTheme = (e.newValue as ColorTheme) || "blue";
+        setColorTheme(newTheme);
+        requestAnimationFrame(() => {
+          document.documentElement.setAttribute("data-theme", newTheme);
+        });
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  // Handle theme changes
-  const handleColorThemeChange = (newColorTheme: string) => {
+  const handleColorThemeChange = (newColorTheme: ColorTheme) => {
     setColorTheme(newColorTheme);
-    document.documentElement.setAttribute("data-theme", newColorTheme);
+    localStorage.setItem(COLOR_THEME_KEY, newColorTheme);
+    requestAnimationFrame(() => {
+      document.documentElement.setAttribute("data-theme", newColorTheme);
+    });
   };
 
   if (!mounted) {
     return (
-      <Button variant="outline" size="icon" disabled>
+      <Button variant="outline" size="icon" className="transition-none">
         <Sun className="h-[1.2rem] w-[1.2rem]" />
         <span className="sr-only">Toggle theme</span>
       </Button>
@@ -57,9 +75,9 @@ export function ThemeToggle() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon">
-          {theme === "light" ? (
+          {resolvedTheme === "light" ? (
             <Sun className="h-[1.2rem] w-[1.2rem]" />
-          ) : theme === "dark" ? (
+          ) : resolvedTheme === "dark" ? (
             <Moon className="h-[1.2rem] w-[1.2rem]" />
           ) : (
             <Laptop className="h-[1.2rem] w-[1.2rem]" />
