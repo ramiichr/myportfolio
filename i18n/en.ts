@@ -64,6 +64,13 @@ export const en = {
     light: "Light",
     dark: "Dark",
     system: "System",
+    colors: {
+      blue: "Blue",
+      green: "Green",
+      purple: "Purple",
+      rose: "Rose",
+      orange: "Orange",
+    },
   },
   language: {
     en: "English",

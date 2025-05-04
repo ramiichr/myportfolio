@@ -41,13 +41,22 @@ export default function CursorLight() {
       {isMouseInWindow && (
         <>
           <motion.div
+            className="cursor-outline"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)`,
+            }}
+          />
+          <motion.div
             className="pointer-events-none fixed inset-0 -z-[1]"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.7 }}
+            animate={{ opacity: 0.25 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             style={{
-              background: `radial-gradient(circle 2000px at ${mousePosition.x}px ${mousePosition.y}px, rgba(21, 0, 255, 0.258), transparent 50%)`,
+              background: `radial-gradient(circle 2000px at ${mousePosition.x}px ${mousePosition.y}px, hsl(var(--primary) / 0.25), transparent 50%)`,
             }}
           />
         </>

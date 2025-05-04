@@ -65,6 +65,13 @@ export const de = {
     light: "Hell",
     dark: "Dunkel",
     system: "System",
+    colors: {
+      blue: "Blau",
+      green: "Grün",
+      purple: "Lila",
+      rose: "Rosa",
+      orange: "Orange",
+    },
   },
   language: {
     en: "Englisch",
