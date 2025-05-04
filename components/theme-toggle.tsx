@@ -118,7 +118,18 @@ export function ThemeToggle() {
           >
             <Palette
               className="mr-2 h-4 w-4"
-              style={{ color: `hsl(var(--primary))` }}
+              style={{
+                color:
+                  themeOption.name === "blue"
+                    ? "hsl(221.2 83.2% 53.3%)"
+                    : themeOption.name === "green"
+                      ? "hsl(142.1 76.2% 36.3%)"
+                      : themeOption.name === "purple"
+                        ? "hsl(262.1 83.3% 57.8%)"
+                        : themeOption.name === "rose"
+                          ? "hsl(346.8 77.2% 49.8%)"
+                          : "hsl(24.6 95% 53.1%)", // orange
+              }}
             />
             <span>{translations.theme.colors[themeOption.name]}</span>
           </DropdownMenuItem>
