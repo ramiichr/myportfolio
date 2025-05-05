@@ -8,15 +8,20 @@ export async function GET(request: Request) {
     const lang = searchParams.get("lang") || "en";
 
     // Validate language
-    if (lang !== "en" && lang !== "de") {
+    if (lang !== "en" && lang !== "de" && lang !== "fr") {
       return NextResponse.json(
-        { error: "Invalid language. Supported languages are 'en' and 'de'." },
+        {
+          error:
+            "Invalid language. Supported languages are 'en', 'de', and 'fr'.",
+        },
         { status: 400 }
       );
     }
 
     // Return the experiences data for the requested language
-    return NextResponse.json(portfolioData.experiences[lang as "en" | "de"]);
+    return NextResponse.json(
+      portfolioData.experiences[lang as "en" | "de" | "fr"]
+    );
   } catch (error) {
     console.error("Error fetching experiences data:", error);
     return NextResponse.json(

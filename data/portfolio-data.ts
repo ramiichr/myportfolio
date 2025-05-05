@@ -30,6 +30,20 @@ export const portfolioData: LocalizedData = {
         twitter: "https://twitter.com",
       },
     },
+    fr: {
+      name: "Rami Cheikh Rouhou",
+      title: "Développeur Frontend",
+      description:
+        "Un développeur frontend passionné avec un Master en Informatique des Médias. Avec une solide base en technologies modernes et une expérience dans le développement de solutions centrées sur l'utilisateur, je suis spécialisé dans la création d'applications impactantes, la résolution de problèmes complexes, le respect des délais et la livraison de projets évolutifs.",
+      email: "ramii.cheikhrouhou@gmail.com",
+      phone: "+49 176 20174689",
+      location: "Dresde, Allemagne",
+      social: {
+        github: "https://github.com/ramiichr",
+        linkedin: "https://www.linkedin.com/in/rami-cheikh-rouhou/",
+        twitter: "https://twitter.com",
+      },
+    },
   },
   projects: {
     en: [
@@ -183,6 +197,81 @@ export const portfolioData: LocalizedData = {
         featured: true,
       },
     ],
+    fr: [
+      {
+        id: "connecthub",
+        title: "ConnectHub",
+        description:
+          "Une application de chat en temps réel riche en fonctionnalités avec des capacités de texte, voix et vidéo. Comprend la messagerie en temps réel, l'authentification des utilisateurs, les appels vocaux et vidéo, le design responsive, les indicateurs de statut et l'historique des messages.",
+        image: "/chatapp.png?height=200&width=350",
+        tags: [
+          "React",
+          "Node.js",
+          "Socket.io",
+          "MongoDB",
+          "Express",
+          "TailwindCSS",
+        ],
+        link: "https://chat-app-connecthub.vercel.app/",
+        github: "https://github.com/ramiichr/ChatApp",
+        category: "web",
+        featured: true,
+      },
+      {
+        id: "exchange-flow",
+        title: "Exchange Flow",
+        description:
+          "Une application de conversion de devises qui fournit des taux de change en temps réel pour plus de 150 devises. Comprend des graphiques historiques, des comparaisons de devises et une interface intuitive avec un design responsive pour tous les appareils.",
+        image: "/exchangeflow.png?height=200&width=350",
+        tags: [
+          "Next.js",
+          "React Query",
+          "Chart.js",
+          "Tailwind CSS",
+          "API Integration",
+        ],
+        link: "https://exchange-flow.vercel.app/",
+        github: "https://github.com/ramiichr/CurrencyConverter",
+        category: "web",
+        featured: true,
+      },
+      {
+        id: "weather-forecast-app",
+        title: "Weather Forecast App",
+        description:
+          "Une application météo complète qui fournit les conditions actuelles et les prévisions sur 7 jours pour n'importe quel endroit. Comprend des cartes interactives, des prévisions horaires, l'indice de qualité de l'air et des alertes météo avec un design responsive.",
+        image: "/weather.png?height=200&width=350",
+        tags: [
+          "React",
+          "OpenWeather API",
+          "Leaflet Maps",
+          "CSS Modules",
+          "Responsive Design",
+        ],
+        link: "https://weather-forecast-liveapp.vercel.app/",
+        github: "https://github.com/ramiichr/WeatherForecastApp",
+        category: "web",
+        featured: true,
+      },
+      {
+        id: "portfolio-website",
+        title: "Site Portfolio",
+        description:
+          "Un site portfolio moderne et responsive construit avec Next.js et TypeScript. Comprend l'internationalisation (Anglais/Allemand/Français), le mode sombre/clair, des animations avec Framer Motion, et un tableau de bord pour l'analyse des visiteurs utilisant Redis.",
+        image: "/portfolio.png?height=200&width=350",
+        tags: [
+          "Next.js",
+          "TypeScript",
+          "Framer Motion",
+          "Tailwind CSS",
+          "Redis",
+        ],
+        link: "https://rami-cheikhrouhou.vercel.app/",
+        github: "https://github.com/ramiichr/myportfolio",
+        category: "web",
+        featured: true,
+      },
+    ],
   },
   skills: [
     { name: "HTML5", icon: "html5", category: "frontend", level: 5 },
@@ -274,6 +363,34 @@ export const portfolioData: LocalizedData = {
         ],
       },
     ],
+    fr: [
+      {
+        position: "Développeur Frontend (Étudiant)",
+        company: "German eTrade GmbH",
+        period: "Mar 2022 - Déc 2024",
+        location: "Dresde, Allemagne",
+        description: [
+          "Développement d'applications web (SPA) conviviales et responsives avec React.js et JavaScript.",
+          "Implémentation d'interfaces utilisateur attrayantes et intuitives, en tenant compte des principes UX/UI et des approches mobile-first avec SCSS/SASS et HTML5.",
+          "Optimisation et développement continu des applications existantes en mettant l'accent sur la performance, l'évolutivité et la convivialité.",
+          "Assurance de la qualité du code grâce aux principes du clean code, aux revues de code et aux tests automatisés.",
+          "Utilisation d'outils modernes de build et de déploiement (Docker, Bitbucket, Git, Jira) pour assurer un processus de développement efficace.",
+          "Collaboration étroite avec les designers et les développeurs backend pour optimiser l'architecture des applications et l'implémentation technique des concepts UI/UX.",
+          "Contribution active à l'implémentation de nouvelles fonctionnalités et à l'amélioration continue des processus de développement.",
+        ],
+      },
+      {
+        position: "Stage pour le mémoire de licence",
+        company: "AISA (Groupe Tunisair)",
+        period: "Jan 2016 - Juin 2016",
+        location: "Tunis, Tunisie",
+        description: [
+          "Développement d'une application web pour la facturation des services utilisés à l'aéroport de Tunis.",
+          "Modélisation et développement d'un logiciel pour la planification et l'organisation responsable de l'organisation logistique des employés, de la disponibilité, des demandes de gestion et de l'allocation des ressources matérielles et immatérielles.",
+          "Le projet est basé sur PHP OOP et l'architecture modèle MVC",
+        ],
+      },
+    ],
   },
   education: {
     en: [
@@ -345,6 +462,42 @@ export const portfolioData: LocalizedData = {
         location: "Mateur, Tunesien",
         description: [
           "Erworbene Kenntnisse: HTML, CSS, JavaScript, PHP, MySQL, Microsoft Access 2007, Algorithmen und Datenstrukturen",
+        ],
+      },
+    ],
+    fr: [
+      {
+        degree: "Master en Informatique des Médias",
+        institution: "Technische Hochschule Köln",
+        period: "Mar 2019 - Oct 2023",
+        location: "Cologne, Allemagne",
+        description: [
+          "Spécialisation: Weaving the Web",
+          "Sujet du mémoire: Application de médias sociaux décentralisée dans le Web 3.0",
+          "Note du mémoire: 3.0 (satisfaisant)",
+          "Note du colloque: 2.7 (satisfaisant)",
+          "Note finale: 2.7 (satisfaisant)",
+        ],
+      },
+      {
+        degree: "Licence en Informatique",
+        institution:
+          "Institut supérieur des sciences appliquées et de la technologie de Mateur",
+        period: "Sep 2013 - Juin 2016",
+        location: "Mateur, Tunisie",
+        description: [
+          "Spécialisation: Systèmes et logiciels informatiques",
+          "Sujet du mémoire: Développement d'une application web pour la facturation des services utilisés à l'aéroport de Tunis-Carthage",
+          "Note finale: (16/20) (2.5: bien)",
+        ],
+      },
+      {
+        degree: "Baccalauréat en Sciences Informatiques",
+        institution: "Lycée Route de Tabarka",
+        period: "Sep 2009 - Juin 2013",
+        location: "Mateur, Tunisie",
+        description: [
+          "Connaissances acquises: HTML, CSS, JavaScript, PHP, MySQL, Microsoft Access 2007, algorithmes et structures de données",
         ],
       },
     ],

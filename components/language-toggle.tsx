@@ -13,7 +13,7 @@ import { Globe } from "lucide-react";
 export function LanguageToggle() {
   const { language, setLanguage, translations } = useLanguage();
 
-  const handleLanguageChange = (newLang: "en" | "de") => {
+  const handleLanguageChange = (newLang: "en" | "de" | "fr") => {
     const root = document.querySelector("[data-language]");
     root?.setAttribute("data-language-switching", "true");
 
@@ -43,6 +43,12 @@ export function LanguageToggle() {
           className={language === "de" ? "bg-accent" : ""}
         >
           <span>{translations.language.de}</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => handleLanguageChange("fr")}
+          className={language === "fr" ? "bg-accent" : ""}
+        >
+          <span>{translations.language.fr}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

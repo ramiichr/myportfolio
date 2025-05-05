@@ -52,18 +52,22 @@ export interface LocalizedData {
   profile: {
     en: Profile;
     de: Profile;
+    fr: Profile;
   };
   projects: {
     en: Project[];
     de: Project[];
+    fr: Project[];
   };
   skills: Skill[];
   experiences: {
     en: Experience[];
     de: Experience[];
+    fr: Experience[];
   };
   education: {
     en: Education[];
     de: Education[];
+    fr: Education[];
   };
 }

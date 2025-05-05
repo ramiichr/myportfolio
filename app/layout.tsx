@@ -100,6 +100,7 @@ export const metadata: Metadata = {
     languages: {
       "en-US": "https://rami-cheikhrouhou.vercel.app",
       "de-DE": "https://rami-cheikhrouhou.vercel.app/de",
+      "fr-FR": "https://rami-cheikhrouhou.vercel.app/fr",
     },
   },
 };

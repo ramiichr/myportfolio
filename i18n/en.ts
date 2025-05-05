@@ -75,5 +75,6 @@ export const en = {
   language: {
     en: "English",
     de: "German",
+    fr: "French",
   },
 };

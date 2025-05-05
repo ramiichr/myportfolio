@@ -4,9 +4,27 @@ import type React from "react";
 import { createContext, useContext, useState, useEffect } from "react";
 import { en } from "@/i18n/en";
 import { de } from "@/i18n/de";
+import { fr } from "@/i18n/fr";
 
-type Language = "en" | "de";
-type Translations = typeof en;
+type Language = "en" | "de" | "fr";
+interface Translations {
+  navigation: {
+    home: string;
+    about: string;
+    projects: string;
+    contact: string;
+  };
+  hero: {
+    greeting: string;
+    name: string;
+    title: string;
+    description: string;
+    cta: string;
+  };
+  about: { title: string; description: string; tools: string };
+  theme: any;
+  language: any;
+}
 
 interface LanguageContextType {
   language: Language;
@@ -21,6 +39,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(
 const preloadedTranslations = {
   en,
   de,
+  fr,
 };
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
@@ -32,15 +51,15 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     setMounted(true);
     // Load saved language preference from localStorage if available
     const savedLanguage = localStorage.getItem("language") as Language;
-    if (savedLanguage && (savedLanguage === "en" || savedLanguage === "de")) {
+    if (savedLanguage && ["en", "de", "fr"].includes(savedLanguage)) {
       setLanguage(savedLanguage);
       setTranslations(preloadedTranslations[savedLanguage]);
     } else {
       // Try to detect browser language
       const browserLang = navigator.language.split("-")[0];
-      if (browserLang === "de") {
-        setLanguage("de");
-        setTranslations(preloadedTranslations.de);
+      if (browserLang === "de" || browserLang === "fr") {
+        setLanguage(browserLang as Language);
+        setTranslations(preloadedTranslations[browserLang as Language]);
       }
     }
   }, []);

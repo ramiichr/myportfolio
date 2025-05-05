@@ -10,15 +10,18 @@ export async function GET(request: Request) {
     const featured = searchParams.get("featured");
 
     // Validate language
-    if (lang !== "en" && lang !== "de") {
+    if (lang !== "en" && lang !== "de" && lang !== "fr") {
       return NextResponse.json(
-        { error: "Invalid language. Supported languages are 'en' and 'de'." },
+        {
+          error:
+            "Invalid language. Supported languages are 'en', 'de', and 'fr'.",
+        },
         { status: 400 }
       );
     }
 
     // Get projects for the requested language
-    let projects = portfolioData.projects[lang as "en" | "de"];
+    let projects = portfolioData.projects[lang as "en" | "de" | "fr"];
 
     // Filter by category if provided
     if (category && category !== "all") {
