@@ -351,3 +351,88 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
+
+/**
+ * PATCH handler for deleting specific visitors
+ */
+export async function PATCH(request: NextRequest) {
+  try {
+    // Authenticate the request
+    const auth = authenticateRequest(request);
+    if (!auth.isAuthenticated) {
+      return auth.response;
+    }
+
+    const { visitorIds, date } = await request.json();
+
+    if (!Array.isArray(visitorIds) || !date) {
+      return NextResponse.json(
+        { success: false, message: "Invalid request parameters" },
+        { status: 400 }
+      );
+    }
+
+    const visitorKey = `${REDIS_KEYS.VISITORS_PREFIX}${date}`;
+
+    // Get all visitors for the date
+    const visitors = await redis.lrange(visitorKey, 0, -1);
+
+    // Keep track of pages to update view counts
+    const pageViewsToDeduct: { [key: string]: number } = {};
+
+    // Filter out the visitors to be deleted and count their page views
+    const remainingVisitors = visitors.filter((visitor) => {
+      const parsed = parseVisitorData(visitor);
+      if (parsed && visitorIds.includes(parsed.timestamp.toString())) {
+        // Track the page view to deduct
+        const page = parsed.page;
+        pageViewsToDeduct[page] = (pageViewsToDeduct[page] || 0) + 1;
+        return false;
+      }
+      return true;
+    });
+
+    // Perform all Redis operations atomically
+    const pipeline = redis.pipeline();
+
+    // Delete the old list and create a new one with remaining visitors
+    pipeline.del(visitorKey);
+    if (remainingVisitors.length > 0) {
+      pipeline.lpush(visitorKey, ...remainingVisitors);
+    }
+
+    // Update total page views
+    const deletedViewsCount = Object.values(pageViewsToDeduct).reduce(
+      (a, b) => a + b,
+      0
+    );
+    if (deletedViewsCount > 0) {
+      pipeline.decrby(REDIS_KEYS.TOTAL_PAGEVIEWS, deletedViewsCount);
+    }
+
+    // Update page-specific views
+    for (const [page, count] of Object.entries(pageViewsToDeduct)) {
+      pipeline.hincrby(REDIS_KEYS.PAGEVIEWS_BY_PAGE, page, -count);
+    }
+
+    // Update daily views
+    pipeline.hincrby(REDIS_KEYS.PAGEVIEWS_BY_DATE, date, -deletedViewsCount);
+
+    // Execute all Redis operations
+    await pipeline.exec();
+
+    // Return success with updated counts
+    return NextResponse.json({
+      success: true,
+      message: "Visitors deleted successfully",
+      deletedCount: visitorIds.length,
+      updatedPageViews: -deletedViewsCount,
+    });
+  } catch (error) {
+    console.error("Error deleting visitors:", error);
+    return NextResponse.json(
+      { success: false, message: "Failed to delete visitors" },
+      { status: 500 }
+    );
+  }
+}

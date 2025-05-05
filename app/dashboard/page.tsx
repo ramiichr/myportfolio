@@ -49,6 +49,7 @@ export default function DashboardPage() {
     setSelectedDate,
     fetchStats,
     resetError,
+    setStats,
   } = useVisitorStats();
 
   // Data management state and methods
@@ -107,6 +108,49 @@ export default function DashboardPage() {
     setTimeout(() => {
       fetchStats(apiToken, true, page);
     }, 0);
+  };
+
+  // Handle deletion of selected visitors
+  const handleDeleteVisitors = async (visitorIds: string[]) => {
+    try {
+      const response = await fetch("/api/track", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiToken}`,
+        },
+        body: JSON.stringify({
+          visitorIds,
+          date: selectedDate,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to delete visitors");
+      }
+
+      // Update stats with the new counts
+      if (stats) {
+        const updatedStats = {
+          ...stats,
+          totalPageviews: stats.totalPageviews + (data.updatedPageViews || 0),
+          pageviewsByDate: {
+            ...stats.pageviewsByDate,
+            [selectedDate]:
+              (stats.pageviewsByDate[selectedDate] || 0) +
+              (data.updatedPageViews || 0),
+          },
+        };
+        setStats(updatedStats);
+      }
+
+      // Refresh the visitor list to show updated data
+      fetchStats(apiToken, true, currentPage);
+    } catch (error) {
+      console.error("Error deleting visitors:", error);
+    }
   };
 
   // If not authenticated, show login form
@@ -185,6 +229,7 @@ export default function DashboardPage() {
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
                 loading={loadingVisitors}
+                onDeleteVisitors={handleDeleteVisitors}
               />
             </TabsContent>
           </Tabs>

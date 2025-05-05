@@ -3,6 +3,7 @@ import { VisitorStats } from "@/app/dashboard/types";
 
 interface UseVisitorStatsReturn {
   stats: VisitorStats | null;
+  setStats: (stats: VisitorStats | null) => void;
   loading: boolean;
   loadingVisitors: boolean;
   error: string | null;
@@ -117,6 +118,7 @@ export const useVisitorStats = (): UseVisitorStatsReturn => {
 
   return {
     stats,
+    setStats,
     loading,
     loadingVisitors,
     error,
