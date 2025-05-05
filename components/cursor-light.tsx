@@ -52,11 +52,11 @@ export default function CursorLight() {
           <motion.div
             className="pointer-events-none fixed inset-0 -z-[1]"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.25 }}
+            animate={{ opacity: 0.4 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             style={{
-              background: `radial-gradient(circle 2000px at ${mousePosition.x}px ${mousePosition.y}px, hsl(var(--primary) / 0.25), transparent 50%)`,
+              background: `radial-gradient(circle 2500px at ${mousePosition.x}px ${mousePosition.y}px, hsl(var(--primary) / 0.35), transparent 50%)`,
             }}
           />
         </>
