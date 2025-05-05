@@ -24,7 +24,7 @@ export default function Footer() {
         </p>
         <div className="flex gap-4">
           <a
-            href="https://github.com"
+            href="https://github.com/ramiichr"
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-foreground transition-colors"
@@ -33,22 +33,13 @@ export default function Footer() {
             <span className="sr-only">GitHub</span>
           </a>
           <a
-            href="https://linkedin.com"
+            href="https://www.linkedin.com/in/rami-cheikh-rouhou/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
             <Linkedin className="h-5 w-5" />
             <span className="sr-only">LinkedIn</span>
-          </a>
-          <a
-            href="https://twitter.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Twitter className="h-5 w-5" />
-            <span className="sr-only">Twitter</span>
           </a>
         </div>
       </div>
