@@ -16,6 +16,10 @@ export default function Header() {
   const [mounted, setMounted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const toggleMenu = useCallback(() => {
+    setMenuOpen((prev) => !prev);
+  }, []);
+
   // Ensure we're mounted before rendering interactive elements
   useEffect(() => {
     setMounted(true);
@@ -37,11 +41,6 @@ export default function Header() {
     };
   }, [menuOpen, mounted]);
 
-  // Don't render header on dashboard pages
-  if (pathname.startsWith("/dashboard")) {
-    return null;
-  }
-
   const navigation = [
     { name: translations.navigation.home, href: "/" },
     { name: translations.navigation.about, href: "/about" },
@@ -49,9 +48,10 @@ export default function Header() {
     { name: translations.navigation.contact, href: "/contact" },
   ];
 
-  const toggleMenu = useCallback(() => {
-    setMenuOpen((prev) => !prev);
-  }, []);
+  // Don't render header on dashboard pages
+  if (pathname.startsWith("/dashboard")) {
+    return null;
+  }
 
   // If not mounted, render a simpler version without interactive elements
   if (!mounted) {
