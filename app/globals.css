@@ -174,7 +174,7 @@ body {
 
   .dark[data-theme="purple"] {
     --primary: 262.1 83.3% 70%; /* Brighter */
-    --primary-foreground: 210 40% 98%;
+    --primary-foreground: 0 0% 0%;
     --ring: 262.1 83.3% 70%;
     --background: 270 32.6% 5%;
     --card: 270 32.6% 5%;
@@ -188,7 +188,7 @@ body {
 
   .dark[data-theme="rose"] {
     --primary: 346.8 77.2% 65%; /* Brighter */
-    --primary-foreground: 355.7 100% 97.3%;
+    --primary-foreground: 0 0% 0%;
     --ring: 346.8 77.2% 65%;
     --background: 350 32.6% 5%;
     --card: 350 32.6% 5%;
@@ -202,7 +202,7 @@ body {
 
   .dark[data-theme="orange"] {
     --primary: 24.6 95% 68%; /* Brighter */
-    --primary-foreground: 60 9.1% 97.8%;
+    --primary-foreground: 0 0% 0%;
     --ring: 24.6 95% 68%;
     --background: 30 32.6% 5%;
     --card: 30 32.6% 5%;

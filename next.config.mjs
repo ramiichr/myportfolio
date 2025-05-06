@@ -27,11 +27,7 @@ const nextConfig = {
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
   },
-  sitemaps: {
-    baseUrl: "https://rami-cheikhrouhou.vercel.app",
-    exclude: ["/dashboard/**", "/api/**"],
-    generateIndexSitemap: false,
-  },
+  // Remove the sitemaps configuration
 };
 
 if (userConfig) {
