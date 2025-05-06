@@ -1,7 +1,13 @@
 "use client";
 
 import type React from "react";
-import { createContext, useContext, useState, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { en } from "@/i18n/en";
 import { de } from "@/i18n/de";
 import { fr } from "@/i18n/fr";
@@ -21,7 +27,16 @@ interface Translations {
     description: string;
     cta: string;
   };
-  about: { title: string; description: string; tools: string };
+  about: {
+    backend: ReactNode;
+    frontend: ReactNode;
+    education: ReactNode;
+    experience: ReactNode;
+    skills: ReactNode;
+    title: string;
+    description: string;
+    tools: string;
+  };
   theme: any;
   language: any;
 }
