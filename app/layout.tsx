@@ -6,7 +6,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/components/language-provider";
 import { ErrorBoundary } from "@/components/common";
-import Header from "@/components/header";
+import Header from "@/components/layout/header/Header";
 import Footer from "@/components/footer";
 import CursorLight from "@/components/cursor-light";
 import { PageTracker } from "@/components/page-tracker";

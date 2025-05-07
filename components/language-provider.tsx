@@ -37,6 +37,38 @@ interface Translations {
     description: string;
     tools: string;
   };
+  projects: {
+    title: string;
+    description: string;
+    viewProject: string;
+    viewCode: string;
+    categories: {
+      all: string;
+      web: string;
+      three: string;
+      data: string;
+    };
+  };
+  contact: {
+    title: string;
+    nameLabel: string;
+    emailLabel: string;
+    subjectLabel: string;
+    messageLabel: string;
+    sendButton: string;
+    success: string;
+    error: string;
+    cta: string;
+    email: string;
+    phone: string;
+    location: string;
+    formTitle: string;
+    formDescription: string;
+  };
+  footer: {
+    name: string;
+    rights: string;
+  };
   theme: any;
   language: any;
 }
