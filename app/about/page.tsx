@@ -92,6 +92,7 @@ export default function AboutPage() {
                 src="/profile.png"
                 alt="Profile"
                 fill
+                priority
                 className="object-cover object-[center_top]"
               />
             </div>
@@ -119,17 +120,19 @@ export default function AboutPage() {
         </div>
 
         <Tabs defaultValue="skills" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="skills">
-              {translations.about.skills}
-            </TabsTrigger>
-            <TabsTrigger value="experience">
-              {translations.about.experience}
-            </TabsTrigger>
-            <TabsTrigger value="education">
-              {translations.about.education}
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex justify-center w-full mb-8">
+            <TabsList className="w-full">
+              <TabsTrigger value="skills" className="flex-1">
+                {translations.about.skills}
+              </TabsTrigger>
+              <TabsTrigger value="experience" className="flex-1">
+                {translations.about.experience}
+              </TabsTrigger>
+              <TabsTrigger value="education" className="flex-1">
+                {translations.about.education}
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="skills" className="mt-6">
             <motion.div

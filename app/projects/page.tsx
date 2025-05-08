@@ -66,8 +66,8 @@ export default function ProjectsPage() {
         className="w-full mb-12"
         onValueChange={setActiveCategory}
       >
-        <div className="flex justify-center">
-          <TabsList>
+        <div className="flex justify-center w-full">
+          <TabsList className="w-full max-w-3xl">
             <TabsTrigger value="all">
               {translations.projects.categories.all}
             </TabsTrigger>

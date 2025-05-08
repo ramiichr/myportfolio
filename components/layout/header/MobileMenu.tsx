@@ -26,7 +26,7 @@ const MobileMenu = memo(function MobileMenu({
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
           transition={{ duration: 0.2, ease: "easeInOut" }}
-          className="absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md border-b md:hidden overflow-hidden"
+          className="absolute top-full left-0 right-0 bg-background/80 backdrop-blur-sm border-b md:hidden overflow-hidden"
         >
           <nav className="flex flex-col max-w-7xl mx-auto px-6">
             {items.map((item) => (
@@ -38,7 +38,7 @@ const MobileMenu = memo(function MobileMenu({
               >
                 <Link
                   href={item.href}
-                  className={`text-base font-medium py-4 transition-colors hover:text-primary ${
+                  className={`block w-full text-base font-medium py-4 px-2 transition-all hover:translate-x-1 hover:text-primary mobile-nav-item ${
                     activePath === item.href
                       ? "text-primary"
                       : "text-muted-foreground"

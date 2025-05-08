@@ -291,6 +291,33 @@ button,
   opacity: 0.4;
 }
 
+/* Nav item styles for both desktop and mobile */
+.nav-item::after,
+.mobile-nav-item::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: hsl(var(--primary));
+  transition: all 0.3s ease;
+  opacity: 0;
+}
+
+.nav-item:hover::after,
+.nav-item[data-active="true"]::after,
+.mobile-nav-item:hover::after,
+.mobile-nav-item[data-active="true"]::after {
+  width: 100%;
+  opacity: 1;
+}
+
+.nav-item:active,
+.mobile-nav-item:active {
+  transform: scale(0.98);
+}
+
 /* Mobile menu and responsive styles */
 @media (max-width: 768px) {
   .header-blur {
@@ -311,12 +338,18 @@ button,
     width: 0;
     height: 2px;
     background: hsl(var(--primary));
-    transition: width 0.3s ease;
+    transition: all 0.3s ease;
+    opacity: 0;
   }
 
   .mobile-nav-item:hover::after,
   .mobile-nav-item[data-active="true"]::after {
     width: 100%;
+    opacity: 1;
+  }
+
+  .mobile-nav-item:active {
+    transform: scale(0.98);
   }
 }
 

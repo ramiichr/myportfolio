@@ -19,7 +19,7 @@ export const NavigationMenu = memo(function NavigationMenu({
         <Link
           key={item.name}
           href={item.href}
-          className={`text-sm font-medium transition-colors hover:text-primary ${
+          className={`relative px-2 py-4 text-sm font-medium transition-colors hover:text-primary nav-item ${
             activePath === item.href ? "text-primary" : "text-muted-foreground"
           }`}
         >
