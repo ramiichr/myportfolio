@@ -1,12 +1,12 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Get in touch with me to discuss your next web development project. I am available for freelance work and collaborations.",
+    "Get in touch with Rami Cheikh Rouhou. Whether you have a project in mind or just want to connect, I'm always open to discussing new opportunities and collaborations.",
   openGraph: {
     title: "Contact | Rami Cheikh Rouhou",
     description:
-      "Get in touch with me to discuss your next web development project. I am available for freelance work and collaborations.",
+      "Reach out to discuss collaboration opportunities, project ideas, or just to connect. I'm always interested in hearing about new projects and possibilities.",
   },
 };

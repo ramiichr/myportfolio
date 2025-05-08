@@ -25,44 +25,42 @@ export const metadata: Metadata = {
     template: "%s | Rami Cheikh Rouhou",
   },
   description:
-    "Frontend Developer specializing in React, Next.js, and TypeScript. View my portfolio showcasing web development projects, skills, and professional experience.",
+    "Frontend Developer with expertise in React, Next.js, and TypeScript. Explore my portfolio featuring modern web applications, responsive designs, and innovative solutions.",
   keywords: [
     "Frontend Developer",
-    "React",
-    "Next.js",
+    "React Developer",
+    "Next.js Expert",
     "TypeScript",
     "Web Development",
     "Portfolio",
     "JavaScript",
-    "UI/UX",
+    "UI/UX Design",
+    "Responsive Design",
+    "Modern Web Applications",
+    "Frontend Architecture",
+    "Performance Optimization",
   ],
-  authors: [{ name: "Rami Cheikh Rouhou" }],
+  authors: [
+    { name: "Rami Cheikh Rouhou", url: "https://rami-cheikhrouhou.vercel.app" },
+  ],
   creator: "Rami Cheikh Rouhou",
   openGraph: {
     type: "website",
-    locale: "en_US",
+    locale: "de_DE",
     url: "https://rami-cheikhrouhou.vercel.app",
     title: "Rami Cheikh Rouhou | Frontend Developer",
     description:
-      "Frontend Developer specializing in React, Next.js, and TypeScript. View my portfolio showcasing web development projects, skills, and professional experience.",
-    siteName: "Rami Cheikh Rouhou Portfolio",
+      "Frontend Developer crafting exceptional web experiences with React, Next.js, and TypeScript. View my portfolio showcasing innovative projects and technical expertise.",
+    siteName: "Rami Cheikh Rouhou - Professional Portfolio",
     images: [
       {
         url: "/rami.png",
-        width: 800,
-        height: 600,
-        alt: "Rami Cheikh Rouhou",
+        width: 1200,
+        height: 630,
+        alt: "Rami Cheikh Rouhou - Frontend Developer Portfolio",
         type: "image/png",
       },
     ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Rami Cheikh Rouhou | Frontend Developer",
-    description:
-      "Frontend Developer specializing in React, Next.js, and TypeScript. View my portfolio showcasing web development projects.",
-    images: ["/rami.png"],
-    creator: "@ramiichr",
   },
   icons: {
     icon: [
