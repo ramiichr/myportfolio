@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Metadata } from "next";
 import { useLanguage } from "@/components/language-provider";
 import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,17 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import { getProfile, getSkills, getExperiences, getEducation } from "@/lib/api";
 import type { Profile, Skill, Experience, Education } from "@/types";
 import StackIcon from "tech-stack-icons";
-
-export const metadata: Metadata = {
-  title: "About Me",
-  description:
-    "Learn more about Rami Cheikh Rouhou, a Frontend Developer with expertise in React, Next.js, and modern web technologies. Discover my journey, skills, and professional experience.",
-  openGraph: {
-    title: "About Rami Cheikh Rouhou | Frontend Developer",
-    description:
-      "Get to know more about my journey as a Frontend Developer, my technical expertise, and professional experience in web development.",
-  },
-};
 
 export default function AboutPage() {
   const { translations, language } = useLanguage();
