@@ -17,6 +17,14 @@ export default function Header() {
   const { translations } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const toggleMenu = useCallback(() => {
+    setMenuOpen((prev) => !prev);
+  }, []);
+
+  const handleMobileItemClick = useCallback(() => {
+    setMenuOpen(false);
+  }, []);
+
   // Don't render header on dashboard pages
   if (pathname.startsWith("/dashboard")) {
     return null;
@@ -28,14 +36,6 @@ export default function Header() {
     { name: translations.navigation.projects, href: "/projects" },
     { name: translations.navigation.contact, href: "/contact" },
   ];
-
-  const toggleMenu = useCallback(() => {
-    setMenuOpen((prev) => !prev);
-  }, []);
-
-  const handleMobileItemClick = useCallback(() => {
-    setMenuOpen(false);
-  }, []);
 
   return (
     <header className="fixed w-full bg-background/80 backdrop-blur-sm z-50 border-b">
