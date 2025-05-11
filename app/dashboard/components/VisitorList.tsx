@@ -189,6 +189,66 @@ const getDeviceInfo = (userAgent: string): string => {
   return "Desktop";
 };
 
+const decodeLocationName = (name: string): string => {
+  if (!name) return "Unknown";
+
+  try {
+    // First try to decode if the string was URI encoded
+    let decoded = decodeURIComponent(name);
+
+    // Map of HTML entities to their Unicode characters
+    const htmlEntities: Record<string, string> = {
+      "&auml;": "ä",
+      "&ouml;": "ö",
+      "&uuml;": "ü",
+      "&Auml;": "Ä",
+      "&Ouml;": "Ö",
+      "&Uuml;": "Ü",
+      "&szlig;": "ß",
+      "&aacute;": "á",
+      "&eacute;": "é",
+      "&iacute;": "í",
+      "&oacute;": "ó",
+      "&uacute;": "ú",
+      "&ntilde;": "ñ",
+      "&aring;": "å",
+      "&aelig;": "æ",
+      "&oslash;": "ø",
+      "&amp;": "&",
+      "&lt;": "<",
+      "&gt;": ">",
+      "&quot;": '"',
+      "&#039;": "'",
+    };
+
+    // Replace all HTML entities
+    decoded = Object.entries(htmlEntities).reduce(
+      (acc, [entity, char]) => acc.replace(new RegExp(entity, "g"), char),
+      decoded
+    );
+
+    // Replace numeric HTML entities like &#228;
+    decoded = decoded.replace(/&#(\d+);/g, (_, code) =>
+      String.fromCharCode(code)
+    );
+
+    return decoded.trim();
+  } catch {
+    // If decoding fails, return the original string
+    return name;
+  }
+};
+
+// Helper function to format location with proper character encoding
+const formatLocation = (visitor: VisitorData): string => {
+  if (!visitor.country) return "Unknown";
+
+  if (visitor.city && visitor.city !== "Unknown") {
+    return `${decodeLocationName(visitor.city)}, ${decodeLocationName(visitor.country)}`;
+  }
+  return decodeLocationName(visitor.country);
+};
+
 export const VisitorListContainer: React.FC<VisitorListProps> = (props) => {
   const [selectedVisitors, setSelectedVisitors] = useState<Set<string>>(
     new Set()
@@ -392,9 +452,7 @@ export const VisitorListContainer: React.FC<VisitorListProps> = (props) => {
                           </span>
                         </td>
                         <td className="px-4 py-2 whitespace-nowrap">
-                          {visitor.city && visitor.city !== "Unknown"
-                            ? `${visitor.city}, ${visitor.country}`
-                            : visitor.country}
+                          {formatLocation(visitor)}
                         </td>
                         <td className="px-4 py-2 whitespace-nowrap">
                           {visitor.ip && visitor.ip !== "Unknown"
@@ -558,9 +616,7 @@ export const VisitorListContainer: React.FC<VisitorListProps> = (props) => {
                     <div className="p-3 pt-0 text-sm space-y-2 border-t">
                       <p>
                         <span className="font-medium">Location:</span>{" "}
-                        {visitor.city && visitor.city !== "Unknown"
-                          ? `${visitor.city}, ${visitor.country}`
-                          : visitor.country}
+                        {formatLocation(visitor)}
                       </p>
                       <p>
                         <span className="font-medium">IP Address:</span>{" "}
