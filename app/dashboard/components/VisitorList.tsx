@@ -441,7 +441,14 @@ export const VisitorListContainer: React.FC<VisitorListProps> = (props) => {
                           />
                         </td>
                         <td className="px-4 py-2 whitespace-nowrap">
-                          {new Date(visitor.timestamp).toLocaleTimeString()}
+                          {new Date(visitor.timestamp).toLocaleTimeString(
+                            undefined,
+                            {
+                              hour12: false,
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            }
+                          )}
                         </td>
                         <td className="px-4 py-2">
                           <span
@@ -610,8 +617,11 @@ export const VisitorListContainer: React.FC<VisitorListProps> = (props) => {
                 return (
                   <details key={index} className="mb-2 border rounded-md">
                     <summary className="p-3 cursor-pointer font-medium">
-                      {new Date(visitor.timestamp).toLocaleTimeString()} -{" "}
-                      {visitor.page === "/" ? "Home" : visitor.page}
+                      {new Date(visitor.timestamp).toLocaleTimeString(
+                        undefined,
+                        { hour12: false, hour: "2-digit", minute: "2-digit" }
+                      )}{" "}
+                      - {visitor.page === "/" ? "Home" : visitor.page}
                     </summary>
                     <div className="p-3 pt-0 text-sm space-y-2 border-t">
                       <p>
