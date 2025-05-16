@@ -174,7 +174,7 @@ export default function RootLayout({
             </div>
           </LanguageProvider>
         </ThemeProvider>
-        <Analytics debug={false} />
+        <Analytics />
       </body>
     </html>
   );
