@@ -21,7 +21,7 @@ export interface Project {
   tags: string[];
   link: string;
   github: string;
-  category: "web" | "three" | "data";
+  category: "web" | "mobile";
   featured?: boolean;
 }
 

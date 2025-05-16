@@ -45,8 +45,7 @@ interface Translations {
     categories: {
       all: string;
       web: string;
-      three: string;
-      data: string;
+      mobile: string;
     };
   };
   contact: {

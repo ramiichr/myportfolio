@@ -113,8 +113,8 @@ export default function AboutPage() {
             </p>
             <div className="flex flex-wrap gap-2 justify-center md:justify-start">
               <Badge variant="outline">Frontend Developer</Badge>
-              <Badge variant="outline">3D Web Specialist</Badge>
-              <Badge variant="outline">UI/UX Enthusiast</Badge>
+              <Badge variant="outline">UI/UX Design</Badge>
+              <Badge variant="outline">Modern Web Applications</Badge>
             </div>
           </motion.div>
         </div>

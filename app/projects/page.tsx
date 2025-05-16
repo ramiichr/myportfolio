@@ -74,11 +74,8 @@ export default function ProjectsPage() {
             <TabsTrigger value="web">
               {translations.projects.categories.web}
             </TabsTrigger>
-            <TabsTrigger value="three">
-              {translations.projects.categories.three}
-            </TabsTrigger>
-            <TabsTrigger value="data">
-              {translations.projects.categories.data}
+            <TabsTrigger value="mobile">
+              {translations.projects.categories.mobile}
             </TabsTrigger>
           </TabsList>
         </div>

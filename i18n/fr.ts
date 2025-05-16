@@ -33,8 +33,7 @@ export const fr = {
     categories: {
       all: "Tous",
       web: "Applications Web",
-      three: "Expériences 3D",
-      data: "Visualisation de données",
+      mobile: "Applications Mobiles",
     },
   },
   skills: {
