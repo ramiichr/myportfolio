@@ -170,11 +170,19 @@ export default function RootLayout({
                   <main className="flex-1">{children}</main>
                   <Footer />
                 </div>
-                <Analytics />
               </ErrorBoundary>
             </div>
           </LanguageProvider>
         </ThemeProvider>
+        <Analytics
+          debug={false}
+          beforeSend={(event) => {
+            if (localStorage.getItem("va-disable")) {
+              return null;
+            }
+            return event;
+          }}
+        />
       </body>
     </html>
   );
