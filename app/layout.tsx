@@ -110,7 +110,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="de" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -174,7 +174,7 @@ export default function RootLayout({
             </div>
           </LanguageProvider>
         </ThemeProvider>
-        <Analytics />
+        <Analytics mode="production" />
       </body>
     </html>
   );

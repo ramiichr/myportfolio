@@ -27,6 +27,7 @@ const nextConfig = {
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
   },
+  analytics: true,
   // Remove the sitemaps configuration
 };
 
