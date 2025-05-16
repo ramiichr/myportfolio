@@ -174,15 +174,7 @@ export default function RootLayout({
             </div>
           </LanguageProvider>
         </ThemeProvider>
-        <Analytics
-          debug={false}
-          beforeSend={(event) => {
-            if (localStorage.getItem("va-disable")) {
-              return null;
-            }
-            return event;
-          }}
-        />
+        <Analytics debug={false} />
       </body>
     </html>
   );
