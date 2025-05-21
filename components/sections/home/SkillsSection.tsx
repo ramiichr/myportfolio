@@ -73,38 +73,7 @@ export function SkillsSection({ skills, translations }: SkillsSectionProps) {
               {/* Skill name */}
               <h3 className="font-medium text-lg mb-4 z-10">{skill.name}</h3>
 
-              {/* Skill level indicator */}
-              <div className="relative w-full h-2 bg-secondary/30 rounded-full overflow-hidden z-10">
-                <div
-                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-primary/70 rounded-full"
-                  style={{
-                    width: `${(skill.level / 5) * 100}%`,
-                    boxShadow: "0 0 10px rgba(var(--primary), 0.5)",
-                  }}
-                ></div>
-              </div>
-
-              {/* Skill level dots */}
-              <div className="flex justify-center mt-3 z-10">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className={`w-2 h-2 mx-1 rounded-full transition-all duration-300 ${
-                      i < skill.level
-                        ? "bg-primary scale-100"
-                        : "bg-secondary/50 scale-75"
-                    }`}
-                  ></div>
-                ))}
-              </div>
-
-              {/* Skill level text */}
-              <div className="mt-2 text-xs text-muted-foreground z-10">
-                {translations.skills.level.replace(
-                  "{level}",
-                  skill.level.toString()
-                )}
-              </div>
+              {/* No skill level display needed */}
             </motion.div>
           ))}
         </motion.div>

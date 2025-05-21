@@ -36,9 +36,7 @@ export const fr = {
       mobile: "Applications Mobiles",
     },
   },
-  skills: {
-    level: "Niveau : {level}/5",
-  },
+  skills: {},
   contact: {
     title: "Me Contacter",
     nameLabel: "Votre nom",

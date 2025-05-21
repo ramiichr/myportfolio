@@ -36,9 +36,7 @@ export const en = {
       mobile: "Mobile Apps",
     },
   },
-  skills: {
-    level: "Level: {level}/5",
-  },
+  skills: {},
   contact: {
     title: "Get In Touch",
     nameLabel: "Your Name",

@@ -162,15 +162,8 @@ export default function AboutPage() {
                             key={skill.name}
                             className="relative overflow-hidden group"
                           >
-                            <div
-                              className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent rounded-lg"
-                              style={{
-                                width: `${(skill.level / 5) * 100}%`,
-                                transition: "all 0.5s ease",
-                              }}
-                            ></div>
                             <div className="relative z-10 p-4 border border-border/50 rounded-lg backdrop-blur-sm group-hover:border-primary/50 transition-all">
-                              <div className="flex items-center justify-between">
+                              <div className="flex items-center">
                                 <div className="flex items-center gap-3">
                                   {skill.icon !== "" ? (
                                     <div className="relative">
@@ -190,40 +183,6 @@ export default function AboutPage() {
                                   <span className="font-medium text-sm  text-foreground">
                                     {skill.name}
                                   </span>
-                                </div>
-
-                                <div className="flex items-center">
-                                  <div className="relative h-8 w-8">
-                                    <svg
-                                      viewBox="0 0 36 36"
-                                      className="h-8 w-8 stroke-primary/30"
-                                    >
-                                      <path
-                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                        fill="none"
-                                        strokeWidth="3"
-                                        strokeLinecap="round"
-                                      />
-                                    </svg>
-                                    <svg
-                                      viewBox="0 0 36 36"
-                                      className="absolute inset-0 h-8 w-8 stroke-primary"
-                                    >
-                                      <path
-                                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                        fill="none"
-                                        strokeWidth="3"
-                                        strokeLinecap="round"
-                                        strokeDasharray="100"
-                                        strokeDashoffset={
-                                          100 - (skill.level / 5) * 100
-                                        }
-                                      />
-                                    </svg>
-                                    <div className="absolute inset-0 flex items-center justify-center text-xs font-medium">
-                                      {skill.level}
-                                    </div>
-                                  </div>
                                 </div>
                               </div>
                             </div>
