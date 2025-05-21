@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import redis from "@/lib/redis";
 import { headers } from "next/headers";
 
-import { getIpbaseData } from "@/lib/ipbase";
 import { formatLocation } from "@/lib/location-utils";
+import { processVercelGeolocation } from "@/lib/geo-utils";
 
 // Define the structure of visitor data
 interface VisitorData {
@@ -158,21 +158,11 @@ export async function POST(request: NextRequest) {
     const referrer = headersList.get("referer") || "Direct";
     const ip = await getClientIp(request);
 
-    // Get geo information from ipbase.com API first
-    let country = "Unknown";
-    let city = "Unknown";
-
-    // Try to get more accurate location data from ipbase.com
-    const ipbaseData = await getIpbaseData(ip);
-
-    if (ipbaseData) {
-      country = ipbaseData.country;
-      city = ipbaseData.city;
-    } else {
-      // Fallback to Vercel headers if ipbase.com fails or is not configured
-      country = request.headers.get("x-vercel-ip-country") || "Unknown";
-      city = request.headers.get("x-vercel-ip-city") || "Unknown";
-    }
+    // Get geo information directly from Vercel geolocation headers
+    const { country, city } = processVercelGeolocation(
+      request.headers.get("x-vercel-ip-country"),
+      request.headers.get("x-vercel-ip-city")
+    );
 
     const timestamp = Date.now();
     const date = getTodayDate();
