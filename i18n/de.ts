@@ -36,7 +36,12 @@ export const de = {
       mobile: "Mobile-Apps",
     },
   },
-  skills: {},
+  skills: {
+    viewAll: "Alle Fähigkeiten anzeigen",
+    frontend: "Frontend-Entwicklung",
+    backend: "Backend-Entwicklung",
+    tools: "Tools & Infrastruktur",
+  },
   contact: {
     title: "Kontakt aufnehmen",
     nameLabel: "Dein Name",

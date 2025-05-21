@@ -135,65 +135,61 @@ export default function AboutPage() {
           </div>
 
           <TabsContent value="skills" className="mt-6">
-            <motion.div
-              className="grid gap-6 md:grid-cols-3"
-              variants={fadeIn}
-              initial="hidden"
-              animate="visible"
-              transition={{ duration: 0.5 }}
-            >
+            <div className="mb-8">
               {Object.entries(skillsByCategory).map(
-                ([category, categorySkills]) => (
-                  <Card
+                ([category, categorySkills], catIndex) => (
+                  <motion.div
                     key={category}
-                    className="hover:shadow-md transition-all duration-300 hover:border-primary/30"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: catIndex * 0.1 }}
+                    className="mb-10"
                   >
-                    <CardContent className="pt-6">
-                      <h3 className="text-lg font-bold mb-4">
+                    <div className="flex items-center gap-3 mb-6">
+                      <h3 className="text-2xl font-bold">
                         {category === "frontend"
                           ? translations.about.frontend
                           : category === "backend"
                             ? translations.about.backend
                             : translations.about.tools}
                       </h3>
-                      <div className="flex flex-col space-y-2">
-                        {categorySkills.map((skill) => (
-                          <div
-                            key={skill.name}
-                            className="relative overflow-hidden group"
-                          >
-                            <div className="relative z-10 p-4 border border-border/50 rounded-lg backdrop-blur-sm group-hover:border-primary/50 transition-all">
-                              <div className="flex items-center">
-                                <div className="flex items-center gap-3">
-                                  {skill.icon !== "" ? (
-                                    <div className="relative">
-                                      <div className="absolute -inset-1 bg-gradient-to-r from-primary to-primary/50 rounded-full blur-sm opacity-70 group-hover:opacity-100 transition-opacity"></div>
-                                      <div className="relative bg-background p-2 rounded-full">
-                                        <div className="w-9 h-9 flex items-center justify-center rounded-full bg-background">
-                                          <StackIcon
-                                            name={skill.icon}
-                                            className="w-5 h-5 text-primary"
-                                          />
-                                        </div>
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <div className="w-9 h-9 rounded-full bg-background"></div>
-                                  )}
-                                  <span className="font-medium text-sm  text-foreground">
-                                    {skill.name}
-                                  </span>
-                                </div>
-                              </div>
+                      <div className="h-[2px] flex-1 bg-primary/20 rounded-full"></div>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                      {categorySkills.map((skill, index) => (
+                        <motion.div
+                          key={skill.name}
+                          className="group relative flex flex-col items-center p-5 rounded-xl bg-card hover:bg-card/80 border border-border/50 hover:border-primary/30 transition-all duration-300 overflow-hidden text-center"
+                          whileHover={{
+                            boxShadow:
+                              "0 10px 25px -5px rgba(var(--primary), 0.25)",
+                          }}
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                          <div className="relative mb-4 z-10">
+                            <div className="absolute -inset-3 bg-gradient-to-r from-primary/20 to-primary/10 rounded-full blur-[10px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <div className="relative flex items-center justify-center w-14 h-14 rounded-full bg-background/90 backdrop-blur-sm shadow-inner border border-border/50 group-hover:border-primary/30 transition-all">
+                              <StackIcon
+                                name={skill.icon}
+                                className="w-7 h-7 text-foreground group-hover:text-primary transition-all duration-300 group-hover:scale-110"
+                              />
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+
+                          <h4 className="font-medium mt-1 text-foreground group-hover:text-primary transition-colors">
+                            {skill.name}
+                          </h4>
+
+                          <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out"></div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </motion.div>
                 )
               )}
-            </motion.div>
+            </div>
           </TabsContent>
 
           <TabsContent value="experience" className="mt-6">

@@ -10,24 +10,20 @@ interface SkillsSectionProps {
 }
 
 export function SkillsSection({ skills, translations }: SkillsSectionProps) {
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.3,
-      },
+  // Group skills by category
+  const skillsByCategory = skills.reduce(
+    (acc, skill) => {
+      if (!acc[skill.category]) {
+        acc[skill.category] = [];
+      }
+      acc[skill.category].push(skill);
+      return acc;
     },
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 },
-  };
+    {} as Record<string, Skill[]>
+  );
 
   return (
-    <section className="py-16 bg-accent/50">
+    <section className="py-16 bg-accent/30">
       <div className="container px-4 md:px-6">
         <motion.div
           className="text-center mb-12"
@@ -41,42 +37,79 @@ export function SkillsSection({ skills, translations }: SkillsSectionProps) {
           </h2>
         </motion.div>
 
+        {/* Featured Skills - Show a mix from various categories */}
         <motion.div
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 lg:gap-8"
-          variants={container}
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
+          variants={{
+            hidden: { opacity: 0 },
+            show: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.05,
+                delayChildren: 0.2,
+              },
+            },
+          }}
         >
-          {skills.slice(0, 8).map((skill) => (
+          {skills.slice(0, 12).map((skill, index) => (
             <motion.div
               key={skill.name}
-              variants={item}
-              className="group relative flex flex-col items-center justify-center p-6 rounded-xl overflow-hidden backdrop-blur-effect skill-card-glow"
-              style={{
-                background: "rgba(var(--background), 0.8)",
+              className="skill-card-glow group relative flex flex-col items-center p-4 rounded-xl bg-card/80 backdrop-blur-sm border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg overflow-hidden text-center"
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                show: { opacity: 1, y: 0 },
               }}
             >
-              {/* Skill icon */}
-              <div className="mb-4 relative z-10">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10 rounded-full blur-lg opacity-75 group-hover:opacity-100 transition-opacity"></div>
-                  <div className="relative flex items-center justify-center w-16 h-16 rounded-full bg-background border border-primary/20 group-hover:border-primary/50 transition-colors duration-300">
-                    <StackIcon
-                      name={skill.icon}
-                      className="w-8 h-8 text-primary"
-                    />
-                  </div>
+              <div className="relative mb-3 z-10">
+                <div className="absolute -inset-3 bg-gradient-to-r from-primary/30 to-primary/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center w-12 h-12 rounded-full bg-background/80 backdrop-blur-sm shadow-inner border border-border/50 group-hover:border-primary/30 transition-all">
+                  <StackIcon
+                    name={skill.icon}
+                    className="w-6 h-6 text-primary transition-transform duration-300 group-hover:scale-110"
+                  />
                 </div>
               </div>
-
-              {/* Skill name */}
-              <h3 className="font-medium text-lg mb-4 z-10">{skill.name}</h3>
-
-              {/* No skill level display needed */}
+              <h3 className="font-medium text-sm z-10 group-hover:text-primary transition-colors">
+                {skill.name}
+              </h3>
             </motion.div>
           ))}
         </motion.div>
+
+        {/* View all skills button */}
+        <div className="flex justify-center mt-8">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.6 }}
+          >
+            <a
+              href="/about"
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/50 hover:border-primary/50 bg-card/80 backdrop-blur-sm text-sm font-medium transition-all hover:shadow-md hover:-translate-y-1"
+            >
+              {translations.skills.viewAll}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="ml-1"
+              >
+                <path d="M5 12h14"></path>
+                <path d="m12 5 7 7-7 7"></path>
+              </svg>
+            </a>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

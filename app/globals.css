@@ -291,6 +291,35 @@ button,
   opacity: 0.4;
 }
 
+/* Enhanced skill card effects */
+.skill-card-glow {
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.skill-card-glow:hover {
+  box-shadow:
+    0 10px 25px -5px rgba(var(--primary), 0.1),
+    0 8px 10px -6px rgba(var(--primary), 0.1);
+}
+
+@keyframes pulse-border {
+  0% {
+    border-color: hsl(var(--primary) / 0.2);
+  }
+  50% {
+    border-color: hsl(var(--primary) / 0.5);
+  }
+  100% {
+    border-color: hsl(var(--primary) / 0.2);
+  }
+}
+
+.skill-card-glow:hover {
+  animation: pulse-border 2s infinite;
+}
+
 /* Nav item styles for both desktop and mobile */
 .nav-item::after,
 .mobile-nav-item::after {
