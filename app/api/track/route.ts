@@ -3,6 +3,7 @@ import redis from "@/lib/redis";
 import { headers } from "next/headers";
 
 import { getIpbaseData } from "@/lib/ipbase";
+import { formatLocation } from "@/lib/location-utils";
 
 // Define the structure of visitor data
 interface VisitorData {

@@ -1,6 +1,7 @@
 /**
  * Utility functions for accessing the ipbase.com geolocation API
  */
+import { cleanLocationString } from "./location-utils";
 
 interface IpbaseResponse {
   data: {
@@ -47,9 +48,13 @@ export async function getIpbaseData(
 
     const data = (await response.json()) as IpbaseResponse;
 
+    // Clean and normalize location data to prevent encoding issues
+    const country = cleanLocationString(data.data.location?.country?.name);
+    const city = cleanLocationString(data.data.location?.city?.name);
+
     return {
-      country: data.data.location?.country?.name || "Unknown",
-      city: data.data.location?.city?.name || "Unknown",
+      country: country || "Unknown",
+      city: city || "Unknown",
     };
   } catch (error) {
     console.error("Error fetching geolocation data from ipbase:", error);
