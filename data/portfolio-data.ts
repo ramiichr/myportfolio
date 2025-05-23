@@ -312,7 +312,7 @@ export const portfolioData: LocalizedData = {
         period: "Mar 2022 - Dec 2024",
         location: "Dresden, Germany",
         description: [
-          "Development of user-friendly and responsive single-page applications (SPA) with Ruby on Rails and Turbo Frames.",
+          "Development of user-friendly and responsive single-page applications (SPA) with React.js and Ruby on Rails.",
           "Implementation of appealing and intuitive user interfaces, taking into account UX/UI principles and mobile-first approaches with SCSS/SASS and HTML5.",
           "Optimization and further development of existing applications with a focus on performance, scalability and user-friendliness.",
           "Ensuring high code quality through clean code principles, code reviews and automated testing.",
@@ -340,7 +340,7 @@ export const portfolioData: LocalizedData = {
         period: "Mär 2022 - Dez 2024",
         location: "Dresden, Deutschland",
         description: [
-          "Entwicklung benutzerfreundlicher und responsiver Single-Page-Applications (SPA) mit React.js und JavaScript.",
+          "Entwicklung benutzerfreundlicher und responsiver Single-Page-Applications (SPA) mit React.js und Ruby on Rails.",
           "Umsetzung ansprechender und intuitiver Benutzeroberflächen unter Berücksichtigung von UX/UI-Prinzipien sowie Mobile-First-Ansätzen mit SCSS/SASS und HTML5.",
           "Optimierung und Weiterentwicklung bestehender Anwendungen mit Fokus auf Performance, Skalierbarkeit und Benutzerfreundlichkeit.",
           "Sicherstellung hoher Code-Qualität durch Clean Code-Prinzipien, Code-Reviews und automatisiertes Testen.",
@@ -368,7 +368,7 @@ export const portfolioData: LocalizedData = {
         period: "Mar 2022 - Déc 2024",
         location: "Dresde, Allemagne",
         description: [
-          "Développement d'applications web (SPA) conviviales et responsives avec React.js et JavaScript.",
+          "Développement d'applications web (SPA) conviviales et responsives avec React.js et Ruby on Rails.",
           "Implémentation d'interfaces utilisateur attrayantes et intuitives, en tenant compte des principes UX/UI et des approches mobile-first avec SCSS/SASS et HTML5.",
           "Optimisation et développement continu des applications existantes en mettant l'accent sur la performance, l'évolutivité et la convivialité.",
           "Assurance de la qualité du code grâce aux principes du clean code, aux revues de code et aux tests automatisés.",
