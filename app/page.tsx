@@ -7,13 +7,49 @@ import { getProfile, getProjects, getSkills } from "@/lib/api";
 import { LoadingSpinner } from "@/components/common";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
+import dynamic from "next/dynamic";
 import type { Profile, Project, Skill } from "@/types";
-import {
-  HeroSection,
-  SkillsSection,
-  ProjectsSection,
-  ContactCTASection,
-} from "@/components/sections/home";
+import { HeroSection } from "@/components/sections/home";
+
+// Lazy load non-critical sections
+const SkillsSection = dynamic(
+  () =>
+    import("@/components/sections/home").then((mod) => ({
+      default: mod.SkillsSection,
+    })),
+  {
+    loading: () => (
+      <div className="h-96 animate-pulse bg-muted/50 rounded-lg" />
+    ),
+    ssr: false,
+  }
+);
+
+const ProjectsSection = dynamic(
+  () =>
+    import("@/components/sections/home").then((mod) => ({
+      default: mod.ProjectsSection,
+    })),
+  {
+    loading: () => (
+      <div className="h-96 animate-pulse bg-muted/50 rounded-lg" />
+    ),
+    ssr: false,
+  }
+);
+
+const ContactCTASection = dynamic(
+  () =>
+    import("@/components/sections/home").then((mod) => ({
+      default: mod.ContactCTASection,
+    })),
+  {
+    loading: () => (
+      <div className="h-48 animate-pulse bg-muted/50 rounded-lg" />
+    ),
+    ssr: false,
+  }
+);
 
 export default function Home() {
   const { translations, language } = useLanguage();
