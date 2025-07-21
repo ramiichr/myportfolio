@@ -1,21 +1,21 @@
 import { lazy } from "react";
 
 // Lazy load heavy animation components
-export const LazyMotion = lazy(() => 
-  import("framer-motion").then(module => ({ 
-    default: module.LazyMotion 
+export const LazyMotion = lazy(() =>
+  import("framer-motion").then((module) => ({
+    default: module.LazyMotion,
   }))
 );
 
-export const LazyMotionDiv = lazy(() => 
-  import("framer-motion").then(module => ({ 
-    default: module.motion.div 
+export const LazyMotionDiv = lazy(() =>
+  import("framer-motion").then((module) => ({
+    default: module.motion.div,
   }))
 );
 
-export const LazyAnimatePresence = lazy(() => 
-  import("framer-motion").then(module => ({ 
-    default: module.AnimatePresence 
+export const LazyAnimatePresence = lazy(() =>
+  import("framer-motion").then((module) => ({
+    default: module.AnimatePresence,
   }))
 );
 
@@ -26,22 +26,22 @@ export const loadFramerMotion = () => {
 
 // Motion variants for better performance
 export const fadeInUp = {
-  hidden: { 
-    opacity: 0, 
+  hidden: {
+    opacity: 0,
     y: 20,
     transition: {
       duration: 0.3,
-      ease: "easeOut"
-    }
+      ease: "easeOut",
+    },
   },
-  show: { 
-    opacity: 1, 
+  show: {
+    opacity: 1,
     y: 0,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
-    }
-  }
+      ease: "easeOut",
+    },
+  },
 };
 
 export const staggerContainer = {
@@ -50,20 +50,20 @@ export const staggerContainer = {
     opacity: 1,
     transition: {
       staggerChildren: 0.1,
-      delayChildren: 0.2
-    }
-  }
+      delayChildren: 0.2,
+    },
+  },
 };
 
 export const scaleInOut = {
   hidden: { scale: 0.8, opacity: 0 },
-  show: { 
-    scale: 1, 
+  show: {
+    scale: 1,
     opacity: 1,
     transition: {
       type: "spring",
       stiffness: 100,
-      damping: 15
-    }
-  }
+      damping: 15,
+    },
+  },
 };

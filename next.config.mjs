@@ -11,8 +11,8 @@ try {
   }
 }
 
-const withBundleAnalyzer = (await import('@next/bundle-analyzer')).default({
-  enabled: process.env.ANALYZE === 'true',
+const withBundleAnalyzer = (await import("@next/bundle-analyzer")).default({
+  enabled: process.env.ANALYZE === "true",
 });
 
 /** @type {import('next').NextConfig} */
@@ -24,7 +24,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    formats: ['image/webp', 'image/avif'],
+    formats: ["image/webp", "image/avif"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 31536000, // 1 year
@@ -36,10 +36,14 @@ const nextConfig = {
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
     optimizeCss: true,
-    optimizePackageImports: ['framer-motion', 'lucide-react', '@radix-ui/react-icons'],
+    optimizePackageImports: [
+      "framer-motion",
+      "lucide-react",
+      "@radix-ui/react-icons",
+    ],
   },
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole: process.env.NODE_ENV === "production",
   },
   poweredByHeader: false,
   compress: true,

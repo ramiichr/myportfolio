@@ -12,11 +12,11 @@ import CursorLight from "@/components/cursor-light";
 import { PageTracker } from "@/components/page-tracker";
 import { PerformanceMonitor } from "@/components/performance-monitor";
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   preload: true,
-  fallback: ['system-ui', 'arial']
+  fallback: ["system-ui", "arial"],
 });
 
 const caveat = Caveat({
@@ -24,7 +24,7 @@ const caveat = Caveat({
   variable: "--font-caveat",
   display: "swap",
   preload: false,
-  fallback: ['cursive']
+  fallback: ["cursive"],
 });
 
 export const metadata: Metadata = {
@@ -121,22 +121,14 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Preload critical resources */}
-        <link
-          rel="preload"
-          href="/profile.png"
-          as="image"
-          type="image/png"
-        />
-        <link
-          rel="preconnect"
-          href="https://fonts.googleapis.com"
-        />
+        <link rel="preload" href="/profile.png" as="image" type="image/png" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        
+
         {/* Theme script to prevent FOUC */}
         <script
           dangerouslySetInnerHTML={{
@@ -154,7 +146,7 @@ export default function RootLayout({
             `,
           }}
         />
-        
+
         {/* Structured Data */}
         <script
           type="application/ld+json"

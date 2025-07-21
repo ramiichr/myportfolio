@@ -11,17 +11,17 @@ export default function CursorLight() {
 
   useEffect(() => {
     setIsClient(true);
-    
+
     // Check if device is mobile to disable cursor effects
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+      setIsMobile(window.innerWidth < 768 || "ontouchstart" in window);
     };
-    
+
     checkMobile();
-    window.addEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
 
     let rafId: number;
-    
+
     const updateMousePosition = (e: MouseEvent) => {
       if (isMobile) return;
       rafId = requestAnimationFrame(() => {
@@ -43,16 +43,19 @@ export default function CursorLight() {
 
     return () => {
       window.removeEventListener("mousemove", updateMousePosition);
-      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener("resize", checkMobile);
       document.removeEventListener("mouseenter", handleMouseEnter);
       document.removeEventListener("mouseleave", handleMouseLeave);
       if (rafId) cancelAnimationFrame(rafId);
     };
   }, [isMobile]);
 
-  const gradientStyle = useMemo(() => ({
-    background: `radial-gradient(circle 2500px at ${mousePosition.x}px ${mousePosition.y}px, hsl(var(--primary) / 0.35), transparent 50%)`,
-  }), [mousePosition.x, mousePosition.y]);
+  const gradientStyle = useMemo(
+    () => ({
+      background: `radial-gradient(circle 2500px at ${mousePosition.x}px ${mousePosition.y}px, hsl(var(--primary) / 0.35), transparent 50%)`,
+    }),
+    [mousePosition.x, mousePosition.y]
+  );
 
   if (!isClient || isMobile) return null;
 
