@@ -9,19 +9,14 @@ import { LanguageProvider } from "@/components/language-provider";
 import { ErrorBoundary } from "@/components/common";
 import Header from "@/components/layout/header/Header";
 import Footer from "@/components/footer";
+import CursorLight from "@/components/cursor-light";
 import { PageTracker } from "@/components/page-tracker";
-import { ClientComponents } from "@/components/client-components";
 
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  preload: true,
-});
+const inter = Inter({ subsets: ["latin"] });
 const caveat = Caveat({
   subsets: ["latin"],
   variable: "--font-caveat",
   display: "swap",
-  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -117,13 +112,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin=""
-        />
-        <link rel="dns-prefetch" href="https://vercel.com" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -140,10 +128,8 @@ export default function RootLayout({
             `,
           }}
         />
-        <Script
-          id="structured-data"
+        <script
           type="application/ld+json"
-          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
@@ -177,9 +163,9 @@ export default function RootLayout({
           <LanguageProvider>
             <div data-language>
               <ErrorBoundary>
-                <ClientComponents />
                 <PageTracker />
                 <div className="flex min-h-screen flex-col">
+                  <CursorLight />
                   <Header />
                   <main className="flex-1">{children}</main>
                   <Footer />

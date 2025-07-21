@@ -4,10 +4,8 @@ import { Resend } from "resend";
 // Email validation regex
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-// Initialize Resend with your API key (fallback for build time)
-const resend = new Resend(
-  process.env.RESEND_API_KEY || "re_placeholder_key_for_build"
-);
+// Initialize Resend with your API key
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Define the expected request body structure
 interface ContactFormData {
@@ -94,9 +92,7 @@ export async function POST(request: Request) {
 
     // Send email using Resend
     const { data, error } = await resend.emails.send({
-      from: `Contact Form <${
-        process.env.FROM_EMAIL || "onboarding@resend.dev"
-      }>`,
+      from: `Contact Form <${process.env.FROM_EMAIL || "onboarding@resend.dev"}>`,
       to: process.env.TO_EMAIL || "ramii.cheikhrouhou@gmail.com", // Use default recipient if not configured
       subject: `Portfolio Contact: ${sanitizedName} - ${sanitizedSubject}`,
       html: htmlContent,

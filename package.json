@@ -6,10 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "analyze": "ANALYZE=true next build",
-    "optimize-images": "node scripts/optimize-images.js",
-    "build:production": "NODE_ENV=production next build"
+    "lint": "next lint"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
@@ -66,16 +63,13 @@
     "tailwindcss-animate": "^1.0.7",
     "tech-stack-icons": "^2.1.0",
     "vaul": "^0.9.6",
-    "web-vitals": "^5.0.3",
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^15.4.2",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "postcss": "^8",
-    "sharp": "^0.34.3",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
   }

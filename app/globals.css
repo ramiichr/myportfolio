@@ -1,4 +1,4 @@
-/* Performance optimized styles */
+/* Add these transitions at the top level, before any other styles */
 :root {
   color-scheme: light;
   --transition-theme: background-color 0.15s ease, color 0.15s ease,
@@ -9,34 +9,22 @@
   color-scheme: dark;
 }
 
-/* Optimize theme transitions - only apply to essential elements */
-html,
-body,
-[data-theme-transition] {
+/* Apply theme transitions to specific properties only */
+html {
   transition: var(--transition-theme);
 }
 
-/* Optimize language transitions */
+body {
+  transition: var(--transition-theme);
+}
+
+/* Add language transition animations */
 [data-language] * {
   transition: opacity 0.2s ease-out;
 }
 
 [data-language-switching="true"] * {
   opacity: 0.5;
-}
-
-/* Performance hint for will-change property */
-.will-change-transform {
-  will-change: transform;
-}
-
-.will-change-opacity {
-  will-change: opacity;
-}
-
-/* Reduce repaints with contain property */
-.section-container {
-  contain: layout style paint;
 }
 
 @tailwind base;
@@ -305,11 +293,14 @@ button,
 
 /* Enhanced skill card effects */
 .skill-card-glow {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .skill-card-glow:hover {
-  box-shadow: 0 10px 25px -5px rgba(var(--primary), 0.1),
+  box-shadow:
+    0 10px 25px -5px rgba(var(--primary), 0.1),
     0 8px 10px -6px rgba(var(--primary), 0.1);
 }
 
