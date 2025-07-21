@@ -302,6 +302,7 @@ export const portfolioData: LocalizedData = {
     { name: "Git", icon: "git", category: "tools" },
     { name: "GitHub", icon: "github", category: "tools" },
     { name: "Jira", icon: "jira", category: "tools" },
+    { name: "Jira", icon: "jira", category: "tools" },
     { name: "Bitbucket", icon: "bitbucket", category: "tools" },
     { name: "Azure DevOps", icon: "azure", category: "tools" },
     { name: "Visual Studio Code", icon: "vscode", category: "tools" },
