@@ -11,6 +11,10 @@ try {
   }
 }
 
+const withBundleAnalyzer = (await import('@next/bundle-analyzer')).default({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -20,14 +24,25 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
+    formats: ['image/webp', 'image/avif'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 31536000, // 1 year
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   experimental: {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
+    optimizeCss: true,
+    optimizePackageImports: ['framer-motion', 'lucide-react', '@radix-ui/react-icons'],
   },
-  analytics: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  poweredByHeader: false,
+  compress: true,
   // Remove the sitemaps configuration
 };
 
@@ -50,4 +65,4 @@ if (userConfig) {
   }
 }
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);

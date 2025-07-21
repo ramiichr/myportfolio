@@ -1,7 +1,6 @@
 import type React from "react";
 import type { Metadata } from "next";
 import { Inter, Caveat } from "next/font/google";
-import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -11,12 +10,21 @@ import Header from "@/components/layout/header/Header";
 import Footer from "@/components/footer";
 import CursorLight from "@/components/cursor-light";
 import { PageTracker } from "@/components/page-tracker";
+import { PerformanceMonitor } from "@/components/performance-monitor";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ 
+  subsets: ["latin"],
+  display: "swap",
+  preload: true,
+  fallback: ['system-ui', 'arial']
+});
+
 const caveat = Caveat({
   subsets: ["latin"],
   variable: "--font-caveat",
   display: "swap",
+  preload: false,
+  fallback: ['cursive']
 });
 
 export const metadata: Metadata = {
@@ -112,6 +120,24 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Preload critical resources */}
+        <link
+          rel="preload"
+          href="/profile.png"
+          as="image"
+          type="image/png"
+        />
+        <link
+          rel="preconnect"
+          href="https://fonts.googleapis.com"
+        />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        
+        {/* Theme script to prevent FOUC */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -128,6 +154,8 @@ export default function RootLayout({
             `,
           }}
         />
+        
+        {/* Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -163,6 +191,7 @@ export default function RootLayout({
           <LanguageProvider>
             <div data-language>
               <ErrorBoundary>
+                <PerformanceMonitor />
                 <PageTracker />
                 <div className="flex min-h-screen flex-col">
                   <CursorLight />

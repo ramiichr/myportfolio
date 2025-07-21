@@ -1,22 +1,36 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function CursorLight() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isClient, setIsClient] = useState(false);
   const [isMouseInWindow, setIsMouseInWindow] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
+    
+    // Check if device is mobile to disable cursor effects
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
 
+    let rafId: number;
+    
     const updateMousePosition = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      if (isMobile) return;
+      rafId = requestAnimationFrame(() => {
+        setMousePosition({ x: e.clientX, y: e.clientY });
+      });
     };
 
     const handleMouseEnter = () => {
-      setIsMouseInWindow(true);
+      if (!isMobile) setIsMouseInWindow(true);
     };
 
     const handleMouseLeave = () => {
@@ -29,12 +43,18 @@ export default function CursorLight() {
 
     return () => {
       window.removeEventListener("mousemove", updateMousePosition);
+      window.removeEventListener('resize', checkMobile);
       document.removeEventListener("mouseenter", handleMouseEnter);
       document.removeEventListener("mouseleave", handleMouseLeave);
+      if (rafId) cancelAnimationFrame(rafId);
     };
-  }, []);
+  }, [isMobile]);
 
-  if (!isClient) return null;
+  const gradientStyle = useMemo(() => ({
+    background: `radial-gradient(circle 2500px at ${mousePosition.x}px ${mousePosition.y}px, hsl(var(--primary) / 0.35), transparent 50%)`,
+  }), [mousePosition.x, mousePosition.y]);
+
+  if (!isClient || isMobile) return null;
 
   return (
     <AnimatePresence>
@@ -50,14 +70,12 @@ export default function CursorLight() {
             }}
           />
           <motion.div
-            className="pointer-events-none fixed inset-0 -z-[1]"
+            className="pointer-events-none fixed inset-0 -z-[1] will-change-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.4 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            style={{
-              background: `radial-gradient(circle 2500px at ${mousePosition.x}px ${mousePosition.y}px, hsl(var(--primary) / 0.35), transparent 50%)`,
-            }}
+            style={gradientStyle}
           />
         </>
       )}

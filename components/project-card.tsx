@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Github, ExternalLink } from "lucide-react";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 import type { Project } from "@/types";
 
 interface ProjectCardProps {
@@ -41,13 +41,14 @@ export default function ProjectCard({
     >
       <Card className="overflow-hidden h-full transition-all hover:shadow-lg">
         <div className="relative aspect-video overflow-hidden">
-          <Image
+          <OptimizedImage
             src={project.image}
             alt={`Screenshot of ${project.title}`}
             className="object-cover transition-transform group-hover:scale-105"
             fill
             priority={index < 3}
-            itemProp="image"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            quality={85}
           />
         </div>
         <CardContent className="space-y-4 p-6">

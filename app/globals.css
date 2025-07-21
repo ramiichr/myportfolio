@@ -1,24 +1,19 @@
-/* Add these transitions at the top level, before any other styles */
+/* Critical CSS - loaded first */
 :root {
   color-scheme: light;
-  --transition-theme: background-color 0.15s ease, color 0.15s ease,
-    border-color 0.15s ease;
+  --transition-theme: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .dark {
   color-scheme: dark;
 }
 
-/* Apply theme transitions to specific properties only */
-html {
+/* Optimize transitions - only apply to necessary elements */
+html, body {
   transition: var(--transition-theme);
 }
 
-body {
-  transition: var(--transition-theme);
-}
-
-/* Add language transition animations */
+/* Language transition optimization */
 [data-language] * {
   transition: opacity 0.2s ease-out;
 }
@@ -27,6 +22,7 @@ body {
   opacity: 0.5;
 }
 
+/* Load Tailwind layers */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

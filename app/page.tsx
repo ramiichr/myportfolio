@@ -64,7 +64,7 @@ export default function Home() {
   }
 
   return (
-    <div className="mt-16 pt-4">
+    <main className="mt-16 pt-4">
       <HeroSection
         profile={profile}
         translations={translations}
@@ -73,6 +73,6 @@ export default function Home() {
       <SkillsSection skills={skills || []} translations={translations} />
       <ProjectsSection projects={projects || []} translations={translations} />
       <ContactCTASection translations={translations} />
-    </div>
+    </main>
   );
 }

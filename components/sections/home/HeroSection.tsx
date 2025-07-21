@@ -1,10 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 import type { Profile } from "@/types";
 
 interface HeroSectionProps {
@@ -122,12 +122,14 @@ export function HeroSection({
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Image
+                    <OptimizedImage
                       src="/profile.png"
                       alt="Profile"
                       fill
                       className="object-cover object-[center_top]"
                       priority
+                      sizes="(max-width: 768px) 250px, 380px"
+                      quality={90}
                     />
 
                     <motion.div

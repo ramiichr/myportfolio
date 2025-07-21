@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 interface LoadingSpinnerProps {
   className?: string;
   size?: "sm" | "md" | "lg";
@@ -9,7 +11,7 @@ const sizeClasses = {
   lg: "h-16 w-16",
 };
 
-export function LoadingSpinner({
+export const LoadingSpinner = memo(function LoadingSpinner({
   className = "",
   size = "md",
 }: LoadingSpinnerProps) {
@@ -17,7 +19,11 @@ export function LoadingSpinner({
     <div className="flex items-center justify-center min-h-[200px]">
       <div
         className={`animate-spin rounded-full border-t-2 border-b-2 border-primary ${sizeClasses[size]} ${className}`}
-      ></div>
+        role="status"
+        aria-label="Loading"
+      >
+        <span className="sr-only">Loading...</span>
+      </div>
     </div>
   );
-}
+});
