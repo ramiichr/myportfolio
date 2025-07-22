@@ -1,6 +1,6 @@
 import { lazy } from "react";
 
-// Lazy load heavy animation components
+// Lazy load heavy animation components with optimized features
 export const LazyMotion = lazy(() =>
   import("framer-motion").then((module) => ({
     default: module.LazyMotion,
@@ -19,9 +19,17 @@ export const LazyAnimatePresence = lazy(() =>
   }))
 );
 
-// Preload critical animations
+// Preload critical animations with optimized features
 export const loadFramerMotion = () => {
   return import("framer-motion");
+};
+
+// Use reduced motion for users who prefer it
+export const shouldReduceMotion = () => {
+  return (
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
 };
 
 // Motion variants for better performance

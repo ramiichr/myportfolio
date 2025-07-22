@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
@@ -16,6 +16,18 @@ export default function Header() {
   const pathname = usePathname();
   const { translations } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const toggleMenu = useCallback(() => {
     setMenuOpen((prev) => !prev);
@@ -39,7 +51,15 @@ export default function Header() {
 
   return (
     <header className="fixed w-full bg-background/80 backdrop-blur-sm z-50 border-b">
-      <div className="mx-auto max-w-7xl px-6 py-4">
+      <div
+        className="mx-auto max-w-7xl"
+        style={{
+          paddingTop: "0.25rem",
+          paddingBottom: "0.25rem",
+          paddingLeft: isMobile ? "1rem" : "1.5rem",
+          paddingRight: isMobile ? "1rem" : "1.5rem",
+        }}
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Link href="/" className="font-bold text-xl">

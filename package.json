@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "analyze": "ANALYZE=true next build",
-    "build:analyze": "cross-env ANALYZE=true next build"
+    "build:analyze": "cross-env ANALYZE=true next build",
+    "build:prod": "NODE_ENV=production next build",
+    "lighthouse": "lhci autorun"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "latest",
@@ -65,14 +67,17 @@
     "tailwindcss-animate": "^1.0.7",
     "tech-stack-icons": "^2.1.0",
     "vaul": "^0.9.6",
+    "web-vitals": "^5.0.3",
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^7.0.2",
     "@next/bundle-analyzer": "^15.4.2",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/sharp": "^0.32.0",
+    "cssnano": "^7.1.0",
     "postcss": "^8",
     "sharp": "^0.34.3",
     "tailwindcss": "^3.4.17",

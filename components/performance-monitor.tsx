@@ -13,24 +13,54 @@ export function PerformanceMonitor() {
       return;
     }
 
-    // Monitor Core Web Vitals
+    // Throttle performance logging
+    let lastLogTime = 0;
+    const logThrottle = 5000; // 5 seconds
+
+    // Monitor Core Web Vitals and critical metrics
     const observer = new PerformanceObserver((list) => {
+      const now = Date.now();
+      if (now - lastLogTime < logThrottle) return;
+
       list.getEntries().forEach((entry) => {
-        // Log performance metrics for monitoring
-        console.log(`Performance: ${entry.name}: ${entry.duration || "N/A"}`);
+        // Only log critical performance metrics
+        if (entry.entryType === "navigation") {
+          const navEntry = entry as PerformanceNavigationTiming;
+          console.log(
+            "Page Load Time:",
+            navEntry.loadEventEnd - navEntry.fetchStart
+          );
+        } else if (entry.entryType === "paint") {
+          console.log(`${entry.name}:`, entry.startTime);
+        } else if (entry.entryType === "largest-contentful-paint") {
+          console.log("LCP:", entry.startTime);
+        }
       });
+
+      lastLogTime = now;
     });
 
     try {
-      // Observe Core Web Vitals
-      observer.observe({ entryTypes: ["measure", "navigation", "paint"] });
+      // Observe Core Web Vitals with error handling
+      observer.observe({ entryTypes: ["navigation", "paint"] });
+
+      // Only observe LCP if supported
+      try {
+        observer.observe({ entryTypes: ["largest-contentful-paint"] });
+      } catch {
+        console.warn("LCP observation not supported");
+      }
     } catch (e) {
-      // Fallback for browsers that don't support all entry types
       console.warn("PerformanceObserver not fully supported");
     }
 
+    // Cleanup function
     return () => {
-      observer.disconnect();
+      try {
+        observer.disconnect();
+      } catch (e) {
+        // Ignore cleanup errors
+      }
     };
   }, []);
 

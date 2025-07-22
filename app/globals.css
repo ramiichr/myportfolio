@@ -1,18 +1,89 @@
-/* Critical CSS - loaded first */
+/* Critical CSS - Above the fold content */
 :root {
   color-scheme: light;
   --transition-theme: background-color 0.15s ease, color 0.15s ease,
     border-color 0.15s ease;
+
+  /* Core layout variables */
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --primary: 217.2 91.2% 59.8%;
+  --primary-foreground: 222.2 47.4% 11.2%;
 }
 
 .dark {
   color-scheme: dark;
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
 }
 
-/* Optimize transitions - only apply to necessary elements */
-html,
-body {
+/* Critical base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  scroll-behavior: smooth;
   transition: var(--transition-theme);
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  transition: var(--transition-theme);
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+/* Critical header styles */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  backdrop-filter: blur(10px);
+}
+
+/* Critical navigation styles */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Critical button styles */
+button {
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+/* Critical layout styles */
+main {
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Critical responsive design */
+@media (max-width: 768px) {
+  nav {
+    padding: 0.5rem;
+  }
+} /* Hide non-critical content initially */
+.non-critical {
+  visibility: hidden;
+}
+
+.critical-loaded .non-critical {
+  visibility: visible;
 }
 
 /* Language transition optimization */
@@ -25,22 +96,19 @@ body {
 }
 
 /* Load Tailwind layers */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    /* Default blue theme with improved readability */
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
+    /* Additional theme variables (primary colors defined in critical CSS) */
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 84% 11.2%;
     --muted: 210 40% 96.1%;
@@ -120,8 +188,6 @@ body {
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;

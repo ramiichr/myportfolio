@@ -11,12 +11,17 @@ import Footer from "@/components/footer";
 import CursorLight from "@/components/cursor-light";
 import { PageTracker } from "@/components/page-tracker";
 import { PerformanceMonitor } from "@/components/performance-monitor";
+import { ResourcePreloader } from "@/components/resource-preloader";
+import { WebVitals } from "@/components/web-vitals";
+import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
+import { Suspense } from "react";
 
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   preload: true,
   fallback: ["system-ui", "arial"],
+  adjustFontFallback: false, // Prevent layout shift
 });
 
 const caveat = Caveat({
@@ -25,6 +30,7 @@ const caveat = Caveat({
   display: "swap",
   preload: false,
   fallback: ["cursive"],
+  adjustFontFallback: false, // Prevent layout shift
 });
 
 export const metadata: Metadata = {
@@ -172,6 +178,25 @@ export default function RootLayout({
             }),
           }}
         />
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+              /* Critical header height - loaded before Tailwind */
+              header > div:first-child {
+                padding-top: 0.5rem !important;
+                padding-bottom: 0.5rem !important;
+                padding-left: 1.5rem !important;
+                padding-right: 1.5rem !important;
+              }
+              @media (max-width: 768px) {
+                header > div:first-child {
+                  padding-left: 1rem !important;
+                  padding-right: 1rem !important;
+                }
+              }
+            `,
+          }}
+        />
       </head>
       <body className={`${inter.className} ${caveat.variable}`}>
         <ThemeProvider
@@ -184,18 +209,27 @@ export default function RootLayout({
             <div data-language>
               <ErrorBoundary>
                 <PerformanceMonitor />
+                <WebVitals />
+                <ServiceWorkerRegistration />
+                <ResourcePreloader />
                 <PageTracker />
                 <div className="flex min-h-screen flex-col">
-                  <CursorLight />
+                  <Suspense fallback={null}>
+                    <CursorLight />
+                  </Suspense>
                   <Header />
                   <main className="flex-1">{children}</main>
-                  <Footer />
+                  <Suspense fallback={null}>
+                    <Footer />
+                  </Suspense>
                 </div>
               </ErrorBoundary>
             </div>
           </LanguageProvider>
         </ThemeProvider>
-        <Analytics mode="production" />
+        <Suspense fallback={null}>
+          <Analytics mode="production" />
+        </Suspense>
       </body>
     </html>
   );
