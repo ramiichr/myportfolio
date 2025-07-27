@@ -72,6 +72,22 @@ main {
   width: 100%;
 }
 
+/* Performance optimizations */
+.contribution-grid {
+  contain: layout style paint;
+  will-change: scroll-position;
+}
+
+.contribution-day {
+  transform: translateZ(0); /* Force hardware acceleration */
+  will-change: transform;
+}
+
+/* Reduce paint complexity */
+.hover\:ring-1:hover {
+  transform: translateZ(0);
+}
+
 /* Critical responsive design */
 @media (max-width: 768px) {
   nav {
@@ -298,6 +314,62 @@ html {
 /* Hide scrollbar for Chrome, Safari and Opera */
 html::-webkit-scrollbar {
   display: none;
+}
+
+/* Utility class to hide scrollbars for specific elements */
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+/* Responsive scrollbar utility - hide scrollbars on desktop, show on mobile/tablet */
+.scrollbar-mobile {
+  scrollbar-width: auto; /* Firefox - show scrollbar */
+  -ms-overflow-style: auto; /* IE and Edge - show scrollbar */
+}
+
+.scrollbar-mobile::-webkit-scrollbar {
+  display: block; /* Chrome, Safari and Opera - show scrollbar */
+  width: 6px; /* Thin scrollbar on mobile */
+  height: 6px;
+}
+
+.scrollbar-mobile::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-mobile::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.scrollbar-mobile::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode scrollbar styles */
+.dark .scrollbar-mobile::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dark .scrollbar-mobile::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Hide scrollbars on desktop (lg and above) */
+@media (min-width: 1024px) {
+  .scrollbar-mobile {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .scrollbar-mobile::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
 }
 
 /* Custom cursor styles */

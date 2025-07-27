@@ -46,6 +46,7 @@ export default function Header() {
     { name: translations.navigation.home, href: "/" },
     { name: translations.navigation.about, href: "/about" },
     { name: translations.navigation.projects, href: "/projects" },
+    { name: translations.navigation.github, href: "/github" },
     { name: translations.navigation.contact, href: "/contact" },
   ];
 

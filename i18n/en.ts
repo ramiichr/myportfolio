@@ -3,6 +3,7 @@ export const en = {
     home: "Home",
     about: "About",
     projects: "Projects",
+    github: "GitHub",
     contact: "Contact",
   },
   hero: {
@@ -41,6 +42,22 @@ export const en = {
     frontend: "Frontend Development",
     backend: "Backend Development",
     tools: "Tools & Infrastructure",
+  },
+  github: {
+    title: "GitHub Activity",
+    description:
+      "A visual representation of my coding activity and contributions over the past year.",
+    contributionsTitle: "Contributions",
+    stats: {
+      repositories: "Total Repositories",
+      stars: "Total Stars",
+      forks: "Total Forks",
+      followers: "Followers",
+    },
+    sections: {
+      languages: "Most Used Languages",
+      activity: "Recent Activity",
+    },
   },
   contact: {
     title: "Get In Touch",

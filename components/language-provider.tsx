@@ -18,6 +18,7 @@ interface Translations {
     home: string;
     about: string;
     projects: string;
+    github: string;
     contact: string;
   };
   hero: {
@@ -46,6 +47,27 @@ interface Translations {
       all: string;
       web: string;
       mobile: string;
+    };
+  };
+  skills: {
+    viewAll: string;
+    frontend: string;
+    backend: string;
+    tools: string;
+  };
+  github: {
+    title: string;
+    description: string;
+    contributionsTitle: string;
+    stats: {
+      repositories: string;
+      stars: string;
+      forks: string;
+      followers: string;
+    };
+    sections: {
+      languages: string;
+      activity: string;
     };
   };
   contact: {

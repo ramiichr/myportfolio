@@ -3,6 +3,7 @@ export const fr = {
     home: "Accueil",
     about: "À propos",
     projects: "Projets",
+    github: "GitHub",
     contact: "Contact",
   },
   hero: {
@@ -41,6 +42,22 @@ export const fr = {
     frontend: "Développement Frontend",
     backend: "Développement Backend",
     tools: "Outils & Infrastructure",
+  },
+  github: {
+    title: "Activité GitHub",
+    description:
+      "Une représentation visuelle de mon activité de programmation et contributions au cours de la dernière année.",
+    contributionsTitle: "Contributions",
+    stats: {
+      repositories: "Total des Dépôts",
+      stars: "Total des Étoiles",
+      forks: "Total des Forks",
+      followers: "Abonnés",
+    },
+    sections: {
+      languages: "Langages les Plus Utilisés",
+      activity: "Activité Récente",
+    },
   },
   contact: {
     title: "Me Contacter",
