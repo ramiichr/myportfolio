@@ -69,7 +69,7 @@ export default function AboutPage() {
   }
 
   return (
-    <div className="container pt-32 pb-24 px-4 md:px-6">
+    <div className="container page-container">
       <motion.div
         className="max-w-4xl mx-auto"
         initial={{ opacity: 0 }}

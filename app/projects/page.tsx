@@ -46,7 +46,7 @@ export default function ProjectsPage() {
   };
 
   return (
-    <div className="container pt-32 pb-24 px-4 md:px-6">
+    <div className="container page-container">
       <motion.div
         className="text-center mb-12"
         initial={{ opacity: 0, y: 20 }}
