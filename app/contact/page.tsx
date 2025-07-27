@@ -162,7 +162,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="container py-24 px-4 md:px-6">
+    <div className="container pt-32 pb-24 px-4 md:px-6">
       <motion.div
         className="text-center mb-12"
         initial={{ opacity: 0, y: 20 }}
@@ -376,8 +376,8 @@ export default function ContactPage() {
                   submitStatus === "success"
                     ? "bg-green-600 hover:bg-green-700"
                     : submitStatus === "error"
-                      ? "bg-red-600 hover:bg-red-700"
-                      : ""
+                    ? "bg-red-600 hover:bg-red-700"
+                    : ""
                 }`}
                 disabled={isSubmitting}
               >
@@ -440,10 +440,10 @@ export default function ContactPage() {
                 {submitStatus === "sending"
                   ? "Sending..."
                   : submitStatus === "success"
-                    ? "Message Sent!"
-                    : submitStatus === "error"
-                      ? "Failed to Send"
-                      : translations.contact.sendButton}
+                  ? "Message Sent!"
+                  : submitStatus === "error"
+                  ? "Failed to Send"
+                  : translations.contact.sendButton}
               </Button>
             </form>
           </CardContent>

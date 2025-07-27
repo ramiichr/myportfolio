@@ -52,16 +52,13 @@ export default function AboutPage() {
   };
 
   // Group skills by category
-  const skillsByCategory = skills.reduce(
-    (acc, skill) => {
-      if (!acc[skill.category]) {
-        acc[skill.category] = [];
-      }
-      acc[skill.category].push(skill);
-      return acc;
-    },
-    {} as Record<string, Skill[]>
-  );
+  const skillsByCategory = skills.reduce((acc, skill) => {
+    if (!acc[skill.category]) {
+      acc[skill.category] = [];
+    }
+    acc[skill.category].push(skill);
+    return acc;
+  }, {} as Record<string, Skill[]>);
 
   if (loading) {
     return (
@@ -72,7 +69,7 @@ export default function AboutPage() {
   }
 
   return (
-    <div className="container py-24 px-4 md:px-6">
+    <div className="container pt-32 pb-24 px-4 md:px-6">
       <motion.div
         className="max-w-4xl mx-auto"
         initial={{ opacity: 0 }}
@@ -150,8 +147,8 @@ export default function AboutPage() {
                         {category === "frontend"
                           ? translations.about.frontend
                           : category === "backend"
-                            ? translations.about.backend
-                            : translations.about.tools}
+                          ? translations.about.backend
+                          : translations.about.tools}
                       </h3>
                       <div className="h-[2px] flex-1 bg-primary/20 rounded-full"></div>
                     </div>

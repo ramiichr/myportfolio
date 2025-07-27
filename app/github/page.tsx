@@ -145,7 +145,7 @@ export default function GitHubPage() {
   }
 
   return (
-    <div className="container py-12 sm:py-24 px-4 md:px-6">
+    <div className="container pt-32 pb-12 sm:pb-24 px-4 md:px-6">
       <motion.div
         className="max-w-6xl mx-auto"
         initial={{ opacity: 0 }}
