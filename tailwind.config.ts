@@ -12,7 +12,7 @@ const config: Config = {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: "0", // Remove default padding to prevent conflicts
       screens: {
         "2xl": "1400px",
       },
