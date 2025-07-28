@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/language-provider";
-import { usePagePadding } from "@/hooks/use-page-padding";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,7 +21,6 @@ import type { Profile } from "@/types";
 export default function ContactPage() {
   const { translations, language } = useLanguage();
   const { toast } = useToast();
-  const pagePadding = usePagePadding();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
@@ -164,7 +162,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="container page-container" style={pagePadding}>
+    <div className="container pt-32 pb-24 px-4 md:px-6">
       <motion.div
         className="text-center mb-12"
         initial={{ opacity: 0, y: 20 }}

@@ -3,7 +3,6 @@
 import { useState, useEffect, Suspense, lazy } from "react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/language-provider";
-import { usePagePadding } from "@/hooks/use-page-padding";
 import { getProfile } from "@/lib/api";
 import { LoadingSpinner } from "@/components/common";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -58,7 +57,6 @@ interface GitHubStats {
 
 export default function GitHubPage() {
   const { translations, language } = useLanguage();
-  const pagePadding = usePagePadding();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [githubStats, setGithubStats] = useState<GitHubStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -147,7 +145,7 @@ export default function GitHubPage() {
   }
 
   return (
-    <div className="container page-container" style={pagePadding}>
+    <div className="container pt-32 pb-12 sm:pb-24 px-4 md:px-6">
       <motion.div
         className="max-w-6xl mx-auto"
         initial={{ opacity: 0 }}

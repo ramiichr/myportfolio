@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/language-provider";
-import { usePagePadding } from "@/hooks/use-page-padding";
 import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,7 +13,6 @@ import StackIcon from "tech-stack-icons";
 
 export default function AboutPage() {
   const { translations, language } = useLanguage();
-  const pagePadding = usePagePadding();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [skills, setSkills] = useState<Skill[]>([]);
   const [experiences, setExperiences] = useState<Experience[]>([]);
@@ -71,7 +69,7 @@ export default function AboutPage() {
   }
 
   return (
-    <div className="container page-container" style={pagePadding}>
+    <div className="container pt-32 pb-24 px-4 md:px-6">
       <motion.div
         className="max-w-4xl mx-auto"
         initial={{ opacity: 0 }}

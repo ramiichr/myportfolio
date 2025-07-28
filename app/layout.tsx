@@ -194,31 +194,6 @@ export default function RootLayout({
                   padding-right: 1rem !important;
                 }
               }
-              /* Critical page padding - ensures consistent spacing */
-              .container.page-container {
-                padding-top: 8rem !important;
-                padding-bottom: 6rem !important;
-                padding-left: 1rem !important;
-                padding-right: 1rem !important;
-              }
-              @media (min-width: 768px) {
-                .container.page-container {
-                  padding-left: 1.5rem !important;
-                  padding-right: 1.5rem !important;
-                }
-              }
-              .page-container {
-                padding-top: 8rem !important;
-                padding-bottom: 6rem !important;
-                padding-left: 1rem !important;
-                padding-right: 1rem !important;
-              }
-              @media (min-width: 768px) {
-                .page-container {
-                  padding-left: 1.5rem !important;
-                  padding-right: 1.5rem !important;
-                }
-              }
             `,
           }}
         />

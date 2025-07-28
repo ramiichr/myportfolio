@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/components/language-provider";
-import { usePagePadding } from "@/hooks/use-page-padding";
 import ProjectCard from "@/components/project-card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getProjects } from "@/lib/api";
@@ -11,7 +10,6 @@ import type { Project } from "@/types";
 
 export default function ProjectsPage() {
   const { translations, language } = useLanguage();
-  const pagePadding = usePagePadding();
   const [activeCategory, setActiveCategory] = useState("all");
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,7 +46,7 @@ export default function ProjectsPage() {
   };
 
   return (
-    <div className="container page-container" style={pagePadding}>
+    <div className="container pt-32 pb-24 px-4 md:px-6">
       <motion.div
         className="text-center mb-12"
         initial={{ opacity: 0, y: 20 }}
