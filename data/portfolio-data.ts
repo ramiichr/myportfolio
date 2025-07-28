@@ -293,6 +293,7 @@ export const portfolioData: LocalizedData = {
     { name: "React", icon: "reactjs", category: "frontend" },
     { name: "Next.js", icon: "nextjs2", category: "frontend" },
     { name: "Node.js/Express", icon: "nodejs", category: "backend" },
+    { name: "Python", icon: "python", category: "backend" },
     { name: "PHP 8", icon: "php", category: "backend" },
     { name: "Ruby on Rails", icon: "ruby", category: "backend" },
     { name: "Redis", icon: "redis", category: "backend" },
