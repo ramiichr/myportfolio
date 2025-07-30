@@ -14,6 +14,7 @@ import { PerformanceMonitor } from "@/components/performance-monitor";
 import { ResourcePreloader } from "@/components/resource-preloader";
 import { WebVitals } from "@/components/web-vitals";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
+import { HardReload } from "@/components/hard-reload";
 import { Suspense } from "react";
 
 const inter = Inter({
@@ -126,6 +127,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Prevent caching headers */}
+        <meta
+          httpEquiv="Cache-Control"
+          content="no-cache, no-store, must-revalidate"
+        />
+        <meta httpEquiv="Pragma" content="no-cache" />
+        <meta httpEquiv="Expires" content="0" />
+
         {/* Preload critical resources */}
         <link rel="preload" href="/profile.png" as="image" type="image/png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -211,6 +220,7 @@ export default function RootLayout({
                 <PerformanceMonitor />
                 <WebVitals />
                 <ServiceWorkerRegistration />
+                <HardReload />
                 <ResourcePreloader />
                 <PageTracker />
                 <div className="flex min-h-screen flex-col">

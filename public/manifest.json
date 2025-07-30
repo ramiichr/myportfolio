@@ -3,7 +3,7 @@
   "short_name": "Rami's Portfolio",
   "description": "Frontend Developer portfolio showcasing web development projects and skills",
   "start_url": "/",
-  "display": "standalone",
+  "display": "browser",
   "background_color": "#1a1a1a",
   "theme_color": "#3b82f6",
   "icons": [
@@ -23,5 +23,6 @@
   "orientation": "portrait",
   "categories": ["portfolio", "web development", "frontend", "backend"],
   "lang": "en",
-  "dir": "ltr"
+  "dir": "ltr",
+  "prefer_related_applications": false
 }
