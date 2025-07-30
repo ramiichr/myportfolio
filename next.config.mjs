@@ -23,64 +23,11 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Disable caching for hard reloads
-  headers: async () => {
-    return [
-      {
-        source: "/(.*)",
-        headers: [
-          {
-            key: "Cache-Control",
-            value:
-              "no-cache, no-store, must-revalidate, max-age=0, s-maxage=0, proxy-revalidate",
-          },
-          {
-            key: "Pragma",
-            value: "no-cache",
-          },
-          {
-            key: "Expires",
-            value: "0",
-          },
-          {
-            key: "Surrogate-Control",
-            value: "no-store",
-          },
-          {
-            key: "X-Accel-Expires",
-            value: "0",
-          },
-        ],
-      },
-      {
-        source: "/_next/static/(.*)",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "no-cache, no-store, must-revalidate, max-age=0",
-          },
-        ],
-      },
-      {
-        source: "/api/(.*)",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "no-cache, no-store, must-revalidate, max-age=0",
-          },
-          {
-            key: "Pragma",
-            value: "no-cache",
-          },
-        ],
-      },
-    ];
-  },
   images: {
     formats: ["image/webp", "image/avif"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 0, // Disable image caching
+    minimumCacheTTL: 31536000, // 1 year
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     unoptimized: false,
