@@ -15,6 +15,7 @@ import { ResourcePreloader } from "@/components/resource-preloader";
 import { WebVitals } from "@/components/web-vitals";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
 import { HardReload } from "@/components/hard-reload";
+import { ProductionHardReload } from "@/components/production-hard-reload";
 import { Suspense } from "react";
 
 const inter = Inter({
@@ -221,6 +222,7 @@ export default function RootLayout({
                 <WebVitals />
                 <ServiceWorkerRegistration />
                 <HardReload />
+                <ProductionHardReload />
                 <ResourcePreloader />
                 <PageTracker />
                 <div className="flex min-h-screen flex-col">

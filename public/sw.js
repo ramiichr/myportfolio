@@ -1,54 +1,37 @@
-const CACHE_NAME = "portfolio-v2";
-const STATIC_ASSETS = [
-  "/",
-  "/about",
-  "/projects",
-  "/contact",
-  "/github",
-  "/globals.css",
-  "/rami.png",
-  "/profile.png",
-  "/portfolio.png",
-  "/chatapp.png",
-  "/exchangeflow.png",
-  "/weather.png",
-];
+// Production Hard Reload Service Worker
+// This service worker aggressively prevents caching
 
-const API_CACHE_NAME = "portfolio-api-v1";
-const API_CACHE_TIME = 5 * 60 * 1000; // 5 minutes
+const CACHE_NAME = "no-cache-sw";
 
-// Install event - cache static assets
+// Install event - immediately activate
 self.addEventListener("install", (event) => {
+  console.log("Hard Reload SW installing");
+  self.skipWaiting();
+});
+
+// Activate event - take control immediately and clear all caches
+self.addEventListener("activate", (event) => {
+  console.log("Hard Reload SW activating");
   event.waitUntil(
     caches
-      .open(CACHE_NAME)
-      .then((cache) => {
-        return cache.addAll(STATIC_ASSETS);
-      })
-      .catch((error) => {
-        console.error("Service Worker install failed:", error);
-      })
-  );
-});
-
-// Activate event - clean up old caches
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME && cacheName !== API_CACHE_NAME) {
+      .keys()
+      .then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            console.log("Deleting cache:", cacheName);
             return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+          })
+        );
+      })
+      .then(() => {
+        return self.clients.claim();
+      })
   );
 });
 
-// Fetch event - serve from cache, fall back to network
+// Fetch event - never cache, always fetch fresh
 self.addEventListener("fetch", (event) => {
-  // Only handle GET requests
+  // Skip non-GET requests
   if (event.request.method !== "GET") {
     return;
   }
@@ -58,76 +41,64 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Handle API requests with shorter cache
-  if (event.request.url.includes("/api/")) {
-    event.respondWith(
-      caches.open(API_CACHE_NAME).then((cache) => {
-        return cache.match(event.request).then((response) => {
-          if (response) {
-            // Check if cached response is still fresh
-            const cachedTime = new Date(
-              response.headers.get("cached-time") || 0
-            );
-            if (Date.now() - cachedTime.getTime() < API_CACHE_TIME) {
-              return response;
-            }
-          }
+  console.log("SW intercepting:", event.request.url);
 
-          // Fetch fresh data
-          return fetch(event.request)
-            .then((fetchResponse) => {
-              if (fetchResponse.status === 200) {
-                const responseClone = fetchResponse.clone();
-                // Add timestamp to response
-                const headers = new Headers(responseClone.headers);
-                headers.set("cached-time", new Date().toISOString());
+  event.respondWith(
+    fetch(event.request.clone(), {
+      cache: "no-store",
+      headers: {
+        ...event.request.headers,
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+      },
+    })
+      .then((response) => {
+        // Clone the response and modify headers to prevent caching
+        const modifiedResponse = new Response(response.body, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: {
+            ...response.headers,
+            "Cache-Control": "no-cache, no-store, must-revalidate, max-age=0",
+            Pragma: "no-cache",
+            Expires: "0",
+            "Last-Modified": new Date().toUTCString(),
+            ETag: Date.now().toString(),
+          },
+        });
 
-                const modifiedResponse = new Response(responseClone.body, {
-                  status: responseClone.status,
-                  statusText: responseClone.statusText,
-                  headers: headers,
-                });
-
-                cache.put(event.request, modifiedResponse.clone());
-                return modifiedResponse;
-              }
-              return fetchResponse;
-            })
-            .catch(() => {
-              // Return stale cache if network fails
-              return response || new Response("Network Error", { status: 500 });
-            });
+        return modifiedResponse;
+      })
+      .catch((error) => {
+        console.error("SW fetch failed:", error);
+        // Return a basic response on network failure
+        return new Response("Network Error", {
+          status: 500,
+          headers: {
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Content-Type": "text/plain",
+          },
         });
       })
-    );
-    return;
-  }
-
-  // Handle static assets
-  event.respondWith(
-    caches
-      .match(event.request)
-      .then((response) => {
-        // Return cached version or fetch from network
-        return (
-          response ||
-          fetch(event.request).then((fetchResponse) => {
-            // Cache successful responses
-            if (fetchResponse.status === 200) {
-              const responseClone = fetchResponse.clone();
-              caches.open(CACHE_NAME).then((cache) => {
-                cache.put(event.request, responseClone);
-              });
-            }
-            return fetchResponse;
-          })
-        );
-      })
-      .catch(() => {
-        // Return a fallback for navigation requests when offline
-        if (event.request.mode === "navigate") {
-          return caches.match("/");
-        }
-      })
   );
+});
+
+// Message event - handle cache clearing requests
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "CLEAR_CACHE") {
+    console.log("SW clearing all caches");
+    event.waitUntil(
+      caches
+        .keys()
+        .then((cacheNames) => {
+          return Promise.all(
+            cacheNames.map((cacheName) => caches.delete(cacheName))
+          );
+        })
+        .then(() => {
+          event.ports[0].postMessage({ success: true });
+        })
+    );
+  }
 });
