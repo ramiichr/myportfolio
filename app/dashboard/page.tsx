@@ -16,6 +16,7 @@ import { AuthForm, LoadingSpinner } from "./components/index";
 import { VisitorListContainer } from "./components/VisitorList";
 import { DashboardActions } from "./components/DashboardActions";
 import { StatsCards } from "./components/StatsCards";
+import { DashboardStats } from "./components/DashboardStats";
 import { ErrorDisplay } from "./components/ErrorDisplay";
 import {
   PageViewsChart,
@@ -23,9 +24,17 @@ import {
   PopularPagesChart,
 } from "./components/charts/index";
 
+// Import portfolio management components
+import { PortfolioManager } from "./components/PortfolioManager";
+import { ProjectManager } from "./components/ProjectManager";
+import { SkillManager } from "./components/SkillManager";
+import { ExperienceEducationManager } from "./components/ExperienceEducationManager";
+import { ProfileManager } from "./components/ProfileManager";
+
 export default function DashboardPage() {
   // State to track the active tab
   const [activeTab, setActiveTab] = useState("pageviews");
+  const [isSeeding, setIsSeeding] = useState(false);
 
   // Authentication state and methods
   const {
@@ -153,6 +162,32 @@ export default function DashboardPage() {
     }
   };
 
+  // Portfolio management functions
+  const seedDatabase = async () => {
+    setIsSeeding(true);
+    try {
+      const response = await fetch("/api/seed", {
+        method: "POST",
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        // Could add a toast notification here
+        console.log("Database seeded successfully!");
+      } else {
+        console.error("Failed to seed database:", data.message);
+      }
+    } catch (error) {
+      console.error("Error seeding database:", error);
+    } finally {
+      setIsSeeding(false);
+    }
+  };
+
+  const handleNavigateToSection = (section: string) => {
+    setActiveTab(`portfolio-${section}`);
+  };
+
   // If not authenticated, show login form
   if (!isAuthenticated) {
     return (
@@ -166,7 +201,7 @@ export default function DashboardPage() {
 
   return (
     <div className="container mx-auto py-10">
-      <h1 className="text-4xl font-bold mb-6">Portfolio Analytics</h1>
+      <h1 className="text-4xl font-bold mb-6">Portfolio Dashboard</h1>
 
       {loading ? (
         <LoadingSpinner message="Loading dashboard data..." />
@@ -187,31 +222,36 @@ export default function DashboardPage() {
         />
       ) : (
         <>
-          {/* Stats summary cards */}
-          {stats && <StatsCards stats={stats} />}
+          {/* Dashboard overview stats */}
+          <DashboardStats stats={stats} />
 
-          {/* Tabs for different chart views */}
+          {/* Tabs for different dashboard sections */}
           <Tabs
             value={activeTab}
             onValueChange={setActiveTab}
             className="space-y-4"
           >
-            <TabsList>
-              <TabsTrigger value="pageviews">Page Views</TabsTrigger>
-              <TabsTrigger value="visitors">Unique Visitors</TabsTrigger>
-              <TabsTrigger value="pages">Popular Pages</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
+              {/* Analytics Tabs */}
+              <TabsTrigger value="pageviews">Analytics</TabsTrigger>
+              <TabsTrigger value="visitors">Visitors</TabsTrigger>
               <TabsTrigger value="visitor-list">Visitor List</TabsTrigger>
+
+              {/* Portfolio Management Tabs */}
+              <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
+              <TabsTrigger value="portfolio-projects">Projects</TabsTrigger>
+              <TabsTrigger value="portfolio-skills">Skills</TabsTrigger>
+              <TabsTrigger value="portfolio-experience">Experience</TabsTrigger>
+              <TabsTrigger value="portfolio-profile">Profile</TabsTrigger>
             </TabsList>
 
+            {/* Analytics Tabs Content */}
             <TabsContent value="pageviews" className="space-y-4">
               <PageViewsChart data={dailyViewsData} />
             </TabsContent>
 
             <TabsContent value="visitors" className="space-y-4">
               <VisitorsChart data={uniqueVisitorsData} />
-            </TabsContent>
-
-            <TabsContent value="pages" className="space-y-4">
               <PopularPagesChart data={pageViewsData} colors={chartColors} />
             </TabsContent>
 
@@ -221,9 +261,8 @@ export default function DashboardPage() {
                 pagination={stats?.pagination}
                 selectedDate={selectedDate}
                 onDateChange={(date) => {
-                  // Prevent default behavior, set the date, and ensure we stay on the visitor-list tab
                   setSelectedDate(date);
-                  setActiveTab("visitor-list"); // Ensure we stay on the visitor list tab
+                  setActiveTab("visitor-list");
                 }}
                 onLoadClick={handleLoadVisitors}
                 currentPage={currentPage}
@@ -231,6 +270,31 @@ export default function DashboardPage() {
                 loading={loadingVisitors}
                 onDeleteVisitors={handleDeleteVisitors}
               />
+            </TabsContent>
+
+            {/* Portfolio Management Tabs Content */}
+            <TabsContent value="portfolio" className="space-y-4">
+              <PortfolioManager
+                onSeedDatabase={seedDatabase}
+                onNavigateToSection={handleNavigateToSection}
+                isSeeding={isSeeding}
+              />
+            </TabsContent>
+
+            <TabsContent value="portfolio-projects" className="space-y-4">
+              <ProjectManager />
+            </TabsContent>
+
+            <TabsContent value="portfolio-skills" className="space-y-4">
+              <SkillManager />
+            </TabsContent>
+
+            <TabsContent value="portfolio-experience" className="space-y-4">
+              <ExperienceEducationManager />
+            </TabsContent>
+
+            <TabsContent value="portfolio-profile" className="space-y-4">
+              <ProfileManager />
             </TabsContent>
           </Tabs>
 
@@ -242,15 +306,12 @@ export default function DashboardPage() {
               handleDeleteAllData(
                 apiToken,
                 (emptyStats) => {
-                  // Use the empty stats provided by the hook
                   if (stats) {
-                    // Create a new stats object with the empty data but preserving visitors array and pagination
                     const updatedStats = {
                       ...emptyStats,
                       visitors: [],
                       pagination: { ...stats.pagination, total: 0 },
                     };
-                    // Refetch to update the UI
                     fetchStats(apiToken);
                   }
                 },

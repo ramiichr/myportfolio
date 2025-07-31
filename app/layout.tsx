@@ -5,6 +5,8 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/components/language-provider";
+import { GraphQLProvider } from "@/components/providers/graphql-provider";
+import { PortfolioDataProvider } from "@/components/portfolio-data-provider";
 import { ErrorBoundary } from "@/components/common";
 import Header from "@/components/layout/header/Header";
 import Footer from "@/components/footer";
@@ -206,25 +208,29 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <LanguageProvider>
-            <div data-language>
-              <ErrorBoundary>
-                <PerformanceMonitor />
-                <WebVitals />
-                <ServiceWorkerRegistration />
-                <ResourcePreloader />
-                <PageTracker />
-                <div className="flex min-h-screen flex-col">
-                  <Suspense fallback={null}>
-                    <CursorLight />
-                  </Suspense>
-                  <Header />
-                  <main className="flex-1">{children}</main>
-                  <Suspense fallback={null}>
-                    <Footer />
-                  </Suspense>
+            <GraphQLProvider>
+              <PortfolioDataProvider>
+                <div data-language>
+                  <ErrorBoundary>
+                    <PerformanceMonitor />
+                    <WebVitals />
+                    <ServiceWorkerRegistration />
+                    <ResourcePreloader />
+                    <PageTracker />
+                    <div className="flex min-h-screen flex-col">
+                      <Suspense fallback={null}>
+                        <CursorLight />
+                      </Suspense>
+                      <Header />
+                      <main className="flex-1">{children}</main>
+                      <Suspense fallback={null}>
+                        <Footer />
+                      </Suspense>
+                    </div>
+                  </ErrorBoundary>
                 </div>
-              </ErrorBoundary>
-            </div>
+              </PortfolioDataProvider>
+            </GraphQLProvider>
           </LanguageProvider>
         </ThemeProvider>
         <Suspense fallback={null}>

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { portfolioData } from "@/data/portfolio-data";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(request: Request) {
   try {
@@ -20,20 +20,38 @@ export async function GET(request: Request) {
       );
     }
 
-    // Get projects for the requested language
-    let projects = portfolioData.projects[lang as "en" | "de" | "fr"];
+    // Build where clause for filtering
+    const where: any = { language: lang };
 
-    // Filter by category if provided
     if (category && category !== "all") {
-      projects = projects.filter((project) => project.category === category);
+      where.category = category;
     }
 
-    // Filter by featured if provided
     if (featured === "true") {
-      projects = projects.filter((project) => project.featured);
+      where.featured = true;
     }
 
-    return NextResponse.json(projects);
+    // Fetch projects from database
+    const projects = await prisma.project.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+    });
+
+    // Transform database projects to API format
+    const projectsData = projects.map((project) => ({
+      id: project.projectId,
+      title: project.title,
+      description: project.description,
+      tags: JSON.parse(project.tags || "[]"), // ProjectCard expects 'tags'
+      category: project.category,
+      featured: project.featured,
+      image: project.image,
+      link: project.link, // ProjectCard expects 'link'
+      github: project.github, // ProjectCard expects 'github'
+      status: "completed", // Default status as it's not in schema
+    }));
+
+    return NextResponse.json(projectsData);
   } catch (error) {
     console.error("Error fetching projects data:", error);
     return NextResponse.json(
