@@ -27,4 +27,10 @@ yarn-error.log*
 next-env.d.ts
 .vscode/settings.json
 
+# database
+*.db
+*.sqlite
+*.sqlite3
+prisma/dev.db
+
 /lib/generated/prisma
