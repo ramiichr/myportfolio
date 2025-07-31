@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
+    "build:vercel": "prisma db push && prisma generate && next build",
     "postbuild": "prisma migrate deploy",
     "start": "next start",
     "lint": "next lint",
@@ -14,6 +15,7 @@
     "lighthouse": "lhci autorun",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
     "db:reset": "prisma migrate reset",
     "db:studio": "prisma studio",
     "db:seed": "curl -X POST http://localhost:3000/api/seed"
