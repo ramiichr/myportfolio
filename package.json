@@ -14,9 +14,11 @@
     "lighthouse": "lhci autorun",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
     "db:reset": "prisma migrate reset",
     "db:studio": "prisma studio",
-    "db:seed": "curl -X POST http://localhost:3000/api/seed"
+    "db:seed": "curl -X POST http://localhost:3000/api/seed",
+    "vercel:deploy": "vercel --prod"
   },
   "dependencies": {
     "@apollo/client": "^3.13.9",
