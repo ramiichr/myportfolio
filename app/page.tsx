@@ -1,6 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/components/language-provider";
+import { usePortfolioData } from "@/components/portfolio-data-provider";
 import { useMousePosition } from "@/hooks/use-mouse-position";
 import { useDataFetch } from "@/hooks/use-data-fetch";
 import { getProfile, getProjects, getSkills } from "@/lib/api";
@@ -17,13 +18,17 @@ import {
 
 export default function Home() {
   const { translations, language } = useLanguage();
+  const { refreshTrigger } = usePortfolioData();
   const { calculateMovement } = useMousePosition();
 
   const {
     data: profile,
     loading: profileLoading,
     error: profileError,
-  } = useDataFetch<Profile>(() => getProfile(language), [language]);
+  } = useDataFetch<Profile>(
+    () => getProfile(language),
+    [language, refreshTrigger]
+  );
 
   const {
     data: projects,
@@ -31,14 +36,14 @@ export default function Home() {
     error: projectsError,
   } = useDataFetch<Project[]>(
     () => getProjects(language, undefined, true),
-    [language]
+    [language, refreshTrigger]
   );
 
   const {
     data: skills,
     loading: skillsLoading,
     error: skillsError,
-  } = useDataFetch<Skill[]>(() => getSkills(), []);
+  } = useDataFetch<Skill[]>(() => getSkills(), [refreshTrigger]);
 
   const isLoading = profileLoading || projectsLoading || skillsLoading;
   const hasError = profileError || projectsError || skillsError;

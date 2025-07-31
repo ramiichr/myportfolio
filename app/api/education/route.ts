@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { portfolioData } from "@/data/portfolio-data";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(request: Request) {
   try {
@@ -18,10 +18,23 @@ export async function GET(request: Request) {
       );
     }
 
-    // Return the education data for the requested language
-    return NextResponse.json(
-      portfolioData.education[lang as "en" | "de" | "fr"]
-    );
+    // Fetch education from database
+    const education = await prisma.education.findMany({
+      where: { language: lang },
+      orderBy: { order: "asc" },
+    });
+
+    // Transform database education to API format
+    const educationData = education.map((edu) => ({
+      id: edu.educationId,
+      degree: edu.degree,
+      institution: edu.institution,
+      period: edu.period,
+      location: edu.location,
+      description: JSON.parse(edu.description || "[]"),
+    }));
+
+    return NextResponse.json(educationData);
   } catch (error) {
     console.error("Error fetching education data:", error);
     return NextResponse.json(

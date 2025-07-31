@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { portfolioData } from "@/data/portfolio-data";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(request: Request) {
   try {
@@ -7,15 +7,28 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");
 
-    // Get all skills
-    let skills = portfolioData.skills;
+    // Build where clause for filtering
+    const where: any = {};
 
-    // Filter by category if provided
     if (category) {
-      skills = skills.filter((skill) => skill.category === category);
+      where.category = category;
     }
 
-    return NextResponse.json(skills);
+    // Fetch skills from database
+    const skills = await prisma.skill.findMany({
+      where,
+      orderBy: { order: "asc" },
+    });
+
+    // Transform database skills to API format
+    const skillsData = skills.map((skill) => ({
+      id: skill.id,
+      name: skill.name,
+      icon: skill.icon,
+      category: skill.category,
+    }));
+
+    return NextResponse.json(skillsData);
   } catch (error) {
     console.error("Error fetching skills data:", error);
     return NextResponse.json(
