@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
+    "postbuild": "prisma migrate deploy",
     "start": "next start",
     "lint": "next lint",
     "analyze": "ANALYZE=true next build",
@@ -15,8 +16,7 @@
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",
     "db:studio": "prisma studio",
-    "db:seed": "curl -X POST http://localhost:3000/api/seed",
-    "postinstall": "prisma generate"
+    "db:seed": "curl -X POST http://localhost:3000/api/seed"
   },
   "dependencies": {
     "@apollo/client": "^3.13.9",
