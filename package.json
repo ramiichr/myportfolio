@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
-    "postbuild": "prisma migrate deploy || echo 'Migration failed - continuing with build'",
+    "postbuild": "prisma migrate deploy",
     "start": "next start",
     "lint": "next lint",
     "analyze": "ANALYZE=true next build",
@@ -14,11 +14,9 @@
     "lighthouse": "lhci autorun",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:migrate:deploy": "prisma migrate deploy",
     "db:reset": "prisma migrate reset",
     "db:studio": "prisma studio",
-    "db:seed": "curl -X POST http://localhost:3000/api/seed",
-    "vercel:deploy": "vercel --prod"
+    "db:seed": "curl -X POST http://localhost:3000/api/seed"
   },
   "dependencies": {
     "@apollo/client": "^3.13.9",
