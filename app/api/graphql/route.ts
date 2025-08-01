@@ -9,6 +9,12 @@ const server = new ApolloServer({
   resolvers,
 });
 
-const handler = startServerAndCreateNextHandler(server);
+export async function GET(request: NextRequest) {
+  const handler = startServerAndCreateNextHandler(server);
+  return handler(request);
+}
 
-export { handler as GET, handler as POST };
+export async function POST(request: NextRequest) {
+  const handler = startServerAndCreateNextHandler(server);
+  return handler(request);
+}
