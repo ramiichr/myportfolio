@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { portfolioData } from "@/data/portfolio-data";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(request: Request) {
   try {
@@ -18,10 +18,23 @@ export async function GET(request: Request) {
       );
     }
 
-    // Return the experiences data for the requested language
-    return NextResponse.json(
-      portfolioData.experiences[lang as "en" | "de" | "fr"]
-    );
+    // Fetch experiences from database
+    const experiences = await prisma.experience.findMany({
+      where: { language: lang },
+      orderBy: { order: "asc" },
+    });
+
+    // Transform database experiences to API format
+    const experiencesData = experiences.map((exp) => ({
+      id: exp.experienceId,
+      position: exp.position,
+      company: exp.company,
+      period: exp.period,
+      location: exp.location,
+      description: JSON.parse(exp.description || "[]"),
+    }));
+
+    return NextResponse.json(experiencesData);
   } catch (error) {
     console.error("Error fetching experiences data:", error);
     return NextResponse.json(

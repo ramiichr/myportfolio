@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { portfolioData } from "@/data/portfolio-data";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(request: Request) {
   try {
@@ -18,8 +18,36 @@ export async function GET(request: Request) {
       );
     }
 
-    // Return the profile data for the requested language
-    return NextResponse.json(portfolioData.profile[lang as "en" | "de" | "fr"]);
+    // Fetch profile from database
+    const profile = await prisma.profile.findFirst({
+      where: { language: lang },
+    });
+
+    if (!profile) {
+      return NextResponse.json(
+        { error: `Profile not found for language: ${lang}` },
+        { status: 404 }
+      );
+    }
+
+    // Transform database profile to API format
+    const profileData = {
+      name: profile.name,
+      title: profile.title,
+      email: profile.email,
+      phone: profile.phone,
+      location: profile.location,
+      description: profile.description, // Use description instead of summary
+      avatar: "/rami.png", // Default avatar as not in schema
+      social: {
+        github: profile.github,
+        linkedin: profile.linkedin,
+        twitter: profile.twitter,
+        website: "", // Not in current schema
+      },
+    };
+
+    return NextResponse.json(profileData);
   } catch (error) {
     console.error("Error fetching profile data:", error);
     return NextResponse.json(

@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_DATABASE_URL")
+  directUrl = env("POSTGRES_POSTGRES_URL")
+}
+
+model Profile {
+  id          String  @id @default(cuid())
+  language    String  // 'en', 'de', 'fr'
+  name        String
+  title       String
+  description String
+  email       String
+  phone       String
+  location    String
+  github      String
+  linkedin    String
+  twitter     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([language])
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  language    String   // 'en', 'de', 'fr'
+  projectId   String   // shared ID across languages
+  title       String
+  description String
+  image       String
+  tags        String   // JSON string array
+  link        String
+  github      String
+  category    String   // 'web' | 'mobile'
+  featured    Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([language, projectId])
+}
+
+model Skill {
+  id        String   @id @default(cuid())
+  name      String
+  icon      String
+  category  String   // 'frontend' | 'backend' | 'tools'
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name])
+}
+
+model Experience {
+  id           String   @id @default(cuid())
+  language     String   // 'en', 'de', 'fr'
+  experienceId String   // shared ID across languages
+  position     String
+  company      String
+  period       String
+  location     String
+  description  String   // JSON string array
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([language, experienceId])
+}
+
+model Education {
+  id          String   @id @default(cuid())
+  language    String   // 'en', 'de', 'fr'
+  educationId String   // shared ID across languages
+  degree      String
+  institution String
+  period      String
+  location    String
+  description String   // JSON string array
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([language, educationId])
+}
