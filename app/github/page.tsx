@@ -24,6 +24,9 @@ const GitHubContributions = lazy(
   () => import("@/components/github-contributions")
 );
 
+// Lazy load the latest commits component
+const LatestCommits = lazy(() => import("@/components/latest-commits"));
+
 // GitHub Stats interface
 interface GitHubStats {
   user: {
@@ -294,6 +297,52 @@ export default function GitHubPage() {
           </Suspense>
         </motion.div>
 
+        {/* Latest Commits */}
+        <motion.div
+          className="mb-8 sm:mb-12"
+          variants={fadeIn}
+          initial="hidden"
+          animate="visible"
+          transition={{ duration: 0.6, delay: 0.5 }}
+        >
+          <Suspense
+            fallback={
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Code2 className="h-5 w-5" />
+                    Latest Commits
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <div key={i} className="flex items-start gap-3 p-3">
+                        <div className="h-8 w-8 bg-muted animate-pulse rounded-full" />
+                        <div className="flex-1 space-y-2">
+                          <div className="h-4 w-3/4 bg-muted animate-pulse rounded" />
+                          <div className="flex items-center gap-2">
+                            <div className="h-5 w-16 bg-muted animate-pulse rounded" />
+                            <div className="h-3 w-20 bg-muted animate-pulse rounded" />
+                            <div className="h-3 w-16 bg-muted animate-pulse rounded" />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            }
+          >
+            <LatestCommits
+              username={githubUsername}
+              title={translations?.github?.commitsTitle || "Latest Commits"}
+              className="w-full"
+              maxCommits={10}
+            />
+          </Suspense>
+        </motion.div>
+
         {/* Languages and Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
           {/* Most Used Languages */}
@@ -347,7 +396,7 @@ export default function GitHubPage() {
             variants={fadeIn}
             initial="hidden"
             animate="visible"
-            transition={{ duration: 0.6, delay: 0.8 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
           >
             <Card>
               <CardHeader>

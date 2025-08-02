@@ -48,6 +48,7 @@ export const en = {
     description:
       "A visual representation of my coding activity and contributions over the past year.",
     contributionsTitle: "Contributions",
+    commitsTitle: "Latest Commits",
     stats: {
       repositories: "Total Repositories",
       stars: "Total Stars",
@@ -57,6 +58,24 @@ export const en = {
     sections: {
       languages: "Most Used Languages",
       activity: "Recent Activity",
+      commits: "Latest Commits",
+    },
+    commits: {
+      viewCommit: "View Commit",
+      viewProfile: "View Profile",
+      viewAllRepos: "View All Repositories",
+      noCommits: "No recent commits found",
+      timeAgo: {
+        justNow: "just now",
+        minutesAgo: "{{count}}m ago",
+        hoursAgo: "{{count}}h ago",
+        daysAgo: "{{count}}d ago",
+        weeksAgo: "{{count}}w ago",
+        monthsAgo: "{{count}}mo ago",
+        yearsAgo: "{{count}}y ago",
+      },
+      repository: "in",
+      author: "by",
     },
   },
   contact: {

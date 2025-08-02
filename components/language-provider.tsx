@@ -59,6 +59,7 @@ interface Translations {
     title: string;
     description: string;
     contributionsTitle: string;
+    commitsTitle: string;
     stats: {
       repositories: string;
       stars: string;
@@ -68,6 +69,24 @@ interface Translations {
     sections: {
       languages: string;
       activity: string;
+      commits: string;
+    };
+    commits: {
+      viewCommit: string;
+      viewProfile: string;
+      viewAllRepos: string;
+      noCommits: string;
+      timeAgo: {
+        justNow: string;
+        minutesAgo: string;
+        hoursAgo: string;
+        daysAgo: string;
+        weeksAgo: string;
+        monthsAgo: string;
+        yearsAgo: string;
+      };
+      repository: string;
+      author: string;
     };
   };
   contact: {

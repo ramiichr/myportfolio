@@ -48,6 +48,7 @@ export const de = {
     description:
       "Eine visuelle Darstellung meiner Programmieraktivität und Beiträge im letzten Jahr.",
     contributionsTitle: "Beiträge",
+    commitsTitle: "Neueste Commits",
     stats: {
       repositories: "Gesamte Repositories",
       stars: "Gesamte Sterne",
@@ -57,6 +58,24 @@ export const de = {
     sections: {
       languages: "Meist verwendete Sprachen",
       activity: "Letzte Aktivität",
+      commits: "Neueste Commits",
+    },
+    commits: {
+      viewCommit: "Commit ansehen",
+      viewProfile: "Profil ansehen",
+      viewAllRepos: "Alle Repositories ansehen",
+      noCommits: "Keine aktuellen Commits gefunden",
+      timeAgo: {
+        justNow: "gerade eben",
+        minutesAgo: "vor {{count}}m",
+        hoursAgo: "vor {{count}}h",
+        daysAgo: "vor {{count}}T",
+        weeksAgo: "vor {{count}}W",
+        monthsAgo: "vor {{count}}M",
+        yearsAgo: "vor {{count}}J",
+      },
+      repository: "in",
+      author: "von",
     },
   },
   contact: {
