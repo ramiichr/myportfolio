@@ -287,23 +287,30 @@ export const VisitorListContainer: React.FC<VisitorListProps> = (props) => {
 
   return (
     <Card className="overflow-visible">
-      <CardHeader className="overflow-visible">
-        <CardTitle className="flex justify-between items-center">
-          <span>Visitor Information</span>
+      <CardHeader className="overflow-visible pb-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+          <div className="flex-1">
+            <CardTitle className="text-lg sm:text-xl">
+              Visitor Information
+            </CardTitle>
+            <CardDescription className="text-sm mt-1">
+              Detailed visitor information for selected date
+            </CardDescription>
+          </div>
           {selectedVisitors.size > 0 && (
             <button
               onClick={handleDelete}
               disabled={isDeleting}
-              className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 disabled:bg-red-300"
+              className="bg-red-600 text-white px-3 py-2 rounded text-sm hover:bg-red-700 disabled:bg-red-300 whitespace-nowrap"
             >
               {isDeleting
                 ? "Deleting..."
                 : `Delete Selected (${selectedVisitors.size})`}
             </button>
           )}
-        </CardTitle>
-        <CardDescription className="flex flex-col sm:flex-row sm:items-center gap-2 overflow-visible">
-          <span>Detailed visitor information for selected date:</span>
+        </div>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 mt-4 overflow-visible">
+          <span className="text-sm text-muted-foreground">Select date:</span>
           <div className="flex items-center gap-2 relative overflow-visible">
             <DatePicker
               selectedDate={props.selectedDate}
@@ -314,12 +321,12 @@ export const VisitorListContainer: React.FC<VisitorListProps> = (props) => {
             <button
               type="button"
               onClick={handleLoadClick}
-              className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+              className="bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 whitespace-nowrap"
             >
               Load
             </button>
           </div>
-        </CardDescription>
+        </div>
       </CardHeader>
       <CardContent>
         {props.loading ? (
@@ -337,7 +344,8 @@ export const VisitorListContainer: React.FC<VisitorListProps> = (props) => {
           </div>
         ) : (
           <div>
-            <div className="overflow-x-auto">
+            {/* Desktop table view */}
+            <div className="hidden lg:block overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-gray-100 dark:bg-gray-800">
@@ -355,9 +363,7 @@ export const VisitorListContainer: React.FC<VisitorListProps> = (props) => {
                     <th className="px-4 py-2 text-left">Page</th>
                     <th className="px-4 py-2 text-left">Location</th>
                     <th className="px-4 py-2 text-left">IP Address</th>
-                    <th className="px-4 py-2 text-left hidden md:table-cell">
-                      Referrer
-                    </th>
+                    <th className="px-4 py-2 text-left">Referrer</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -417,7 +423,7 @@ export const VisitorListContainer: React.FC<VisitorListProps> = (props) => {
                             ? visitor.ip
                             : "127.0.0.1"}
                         </td>
-                        <td className="px-4 py-2 whitespace-nowrap hidden md:table-cell">
+                        <td className="px-4 py-2 whitespace-nowrap">
                           <span
                             className="inline-block max-w-[200px] truncate"
                             title={visitor.referrer}
@@ -487,9 +493,198 @@ export const VisitorListContainer: React.FC<VisitorListProps> = (props) => {
               </table>
             </div>
 
+            {/* Tablet view - simplified table */}
+            <div className="hidden sm:block lg:hidden overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-gray-100 dark:bg-gray-800">
+                    <th className="px-3 py-2 text-left text-sm">
+                      <input
+                        type="checkbox"
+                        checked={
+                          selectedVisitors.size === props.visitors.length
+                        }
+                        onChange={(e) => handleSelectAll(e.target.checked)}
+                        className="rounded border-gray-300"
+                      />
+                    </th>
+                    <th className="px-3 py-2 text-left text-sm">Time</th>
+                    <th className="px-3 py-2 text-left text-sm">Page</th>
+                    <th className="px-3 py-2 text-left text-sm">Location</th>
+                    <th className="px-3 py-2 text-left text-sm">IP</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {props.visitors.map((visitor, index) => (
+                    <tr
+                      key={index}
+                      className="border-t border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900 cursor-pointer"
+                      onClick={(e) => handleRowClick(e, visitor, index)}
+                      style={{
+                        backgroundColor: selectedVisitors.has(
+                          visitor.timestamp.toString()
+                        )
+                          ? "rgba(59, 130, 246, 0.1)"
+                          : undefined,
+                      }}
+                    >
+                      <td className="px-3 py-2">
+                        <input
+                          type="checkbox"
+                          checked={selectedVisitors.has(
+                            visitor.timestamp.toString()
+                          )}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            handleSelect(
+                              visitor.timestamp.toString(),
+                              e.target.checked
+                            );
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="rounded border-gray-300"
+                        />
+                      </td>
+                      <td className="px-3 py-2 whitespace-nowrap text-sm">
+                        {new Date(visitor.timestamp).toLocaleTimeString(
+                          undefined,
+                          {
+                            hour12: false,
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }
+                        )}
+                      </td>
+                      <td className="px-3 py-2 text-sm">
+                        <span
+                          className="inline-block max-w-[100px] truncate"
+                          title={visitor.page}
+                        >
+                          {visitor.page === "/" ? "Home" : visitor.page}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 whitespace-nowrap text-sm">
+                        {formatVisitorLocation(visitor)}
+                      </td>
+                      <td className="px-3 py-2 whitespace-nowrap text-sm">
+                        {visitor.ip && visitor.ip !== "Unknown"
+                          ? visitor.ip
+                          : "127.0.0.1"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile card view */}
+            <div className="block sm:hidden space-y-3">
+              {props.visitors.map((visitor, index) => (
+                <div
+                  key={index}
+                  className={`border rounded-lg p-3 ${
+                    selectedVisitors.has(visitor.timestamp.toString())
+                      ? "bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800"
+                      : "bg-card border-border"
+                  }`}
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={selectedVisitors.has(
+                          visitor.timestamp.toString()
+                        )}
+                        onChange={(e) => {
+                          handleSelect(
+                            visitor.timestamp.toString(),
+                            e.target.checked
+                          );
+                        }}
+                        className="rounded border-gray-300"
+                      />
+                      <span className="text-sm font-medium">
+                        {new Date(visitor.timestamp).toLocaleTimeString(
+                          undefined,
+                          {
+                            hour12: false,
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }
+                        )}
+                      </span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      #{index + 1}
+                    </span>
+                  </div>
+
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Page:</span>
+                      <span
+                        className="font-medium truncate ml-2 max-w-[150px]"
+                        title={visitor.page}
+                      >
+                        {visitor.page === "/" ? "Home" : visitor.page}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Location:</span>
+                      <span className="truncate ml-2 max-w-[150px]">
+                        {formatVisitorLocation(visitor)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">IP:</span>
+                      <span className="font-mono text-xs">
+                        {visitor.ip && visitor.ip !== "Unknown"
+                          ? visitor.ip
+                          : "127.0.0.1"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <details className="mt-3">
+                    <summary className="text-xs text-primary cursor-pointer hover:underline">
+                      View Details
+                    </summary>
+                    <div className="mt-2 pt-2 border-t border-border space-y-1 text-xs">
+                      <div>
+                        <span className="font-medium">Referrer:</span>{" "}
+                        <span className="break-all">
+                          {visitor.referrer || "Direct visit"}
+                        </span>
+                      </div>
+                      {visitor.userAgent && (
+                        <>
+                          <div>
+                            <span className="font-medium">Browser:</span>{" "}
+                            {getBrowserInfo(visitor.userAgent)}
+                          </div>
+                          <div>
+                            <span className="font-medium">OS:</span>{" "}
+                            {getOSInfo(visitor.userAgent)}
+                          </div>
+                          <div>
+                            <span className="font-medium">Device:</span>{" "}
+                            {getDeviceInfo(visitor.userAgent)}
+                          </div>
+                        </>
+                      )}
+                      <div>
+                        <span className="font-medium">Full Time:</span>{" "}
+                        {new Date(visitor.timestamp).toLocaleString()}
+                      </div>
+                    </div>
+                  </details>
+                </div>
+              ))}
+            </div>
+
             {props.pagination && (
-              <div className="flex justify-between items-center mt-4 mb-2">
-                <div className="text-sm text-gray-600">
+              <div className="flex flex-col sm:flex-row justify-between items-center mt-4 mb-2 gap-4">
+                <div className="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
                   Showing {props.pagination?.currentPage * 10 - 9 || 1} to{" "}
                   {Math.min(
                     props.pagination?.currentPage * 10 || 10,
@@ -497,7 +692,9 @@ export const VisitorListContainer: React.FC<VisitorListProps> = (props) => {
                   )}{" "}
                   of {props.pagination?.totalVisitors || 0} visitors
                 </div>
-                <div className="flex space-x-2">
+
+                {/* Desktop pagination */}
+                <div className="hidden sm:flex space-x-2">
                   <button
                     onClick={() => props.onPageChange(props.currentPage - 1)}
                     disabled={props.currentPage <= 1}
@@ -557,114 +754,40 @@ export const VisitorListContainer: React.FC<VisitorListProps> = (props) => {
                     Next
                   </button>
                 </div>
+
+                {/* Mobile pagination */}
+                <div className="flex sm:hidden items-center justify-center space-x-2">
+                  <button
+                    onClick={() => props.onPageChange(props.currentPage - 1)}
+                    disabled={props.currentPage <= 1}
+                    className={`px-2 py-1 rounded text-xs ${
+                      props.currentPage <= 1
+                        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700"
+                    }`}
+                  >
+                    Prev
+                  </button>
+
+                  <span className="text-xs text-gray-600 px-2">
+                    {props.pagination?.currentPage || 1} /{" "}
+                    {props.pagination?.totalPages || 1}
+                  </span>
+
+                  <button
+                    onClick={() => props.onPageChange(props.currentPage + 1)}
+                    disabled={!props.pagination?.hasMore}
+                    className={`px-2 py-1 rounded text-xs ${
+                      !props.pagination?.hasMore
+                        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700"
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
             )}
-
-            <div className="md:hidden mt-4">
-              <h3 className="font-medium text-sm mb-2">
-                Tap a visitor to see more details:
-              </h3>
-              {props.visitors.map((visitor, index) => {
-                return (
-                  <details key={index} className="mb-2 border rounded-md">
-                    <summary className="p-3 cursor-pointer font-medium">
-                      {new Date(visitor.timestamp).toLocaleTimeString(
-                        undefined,
-                        { hour12: false, hour: "2-digit", minute: "2-digit" }
-                      )}{" "}
-                      - {visitor.page === "/" ? "Home" : visitor.page}
-                    </summary>
-                    <div className="p-3 pt-0 text-sm space-y-2 border-t">
-                      <p>
-                        <span className="font-medium">Location:</span>{" "}
-                        {formatVisitorLocation(visitor)}
-                      </p>
-                      <p>
-                        <span className="font-medium">IP Address:</span>{" "}
-                        {visitor.ip && visitor.ip !== "Unknown"
-                          ? visitor.ip
-                          : "127.0.0.1"}
-                      </p>
-                      <p>
-                        <span className="font-medium">Referrer:</span>{" "}
-                        {visitor.referrer}
-                      </p>
-                      <p>
-                        <span className="font-medium">User Agent:</span>{" "}
-                        {visitor.userAgent}
-                      </p>
-                    </div>
-                  </details>
-                );
-              })}
-
-              {props.pagination && (
-                <div className="flex justify-between items-center mt-4">
-                  <div className="text-xs text-gray-600">
-                    Page {props.pagination?.currentPage || 1} of{" "}
-                    {props.pagination?.totalPages || 1}
-                  </div>
-                  <div className="flex space-x-1">
-                    <button
-                      onClick={() => props.onPageChange(props.currentPage - 1)}
-                      disabled={props.currentPage <= 1}
-                      className={`px-2 py-1 rounded text-xs ${
-                        props.currentPage <= 1
-                          ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700"
-                      }`}
-                    >
-                      Prev
-                    </button>
-
-                    {Array.from(
-                      {
-                        length: Math.min(3, props.pagination?.totalPages || 1),
-                      },
-                      (_, i) => {
-                        let pageNum;
-                        const totalPages = props.pagination?.totalPages || 1;
-                        if (totalPages <= 3) {
-                          pageNum = i + 1;
-                        } else if (props.currentPage <= 2) {
-                          pageNum = i + 1;
-                        } else if (props.currentPage >= totalPages - 1) {
-                          pageNum = totalPages - 2 + i;
-                        } else {
-                          pageNum = props.currentPage - 1 + i;
-                        }
-
-                        return (
-                          <button
-                            key={pageNum}
-                            onClick={() => props.onPageChange(pageNum)}
-                            className={`w-6 h-6 flex items-center justify-center rounded text-xs ${
-                              props.currentPage === pageNum
-                                ? "bg-blue-700 text-white font-bold"
-                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                            }`}
-                          >
-                            {pageNum}
-                          </button>
-                        );
-                      }
-                    )}
-
-                    <button
-                      onClick={() => props.onPageChange(props.currentPage + 1)}
-                      disabled={!props.pagination?.hasMore}
-                      className={`px-2 py-1 rounded text-xs ${
-                        !props.pagination?.hasMore
-                          ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700"
-                      }`}
-                    >
-                      Next
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
         )}
       </CardContent>

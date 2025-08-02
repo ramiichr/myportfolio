@@ -25,7 +25,10 @@
 }
 
 html {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
   line-height: 1.5;
   scroll-behavior: smooth;
   transition: var(--transition-theme);
@@ -35,7 +38,9 @@ body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
   transition: var(--transition-theme);
-  font-feature-settings: "rlig" 1, "calt" 1;
+  font-feature-settings:
+    "rlig" 1,
+    "calt" 1;
 }
 
 /* Critical header styles */
@@ -92,6 +97,58 @@ main {
 @media (max-width: 768px) {
   nav {
     padding: 0.5rem;
+  }
+
+  /* Dashboard specific mobile styles */
+  .dashboard-container {
+    padding: 0.5rem;
+  }
+
+  /* Mobile table improvements */
+  .mobile-table-card {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Mobile chart improvements */
+  .mobile-chart {
+    height: 250px !important;
+  }
+
+  /* Mobile form improvements */
+  .mobile-form input,
+  .mobile-form select,
+  .mobile-form textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Dashboard tab improvements */
+  .dashboard-tabs select {
+    font-size: 16px;
+    padding: 12px;
+  }
+}
+
+/* Tablet responsive design */
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Dashboard tablet styles */
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  /* Tablet chart improvements */
+  .tablet-chart {
+    height: 300px !important;
+  }
+
+  /* Tablet table improvements */
+  .tablet-table {
+    font-size: 14px;
+  }
+
+  .tablet-table th,
+  .tablet-table td {
+    padding: 8px 12px;
   }
 } /* Hide non-critical content initially */
 .non-critical {
@@ -429,11 +486,14 @@ button,
 
 /* Enhanced skill card effects */
 .skill-card-glow {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .skill-card-glow:hover {
-  box-shadow: 0 10px 25px -5px rgba(var(--primary), 0.1),
+  box-shadow:
+    0 10px 25px -5px rgba(var(--primary), 0.1),
     0 8px 10px -6px rgba(var(--primary), 0.1);
 }
 

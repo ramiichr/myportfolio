@@ -200,8 +200,12 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-4xl font-bold mb-6">Portfolio Dashboard</h1>
+    <div className="container mx-auto py-4 px-4 sm:py-6 lg:py-10">
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
+          Portfolio Dashboard
+        </h1>
+      </div>
 
       {loading ? (
         <LoadingSpinner message="Loading dashboard data..." />
@@ -231,19 +235,106 @@ export default function DashboardPage() {
             onValueChange={setActiveTab}
             className="space-y-4"
           >
-            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
-              {/* Analytics Tabs */}
-              <TabsTrigger value="pageviews">Analytics</TabsTrigger>
-              <TabsTrigger value="visitors">Visitors</TabsTrigger>
-              <TabsTrigger value="visitor-list">Visitor List</TabsTrigger>
+            {/* Mobile-first responsive tab layout */}
+            <div className="w-full">
+              {/* Mobile dropdown for tab selection */}
+              <div className="block sm:hidden mb-4">
+                <select
+                  value={activeTab}
+                  onChange={(e) => setActiveTab(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-md bg-background text-foreground"
+                >
+                  <optgroup label="Analytics">
+                    <option value="pageviews">Analytics</option>
+                    <option value="visitors">Visitors</option>
+                    <option value="visitor-list">Visitor List</option>
+                  </optgroup>
+                  <optgroup label="Portfolio Management">
+                    <option value="portfolio">Portfolio</option>
+                    <option value="portfolio-projects">Projects</option>
+                    <option value="portfolio-skills">Skills</option>
+                    <option value="portfolio-experience">Experience</option>
+                    <option value="portfolio-profile">Profile</option>
+                  </optgroup>
+                </select>
+              </div>
 
-              {/* Portfolio Management Tabs */}
-              <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
-              <TabsTrigger value="portfolio-projects">Projects</TabsTrigger>
-              <TabsTrigger value="portfolio-skills">Skills</TabsTrigger>
-              <TabsTrigger value="portfolio-experience">Experience</TabsTrigger>
-              <TabsTrigger value="portfolio-profile">Profile</TabsTrigger>
-            </TabsList>
+              {/* Tablet and desktop tab layout */}
+              <div className="hidden sm:block">
+                {/* Two-row layout for tablets */}
+                <div className="sm:block lg:hidden space-y-2">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger
+                      value="pageviews"
+                      className="text-xs sm:text-sm"
+                    >
+                      Analytics
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="visitors"
+                      className="text-xs sm:text-sm"
+                    >
+                      Visitors
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="visitor-list"
+                      className="text-xs sm:text-sm"
+                    >
+                      Visitor List
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsList className="grid w-full grid-cols-5">
+                    <TabsTrigger
+                      value="portfolio"
+                      className="text-xs sm:text-sm"
+                    >
+                      Portfolio
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="portfolio-projects"
+                      className="text-xs sm:text-sm"
+                    >
+                      Projects
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="portfolio-skills"
+                      className="text-xs sm:text-sm"
+                    >
+                      Skills
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="portfolio-experience"
+                      className="text-xs sm:text-sm"
+                    >
+                      Experience
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="portfolio-profile"
+                      className="text-xs sm:text-sm"
+                    >
+                      Profile
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
+
+                {/* Single row layout for large screens */}
+                <TabsList className="hidden lg:grid w-full grid-cols-8">
+                  {/* Analytics Tabs */}
+                  <TabsTrigger value="pageviews">Analytics</TabsTrigger>
+                  <TabsTrigger value="visitors">Visitors</TabsTrigger>
+                  <TabsTrigger value="visitor-list">Visitor List</TabsTrigger>
+
+                  {/* Portfolio Management Tabs */}
+                  <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
+                  <TabsTrigger value="portfolio-projects">Projects</TabsTrigger>
+                  <TabsTrigger value="portfolio-skills">Skills</TabsTrigger>
+                  <TabsTrigger value="portfolio-experience">
+                    Experience
+                  </TabsTrigger>
+                  <TabsTrigger value="portfolio-profile">Profile</TabsTrigger>
+                </TabsList>
+              </div>
+            </div>
 
             {/* Analytics Tabs Content */}
             <TabsContent value="pageviews" className="space-y-4">

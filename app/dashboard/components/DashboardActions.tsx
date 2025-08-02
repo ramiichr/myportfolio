@@ -19,57 +19,66 @@ export const DashboardActions: React.FC<DashboardActionsProps> = ({
   isDeleting,
 }) => {
   return (
-    <div className="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-gray-50 rounded-lg">
-      <div className="flex flex-col sm:flex-row gap-2">
+    <div className="mt-4 sm:mt-6 flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-4 p-3 sm:p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+      <div className="flex flex-col sm:flex-row gap-2 order-2 lg:order-1">
         <Link
           href="/"
-          className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center justify-center"
+          className="px-3 sm:px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center justify-center text-sm sm:text-base"
         >
           Go to Portfolio
         </Link>
         <button
           onClick={onLogout}
-          className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+          className="px-3 sm:px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm sm:text-base"
         >
           Logout
         </button>
         <button
           onClick={onChangeToken}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm sm:text-base"
         >
           Change API Token
         </button>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center gap-2">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 order-1 lg:order-2">
         {deleteConfirmation ? (
-          <>
-            <span className="text-sm text-red-600 font-medium">
-              Are you sure?
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <span className="text-xs sm:text-sm text-red-600 font-medium text-center sm:text-left">
+              Are you sure? This action cannot be undone.
             </span>
-            <button
-              onClick={onCancelDelete}
-              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
-              disabled={isDeleting}
-            >
-              Cancel
-            </button>
-          </>
-        ) : null}
-        <button
-          onClick={onDeleteData}
-          className={`px-4 py-2 ${
-            deleteConfirmation
-              ? "bg-red-600 hover:bg-red-700"
-              : "bg-red-500 hover:bg-red-600"
-          } text-white rounded-md transition-colors flex items-center gap-2`}
-          disabled={isDeleting}
-        >
-          {isDeleting ? (
-            <div className="animate-spin h-4 w-4 border-2 border-white rounded-full border-t-transparent"></div>
-          ) : null}
-          {deleteConfirmation ? "Confirm Delete" : "Delete All Data"}
-        </button>
+            <div className="flex gap-2">
+              <button
+                onClick={onCancelDelete}
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm sm:text-base"
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={onDeleteData}
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
+                disabled={isDeleting}
+              >
+                {isDeleting ? (
+                  <div className="animate-spin h-4 w-4 border-2 border-white rounded-full border-t-transparent"></div>
+                ) : null}
+                Confirm Delete
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={onDeleteData}
+            className="px-3 sm:px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
+            disabled={isDeleting}
+          >
+            {isDeleting ? (
+              <div className="animate-spin h-4 w-4 border-2 border-white rounded-full border-t-transparent"></div>
+            ) : null}
+            Delete All Data
+          </button>
+        )}
       </div>
     </div>
   );

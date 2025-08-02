@@ -40,19 +40,25 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
       {analyticsStats.map((stat, index) => (
-        <Card key={index}>
-          <CardContent className="p-4">
+        <Card key={index} className="transition-transform hover:scale-105">
+          <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">{stat.title}</p>
-                <p className="text-2xl font-bold">{stat.value}</p>
-                <p className="text-xs text-muted-foreground">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                  {stat.title}
+                </p>
+                <p className="text-lg sm:text-2xl font-bold truncate">
+                  {stat.value}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
                   {stat.description}
                 </p>
               </div>
-              <div className={`${stat.color}`}>{stat.icon}</div>
+              <div className={`${stat.color} flex-shrink-0 ml-2`}>
+                <div className="h-4 w-4 sm:h-5 sm:w-5">{stat.icon}</div>
+              </div>
             </div>
           </CardContent>
         </Card>
