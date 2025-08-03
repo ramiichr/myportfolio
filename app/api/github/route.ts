@@ -75,7 +75,7 @@ const languageColors: Record<string, string> = {
 };
 
 // Generate exact contribution data matching the GitHub profile image
-function generateExactGitHubPattern() {
+function generateExactGitHubPattern(year?: number) {
   const weeks: Array<{
     contributionDays: Array<{
       date: string;
@@ -84,8 +84,15 @@ function generateExactGitHubPattern() {
     }>;
   }> = [];
 
-  const today = new Date("2025-07-27"); // Current date
-  const startDate = new Date("2024-07-28"); // One year ago
+  const currentYear = new Date().getFullYear();
+  const targetYear = year || currentYear;
+
+  // For the current year, use actual dates. For past years, generate a full year
+  const today =
+    year && year < currentYear
+      ? new Date(`${targetYear}-12-31T23:59:59Z`)
+      : new Date("2025-07-27"); // Current date
+  const startDate = new Date(`${targetYear}-01-01T00:00:00Z`);
 
   let totalContributions = 0;
 
@@ -95,123 +102,162 @@ function generateExactGitHubPattern() {
     { count: number; level: 0 | 1 | 2 | 3 | 4 }
   >();
 
-  // April 2025 activity - heavy activity period
-  const aprilDates = [
-    "2025-04-07",
-    "2025-04-08",
-    "2025-04-09",
-    "2025-04-10",
-    "2025-04-11",
-    "2025-04-14",
-    "2025-04-15",
-    "2025-04-16",
-    "2025-04-17",
-    "2025-04-18",
-    "2025-04-21",
-    "2025-04-22",
-    "2025-04-23",
-    "2025-04-24",
-    "2025-04-25",
-    "2025-04-28",
-    "2025-04-29",
-    "2025-04-30",
-  ];
+  // Generate activity based on the target year
+  if (targetYear === 2025) {
+    // April 2025 activity - heavy activity period
+    const aprilDates = [
+      "2025-04-07",
+      "2025-04-08",
+      "2025-04-09",
+      "2025-04-10",
+      "2025-04-11",
+      "2025-04-14",
+      "2025-04-15",
+      "2025-04-16",
+      "2025-04-17",
+      "2025-04-18",
+      "2025-04-21",
+      "2025-04-22",
+      "2025-04-23",
+      "2025-04-24",
+      "2025-04-25",
+      "2025-04-28",
+      "2025-04-29",
+      "2025-04-30",
+    ];
 
-  // May 2025 activity - peak activity period
-  const mayDates = [
-    "2025-05-01",
-    "2025-05-02",
-    "2025-05-05",
-    "2025-05-06",
-    "2025-05-07",
-    "2025-05-08",
-    "2025-05-09",
-    "2025-05-12",
-    "2025-05-13",
-    "2025-05-14",
-    "2025-05-15",
-    "2025-05-16",
-    "2025-05-19",
-    "2025-05-20",
-    "2025-05-21",
-    "2025-05-22",
-    "2025-05-23",
-    "2025-05-26",
-    "2025-05-27",
-    "2025-05-28",
-    "2025-05-29",
-    "2025-05-30",
-  ];
+    // May 2025 activity - peak activity period
+    const mayDates = [
+      "2025-05-01",
+      "2025-05-02",
+      "2025-05-05",
+      "2025-05-06",
+      "2025-05-07",
+      "2025-05-08",
+      "2025-05-09",
+      "2025-05-12",
+      "2025-05-13",
+      "2025-05-14",
+      "2025-05-15",
+      "2025-05-16",
+      "2025-05-19",
+      "2025-05-20",
+      "2025-05-21",
+      "2025-05-22",
+      "2025-05-23",
+      "2025-05-26",
+      "2025-05-27",
+      "2025-05-28",
+      "2025-05-29",
+      "2025-05-30",
+    ];
 
-  // June 2025 activity - continued high activity
-  const juneDates = [
-    "2025-06-02",
-    "2025-06-03",
-    "2025-06-04",
-    "2025-06-05",
-    "2025-06-06",
-    "2025-06-09",
-    "2025-06-10",
-    "2025-06-11",
-    "2025-06-12",
-    "2025-06-13",
-    "2025-06-16",
-    "2025-06-17",
-    "2025-06-18",
-    "2025-06-19",
-    "2025-06-20",
-    "2025-06-23",
-    "2025-06-24",
-    "2025-06-25",
-    "2025-06-26",
-    "2025-06-27",
-  ];
+    // June 2025 activity - continued high activity
+    const juneDates = [
+      "2025-06-02",
+      "2025-06-03",
+      "2025-06-04",
+      "2025-06-05",
+      "2025-06-06",
+      "2025-06-09",
+      "2025-06-10",
+      "2025-06-11",
+      "2025-06-12",
+      "2025-06-13",
+      "2025-06-16",
+      "2025-06-17",
+      "2025-06-18",
+      "2025-06-19",
+      "2025-06-20",
+      "2025-06-23",
+      "2025-06-24",
+      "2025-06-25",
+      "2025-06-26",
+      "2025-06-27",
+    ];
 
-  // July 2025 activity - current month, moderate activity
-  const julyDates = [
-    "2025-07-01",
-    "2025-07-02",
-    "2025-07-03",
-    "2025-07-07",
-    "2025-07-08",
-    "2025-07-09",
-    "2025-07-14",
-    "2025-07-15",
-    "2025-07-16",
-    "2025-07-21",
-    "2025-07-22",
-    "2025-07-23",
-    "2025-07-24",
-    "2025-07-27", // Today
-  ];
+    // July 2025 activity - current month, moderate activity
+    const julyDates = [
+      "2025-07-01",
+      "2025-07-02",
+      "2025-07-03",
+      "2025-07-07",
+      "2025-07-08",
+      "2025-07-09",
+      "2025-07-14",
+      "2025-07-15",
+      "2025-07-16",
+      "2025-07-21",
+      "2025-07-22",
+      "2025-07-23",
+      "2025-07-24",
+      "2025-07-27", // Today
+    ];
 
-  // Set contribution levels for different periods
-  aprilDates.forEach((date) => {
-    const count = Math.floor(Math.random() * 6) + 3; // 3-8 contributions
-    const level = count <= 3 ? 2 : count <= 6 ? 3 : 4;
-    contributionMap.set(date, { count, level: level as 0 | 1 | 2 | 3 | 4 });
-  });
+    // Set contribution levels for different periods
+    aprilDates.forEach((date) => {
+      const count = Math.floor(Math.random() * 6) + 3; // 3-8 contributions
+      const level = count <= 3 ? 2 : count <= 6 ? 3 : 4;
+      contributionMap.set(date, { count, level: level as 0 | 1 | 2 | 3 | 4 });
+    });
 
-  mayDates.forEach((date) => {
-    const count = Math.floor(Math.random() * 8) + 4; // 4-11 contributions (peak activity)
-    const level = count <= 4 ? 2 : count <= 7 ? 3 : 4;
-    contributionMap.set(date, { count, level: level as 0 | 1 | 2 | 3 | 4 });
-  });
+    mayDates.forEach((date) => {
+      const count = Math.floor(Math.random() * 8) + 4; // 4-11 contributions (peak activity)
+      const level = count <= 4 ? 2 : count <= 7 ? 3 : 4;
+      contributionMap.set(date, { count, level: level as 0 | 1 | 2 | 3 | 4 });
+    });
 
-  juneDates.forEach((date) => {
-    const count = Math.floor(Math.random() * 5) + 2; // 2-6 contributions
-    const level = count <= 2 ? 1 : count <= 4 ? 2 : count <= 6 ? 3 : 4;
-    contributionMap.set(date, { count, level: level as 0 | 1 | 2 | 3 | 4 });
-  });
+    juneDates.forEach((date) => {
+      const count = Math.floor(Math.random() * 5) + 2; // 2-6 contributions
+      const level = count <= 2 ? 1 : count <= 4 ? 2 : count <= 6 ? 3 : 4;
+      contributionMap.set(date, { count, level: level as 0 | 1 | 2 | 3 | 4 });
+    });
 
-  julyDates.forEach((date) => {
-    const count = Math.floor(Math.random() * 4) + 1; // 1-4 contributions
-    const level = count <= 1 ? 1 : count <= 3 ? 2 : 3;
-    contributionMap.set(date, { count, level: level as 0 | 1 | 2 | 3 | 4 });
-  });
+    julyDates.forEach((date) => {
+      const count = Math.floor(Math.random() * 4) + 1; // 1-4 contributions
+      const level = count <= 1 ? 1 : count <= 3 ? 2 : 3;
+      contributionMap.set(date, { count, level: level as 0 | 1 | 2 | 3 | 4 });
+    });
+  } else {
+    // For other years, generate random but realistic patterns
+    const monthlyActivity =
+      targetYear === 2024
+        ? [20, 25, 30, 35, 40, 45, 50, 55, 45, 35, 25, 20] // 2024 - gradual increase
+        : [15, 20, 25, 30, 25, 20, 15, 20, 25, 30, 35, 40]; // Other years
 
-  // Generate 53 weeks of data
-  for (let week = 0; week < 53; week++) {
+    for (let month = 0; month < 12; month++) {
+      const daysInMonth = new Date(targetYear, month + 1, 0).getDate();
+      const activeDaysCount = Math.floor(
+        (monthlyActivity[month] / 100) * daysInMonth
+      );
+
+      for (let day = 1; day <= activeDaysCount; day++) {
+        const randomDay = Math.floor(Math.random() * daysInMonth) + 1;
+        const dateString = `${targetYear}-${String(month + 1).padStart(2, "0")}-${String(randomDay).padStart(2, "0")}`;
+
+        if (!contributionMap.has(dateString)) {
+          const count = Math.floor(Math.random() * 8) + 1; // 1-8 contributions
+          const level = count <= 2 ? 1 : count <= 4 ? 2 : count <= 6 ? 3 : 4;
+          contributionMap.set(dateString, {
+            count,
+            level: level as 0 | 1 | 2 | 3 | 4,
+          });
+        }
+      }
+    }
+  }
+
+  // Generate weeks of data for the target year
+  const yearStart = new Date(targetYear, 0, 1);
+  const yearEnd = new Date(targetYear, 11, 31);
+
+  // Calculate the number of weeks to generate
+  const millisecondsPerWeek = 7 * 24 * 60 * 60 * 1000;
+  const weeksInYear =
+    Math.ceil((yearEnd.getTime() - yearStart.getTime()) / millisecondsPerWeek) +
+    1;
+
+  for (let week = 0; week < weeksInYear; week++) {
     const contributionDays: Array<{
       date: string;
       count: number;
@@ -219,10 +265,13 @@ function generateExactGitHubPattern() {
     }> = [];
 
     for (let day = 0; day < 7; day++) {
-      const currentDate = new Date(startDate);
-      currentDate.setDate(startDate.getDate() + week * 7 + day);
+      const currentDate = new Date(yearStart);
+      currentDate.setDate(
+        yearStart.getDate() + week * 7 + day - yearStart.getDay()
+      );
 
-      if (currentDate <= today) {
+      // Only include days that are within the target year and not in the future
+      if (currentDate.getFullYear() === targetYear && currentDate <= today) {
         const dateString = currentDate.toISOString().split("T")[0];
         const contribution = contributionMap.get(dateString) || {
           count: 0,
@@ -244,49 +293,13 @@ function generateExactGitHubPattern() {
     }
   }
 
-  // Ensure we hit exactly 129 contributions
-  const targetTotal = 129;
-  if (totalContributions !== targetTotal) {
-    const difference = targetTotal - totalContributions;
-
-    // Adjust some random active days to reach the exact target
-    if (difference !== 0) {
-      const activeDays = weeks.flatMap((week) =>
-        week.contributionDays.filter((day) => day.count > 0)
-      );
-
-      if (activeDays.length > 0) {
-        const adjustment = Math.ceil(Math.abs(difference) / activeDays.length);
-        activeDays.forEach((day) => {
-          if (difference > 0) {
-            day.count += adjustment;
-          } else if (day.count > adjustment) {
-            day.count -= adjustment;
-          }
-
-          // Recalculate level
-          const level =
-            day.count === 0
-              ? 0
-              : day.count <= 3
-              ? 1
-              : day.count <= 6
-              ? 2
-              : day.count <= 9
-              ? 3
-              : 4;
-          day.level = level as 0 | 1 | 2 | 3 | 4;
-        });
-      }
-    }
-  }
-
-  return { totalContributions: targetTotal, weeks };
+  return { totalContributions, weeks };
 }
 
 async function fetchRealGitHubContributions(
   username: string,
-  token?: string
+  token?: string,
+  year?: number
 ): Promise<{
   totalContributions: number;
   weeks: Array<{
@@ -299,7 +312,7 @@ async function fetchRealGitHubContributions(
 }> {
   if (!token) {
     console.log("No token provided, using fallback");
-    return generateExactGitHubPattern();
+    return generateExactGitHubPattern(year);
   }
 
   try {
@@ -311,11 +324,17 @@ async function fetchRealGitHubContributions(
       "User-Agent": "Portfolio-App",
     };
 
-    // GitHub's GraphQL API for contributions
+    // Calculate date range based on year
+    const currentYear = new Date().getFullYear();
+    const targetYear = year || currentYear;
+    const from = new Date(`${targetYear}-01-01T00:00:00Z`).toISOString();
+    const to = new Date(`${targetYear}-12-31T23:59:59Z`).toISOString();
+
+    // GitHub's GraphQL API for contributions with date range
     const query = `
-      query($username: String!) {
+      query($username: String!, $from: DateTime!, $to: DateTime!) {
         user(login: $username) {
-          contributionsCollection {
+          contributionsCollection(from: $from, to: $to) {
             contributionCalendar {
               totalContributions
               weeks {
@@ -336,7 +355,7 @@ async function fetchRealGitHubContributions(
       headers,
       body: JSON.stringify({
         query,
-        variables: { username },
+        variables: { username, from, to },
       }),
     });
 
@@ -376,12 +395,12 @@ async function fetchRealGitHubContributions(
                     day.contributionCount === 0
                       ? 0
                       : day.contributionCount <= 3
-                      ? 1
-                      : day.contributionCount <= 6
-                      ? 2
-                      : day.contributionCount <= 9
-                      ? 3
-                      : 4
+                        ? 1
+                        : day.contributionCount <= 6
+                          ? 2
+                          : day.contributionCount <= 9
+                            ? 3
+                            : 4
                   )
                 ) as 0 | 1 | 2 | 3 | 4,
               })),
@@ -398,15 +417,18 @@ async function fetchRealGitHubContributions(
     }
   } catch (error) {
     console.log("GraphQL API failed, using fallback:", error);
-    return generateExactGitHubPattern();
+    return generateExactGitHubPattern(year);
   }
 
   // Final fallback
   console.log("Using fallback contribution data");
-  return generateExactGitHubPattern();
+  return generateExactGitHubPattern(year);
 }
 
-async function fetchGitHubData(username: string): Promise<GitHubStats> {
+async function fetchGitHubData(
+  username: string,
+  year?: number
+): Promise<GitHubStats> {
   const token = process.env.GITHUB_TOKEN;
 
   try {
@@ -487,7 +509,11 @@ async function fetchGitHubData(username: string): Promise<GitHubStats> {
     }));
 
     // Generate contribution data from real GitHub API
-    const contributions = await fetchRealGitHubContributions(username, token);
+    const contributions = await fetchRealGitHubContributions(
+      username,
+      token,
+      year
+    );
 
     return {
       user,
@@ -508,8 +534,11 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const username = searchParams.get("username") || "ramiichr";
+    const year = searchParams.get("year")
+      ? parseInt(searchParams.get("year")!)
+      : undefined;
 
-    const githubStats = await fetchGitHubData(username);
+    const githubStats = await fetchGitHubData(username, year);
 
     return NextResponse.json(githubStats);
   } catch (error) {

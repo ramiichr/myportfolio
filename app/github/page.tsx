@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense, lazy } from "react";
 import { motion } from "framer-motion";
+import { useSearchParams } from "next/navigation";
 import { useLanguage } from "@/components/language-provider";
 import { getProfile } from "@/lib/api";
 import { LoadingSpinner } from "@/components/common";
@@ -35,6 +36,7 @@ interface GitHubStats {
     public_repos: number;
     followers: number;
     following: number;
+    created_at: string;
   };
   repos: any[];
   totalStars: number;
@@ -60,26 +62,46 @@ interface GitHubStats {
 
 export default function GitHubPage() {
   const { translations, language } = useLanguage();
+  const searchParams = useSearchParams();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [githubStats, setGithubStats] = useState<GitHubStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedYear, setSelectedYear] = useState<number>(
+    new Date().getFullYear()
+  );
+
+  // Get username from URL params, fallback to profile's GitHub username or default
+  const urlUsername = searchParams.get("username");
 
   useEffect(() => {
     async function fetchData() {
       try {
         setLoading(true);
 
-        // Optimize API calls - use a single API call that returns both profile and GitHub data
-        const [profileData, githubResponse] = await Promise.all([
-          getProfile(language),
-          fetch("/api/github?username=ramiichr", {
+        // Get profile data first
+        const profileData = await getProfile(language);
+
+        // Determine which username to use
+        let username = urlUsername;
+        if (!username) {
+          // Extract username from profile GitHub URL as fallback
+          const githubMatch = profileData.social.github.match(
+            /github\.com\/([^\/]+)/
+          );
+          username = githubMatch ? githubMatch[1] : "ramiichr";
+        }
+
+        // Fetch GitHub data with the determined username
+        const githubResponse = await fetch(
+          `/api/github?username=${username}&year=${selectedYear}`,
+          {
             // Add cache headers for better performance
             headers: {
               "Cache-Control": "max-age=300", // Cache for 5 minutes
             },
-          }),
-        ]);
+          }
+        );
 
         if (!githubResponse.ok) {
           throw new Error(`GitHub API failed: ${githubResponse.status}`);
@@ -98,7 +120,7 @@ export default function GitHubPage() {
     }
 
     fetchData();
-  }, [language]);
+  }, [language, selectedYear, urlUsername]);
 
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
@@ -134,17 +156,13 @@ export default function GitHubPage() {
     );
   }
 
-  const githubUsername = getGitHubUsername(profile.social.github);
-
+  // Determine the GitHub username to display
+  let githubUsername = urlUsername;
+  if (!githubUsername && profile) {
+    githubUsername = getGitHubUsername(profile.social.github);
+  }
   if (!githubUsername) {
-    return (
-      <Alert variant="destructive" className="m-4">
-        <AlertTriangle className="h-4 w-4" />
-        <AlertDescription>
-          GitHub profile not found in profile data.
-        </AlertDescription>
-      </Alert>
-    );
+    githubUsername = "ramiichr"; // fallback
   }
 
   return (
@@ -175,7 +193,7 @@ export default function GitHubPage() {
           </p>
           <Button asChild size="lg" className="w-full sm:w-auto">
             <a
-              href={profile.social.github}
+              href={`https://github.com/${githubUsername}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2"
@@ -293,6 +311,10 @@ export default function GitHubPage() {
               }
               className="w-full"
               contributionsData={githubStats.contributions}
+              selectedYear={selectedYear}
+              onYearChange={setSelectedYear}
+              showYearSelector={true}
+              userCreatedAt={githubStats.user.created_at}
             />
           </Suspense>
         </motion.div>

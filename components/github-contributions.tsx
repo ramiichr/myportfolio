@@ -5,6 +5,7 @@ import { Calendar, Github, ExternalLink } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { YearSelector } from "@/components/ui/year-selector";
 
 interface ContributionDay {
   date: string;
@@ -27,6 +28,10 @@ interface GitHubContributionsProps {
   showTitle?: boolean;
   className?: string;
   contributionsData?: ContributionsData | null;
+  selectedYear?: number;
+  onYearChange?: (year: number) => void;
+  showYearSelector?: boolean;
+  userCreatedAt?: string;
 }
 
 const getContributionLevel = (count: number): 0 | 1 | 2 | 3 | 4 => {
@@ -157,6 +162,10 @@ const GitHubContributions = memo(function GitHubContributions({
   showTitle = true,
   className = "",
   contributionsData = null,
+  selectedYear,
+  onYearChange,
+  showYearSelector = false,
+  userCreatedAt,
 }: GitHubContributionsProps) {
   const [data, setData] = useState<ContributionsData | null>(contributionsData);
   const [loading, setLoading] = useState(!contributionsData);
@@ -193,7 +202,10 @@ const GitHubContributions = memo(function GitHubContributions({
         setError(null);
 
         // Fetch real data from our GitHub API
-        const response = await fetch(`/api/github?username=${username}`);
+        const apiUrl = selectedYear
+          ? `/api/github?username=${username}&year=${selectedYear}`
+          : `/api/github?username=${username}`;
+        const response = await fetch(apiUrl);
 
         if (!response.ok) {
           throw new Error(`Failed to fetch GitHub data: ${response.status}`);
@@ -219,7 +231,7 @@ const GitHubContributions = memo(function GitHubContributions({
     };
 
     fetchContributions();
-  }, [username, contributionsData]);
+  }, [username, contributionsData, selectedYear]);
 
   if (loading) {
     return (
@@ -275,19 +287,32 @@ const GitHubContributions = memo(function GitHubContributions({
               <Calendar className="h-5 w-5" />
               {title}
             </CardTitle>
-            <Button variant="outline" size="sm" asChild className="w-fit">
-              <a
-                href={`https://github.com/${username}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2"
-              >
-                <Github className="h-4 w-4" />
-                <span className="hidden sm:inline">View on GitHub</span>
-                <span className="sm:hidden">GitHub</span>
-                <ExternalLink className="h-3 w-3" />
-              </a>
-            </Button>
+            <div className="flex items-center gap-2">
+              {showYearSelector &&
+                selectedYear &&
+                onYearChange &&
+                userCreatedAt && (
+                  <YearSelector
+                    selectedYear={selectedYear}
+                    onYearChange={onYearChange}
+                    startYear={new Date(userCreatedAt).getFullYear()}
+                    className="mr-2"
+                  />
+                )}
+              <Button variant="outline" size="sm" asChild className="w-fit">
+                <a
+                  href={`https://github.com/${username}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
+                >
+                  <Github className="h-4 w-4" />
+                  <span className="hidden sm:inline">View on GitHub</span>
+                  <span className="sm:hidden">GitHub</span>
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </Button>
+            </div>
           </div>
         </CardHeader>
       )}
@@ -295,7 +320,8 @@ const GitHubContributions = memo(function GitHubContributions({
         <div className="space-y-4">
           <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
             <span className="text-sm text-muted-foreground">
-              {data.totalContributions} contributions in the last year
+              {data.totalContributions} contributions in{" "}
+              {selectedYear || "the last year"}
             </span>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <span>Less</span>

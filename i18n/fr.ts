@@ -46,13 +46,17 @@ export const fr = {
   github: {
     title: "Activité GitHub",
     description:
-      "Une représentation visuelle de mon activité de programmation et contributions au cours de la dernière année.",
+      "Une représentation visuelle de mon activité de codage et de mes contributions au cours de l'année passée.",
     contributionsTitle: "Contributions",
     commitsTitle: "Derniers Commits",
+    yearSelector: {
+      label: "Année",
+      current: "Actuel",
+    },
     stats: {
-      repositories: "Total des Dépôts",
-      stars: "Total des Étoiles",
-      forks: "Total des Forks",
+      repositories: "Total Dépôts",
+      stars: "Total Étoiles",
+      forks: "Total Forks",
       followers: "Abonnés",
     },
     sections: {
@@ -70,9 +74,9 @@ export const fr = {
         minutesAgo: "il y a {{count}}m",
         hoursAgo: "il y a {{count}}h",
         daysAgo: "il y a {{count}}j",
-        weeksAgo: "il y a {{count}}sem",
-        monthsAgo: "il y a {{count}}mois",
-        yearsAgo: "il y a {{count}}an",
+        weeksAgo: "il y a {{count}}s",
+        monthsAgo: "il y a {{count}}m",
+        yearsAgo: "il y a {{count}}a",
       },
       repository: "dans",
       author: "par",

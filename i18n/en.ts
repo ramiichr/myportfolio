@@ -49,6 +49,10 @@ export const en = {
       "A visual representation of my coding activity and contributions over the past year.",
     contributionsTitle: "Contributions",
     commitsTitle: "Latest Commits",
+    yearSelector: {
+      label: "Year",
+      current: "Current",
+    },
     stats: {
       repositories: "Total Repositories",
       stars: "Total Stars",

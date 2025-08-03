@@ -44,11 +44,15 @@ export const de = {
     tools: "Tools & Infrastruktur",
   },
   github: {
-    title: "GitHub-Aktivität",
+    title: "GitHub Aktivität",
     description:
-      "Eine visuelle Darstellung meiner Programmieraktivität und Beiträge im letzten Jahr.",
+      "Eine visuelle Darstellung meiner Codier-Aktivität und Beiträge über das vergangene Jahr.",
     contributionsTitle: "Beiträge",
     commitsTitle: "Neueste Commits",
+    yearSelector: {
+      label: "Jahr",
+      current: "Aktuell",
+    },
     stats: {
       repositories: "Gesamte Repositories",
       stars: "Gesamte Sterne",
