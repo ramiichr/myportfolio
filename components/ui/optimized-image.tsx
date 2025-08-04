@@ -32,7 +32,6 @@ export function OptimizedImage({
   blurDataURL = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q==",
   ...props
 }: OptimizedImageProps) {
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
 
   if (error) {
@@ -61,12 +60,7 @@ export function OptimizedImage({
       quality={quality}
       placeholder={placeholder}
       blurDataURL={blurDataURL}
-      className={cn(
-        "transition-opacity duration-300",
-        isLoading ? "opacity-0" : "opacity-100",
-        className
-      )}
-      onLoad={() => setIsLoading(false)}
+      className={cn(className)}
       onError={() => setError(true)}
       {...props}
     />

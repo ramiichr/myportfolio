@@ -189,24 +189,6 @@ const CommitItem = memo(
 
 CommitItem.displayName = "CommitItem";
 
-const LoadingSkeleton = () => (
-  <div className="space-y-3">
-    {Array.from({ length: 5 }).map((_, i) => (
-      <div key={i} className="flex items-start gap-3 p-3">
-        <Skeleton className="h-8 w-8 rounded-full" />
-        <div className="flex-1 space-y-2">
-          <Skeleton className="h-4 w-3/4" />
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-5 w-16" />
-            <Skeleton className="h-3 w-20" />
-            <Skeleton className="h-3 w-16" />
-          </div>
-        </div>
-      </div>
-    ))}
-  </div>
-);
-
 const LatestCommits = memo(function LatestCommits({
   username,
   title = "Latest Commits",
@@ -215,14 +197,12 @@ const LatestCommits = memo(function LatestCommits({
   maxCommits = 10,
 }: LatestCommitsProps) {
   const [commits, setCommits] = useState<CommitActivity[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { translations } = useLanguage();
 
   useEffect(() => {
     const fetchCommits = async () => {
       try {
-        setLoading(true);
         setError(null);
 
         const response = await fetch(
@@ -243,31 +223,11 @@ const LatestCommits = memo(function LatestCommits({
       } catch (err) {
         console.error("Error fetching commits:", err);
         setError("Failed to load commits");
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchCommits();
   }, [username, maxCommits]);
-
-  if (loading) {
-    return (
-      <Card className={className}>
-        {showTitle && (
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <GitCommit className="h-5 w-5" />
-              {title}
-            </CardTitle>
-          </CardHeader>
-        )}
-        <CardContent>
-          <LoadingSkeleton />
-        </CardContent>
-      </Card>
-    );
-  }
 
   if (error) {
     return (

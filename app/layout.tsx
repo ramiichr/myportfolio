@@ -16,11 +16,12 @@ import { PerformanceMonitor } from "@/components/performance-monitor";
 import { ResourcePreloader } from "@/components/resource-preloader";
 import { WebVitals } from "@/components/web-vitals";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
+import { FontLoader } from "@/components/font-loader";
 import { Suspense } from "react";
 
 const inter = Inter({
   subsets: ["latin"],
-  display: "swap",
+  display: "block", // Changed from "swap" to prevent text flash
   preload: true,
   fallback: ["system-ui", "arial"],
   adjustFontFallback: false, // Prevent layout shift
@@ -29,8 +30,8 @@ const inter = Inter({
 const caveat = Caveat({
   subsets: ["latin"],
   variable: "--font-caveat",
-  display: "swap",
-  preload: false,
+  display: "block", // Changed from "swap" to prevent text flash
+  preload: true, // Changed to true for faster loading
   fallback: ["cursive"],
   adjustFontFallback: false, // Prevent layout shift
 });
@@ -137,6 +138,17 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
 
+        {/* Preload and load fonts to eliminate FOUC */}
+        <link
+          rel="preload"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=block"
+          as="style"
+        />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=block"
+        />
+
         {/* Theme script to prevent FOUC */}
         <script
           dangerouslySetInnerHTML={{
@@ -149,6 +161,8 @@ export default function RootLayout({
                   if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.documentElement.classList.add('dark');
                   }
+                  // Add loaded class immediately since we're loading fonts synchronously
+                  document.documentElement.classList.add('fonts-loaded');
                 } catch (e) {}
               })();
             `,
@@ -196,6 +210,29 @@ export default function RootLayout({
                   padding-right: 1rem !important;
                 }
               }
+              
+              /* Prevent text flash during theme transitions */
+              * {
+                transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease !important;
+              }
+              
+              /* Ensure text is always visible */
+              body {
+                font-family: system-ui, -apple-system, sans-serif;
+                color: hsl(222.2 84% 4.9%);
+              }
+              
+              .dark body {
+                color: hsl(210 40% 98%);
+              }
+              
+              /* Prevent content jump during font load */
+              .hero-text {
+                min-height: 200px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+              }
             `,
           }}
         />
@@ -210,25 +247,24 @@ export default function RootLayout({
           <LanguageProvider>
             <GraphQLProvider>
               <PortfolioDataProvider>
-                <div data-language>
-                  <ErrorBoundary>
-                    <PerformanceMonitor />
-                    <WebVitals />
-                    <ServiceWorkerRegistration />
-                    <ResourcePreloader />
-                    <PageTracker />
-                    <div className="flex min-h-screen flex-col">
-                      <Suspense fallback={null}>
-                        <CursorLight />
-                      </Suspense>
-                      <Header />
-                      <main className="flex-1">{children}</main>
-                      <Suspense fallback={null}>
-                        <Footer />
-                      </Suspense>
-                    </div>
-                  </ErrorBoundary>
-                </div>
+                <ErrorBoundary>
+                  <PerformanceMonitor />
+                  <WebVitals />
+                  <ServiceWorkerRegistration />
+                  <FontLoader />
+                  <ResourcePreloader />
+                  <PageTracker />
+                  <div className="flex min-h-screen flex-col">
+                    <Suspense fallback={null}>
+                      <CursorLight />
+                    </Suspense>
+                    <Header />
+                    <main className="flex-1">{children}</main>
+                    <Suspense fallback={null}>
+                      <Footer />
+                    </Suspense>
+                  </div>
+                </ErrorBoundary>
               </PortfolioDataProvider>
             </GraphQLProvider>
           </LanguageProvider>

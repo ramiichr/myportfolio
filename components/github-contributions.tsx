@@ -168,7 +168,6 @@ const GitHubContributions = memo(function GitHubContributions({
   userCreatedAt,
 }: GitHubContributionsProps) {
   const [data, setData] = useState<ContributionsData | null>(contributionsData);
-  const [loading, setLoading] = useState(!contributionsData);
   const [error, setError] = useState<string | null>(null);
 
   // Memoize computed values to prevent unnecessary recalculations
@@ -192,13 +191,11 @@ const GitHubContributions = memo(function GitHubContributions({
   useEffect(() => {
     if (contributionsData) {
       setData(contributionsData);
-      setLoading(false);
       return;
     }
 
     const fetchContributions = async () => {
       try {
-        setLoading(true);
         setError(null);
 
         // Fetch real data from our GitHub API
@@ -225,38 +222,11 @@ const GitHubContributions = memo(function GitHubContributions({
         // Fallback to mock data only if API fails
         const mockData = generateMockData();
         setData(mockData);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchContributions();
   }, [username, contributionsData, selectedYear]);
-
-  if (loading) {
-    return (
-      <Card className={className}>
-        {showTitle && (
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              {title}
-            </CardTitle>
-          </CardHeader>
-        )}
-        <CardContent>
-          <div className="space-y-4">
-            <Skeleton className="h-4 w-32" />
-            <div className="grid grid-cols-53 gap-1">
-              {Array.from({ length: 371 }).map((_, i) => (
-                <Skeleton key={i} className="h-3 w-3" />
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
 
   if (error || !data) {
     return (

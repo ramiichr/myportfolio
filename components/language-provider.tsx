@@ -159,23 +159,15 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("language", language);
   }, [language, mounted]);
 
-  // During SSR and initial mount, return English translations
-  if (!mounted) {
-    return (
-      <LanguageContext.Provider
-        value={{
-          language: "en",
-          translations: en,
-          setLanguage: () => undefined,
-        }}
-      >
-        {children}
-      </LanguageContext.Provider>
-    );
-  }
+  // During SSR and initial hydration, always use English to prevent mismatch
+  const contextValue = {
+    language: mounted ? language : ("en" as Language),
+    translations: mounted ? translations : en,
+    setLanguage,
+  };
 
   return (
-    <LanguageContext.Provider value={{ language, translations, setLanguage }}>
+    <LanguageContext.Provider value={contextValue}>
       {children}
     </LanguageContext.Provider>
   );

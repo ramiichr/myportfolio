@@ -1,8 +1,8 @@
 /* Critical CSS - Above the fold content */
 :root {
   color-scheme: light;
-  --transition-theme: background-color 0.15s ease, color 0.15s ease,
-    border-color 0.15s ease;
+  --transition-theme: background-color 0.2s ease, color 0.2s ease,
+    border-color 0.2s ease;
 
   /* Core layout variables */
   --background: 0 0% 100%;
@@ -32,6 +32,25 @@ html {
   line-height: 1.5;
   scroll-behavior: smooth;
   transition: var(--transition-theme);
+  text-rendering: optimizeSpeed; /* Prioritize speed over quality */
+  -webkit-font-smoothing: antialiased; /* Improve text rendering */
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent text flash during font loading */
+html:not(.fonts-loaded) {
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif !important;
+}
+
+html.fonts-loaded {
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 body {
@@ -41,6 +60,7 @@ body {
   font-feature-settings:
     "rlig" 1,
     "calt" 1;
+  text-rendering: optimizeSpeed; /* Prioritize speed */
 }
 
 /* Critical header styles */
@@ -161,11 +181,64 @@ main {
 
 /* Language transition optimization */
 [data-language] * {
-  transition: opacity 0.2s ease-out;
+  transition: opacity 0.2s ease-out; /* Smooth transition */
 }
 
 [data-language-switching="true"] * {
-  opacity: 0.5;
+  opacity: 0.8; /* Less opacity change */
+}
+
+/* Prevent text shifting during font loads */
+.text-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Optimize text rendering for headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-rendering: optimizeSpeed;
+  font-display: block; /* Prevent font flash */
+}
+
+/* Fast loading states */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 25%,
+    hsl(var(--muted-foreground)) 50%,
+    hsl(var(--muted)) 75%
+  );
+  background-size: 200% 100%;
+  animation: loading 1s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* Load Tailwind layers */
@@ -591,7 +664,7 @@ button,
   }
 }
 
-/* Smooth transitions for all interactive elements */
+/* Smooth transitions for all interactive elements (optimized for speed) */
 a,
 button,
 input,
@@ -600,7 +673,7 @@ textarea {
   transition-property: color, background-color, border-color, fill, stroke,
     opacity, box-shadow, transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+  transition-duration: 100ms;
 }
 
 /* Prevent content shift on mobile menu open */

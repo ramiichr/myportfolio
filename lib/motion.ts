@@ -1,44 +1,10 @@
-import { lazy } from "react";
-
-// Lazy load heavy animation components with optimized features
-export const LazyMotion = lazy(() =>
-  import("framer-motion").then((module) => ({
-    default: module.LazyMotion,
-  }))
-);
-
-export const LazyMotionDiv = lazy(() =>
-  import("framer-motion").then((module) => ({
-    default: module.motion.div,
-  }))
-);
-
-export const LazyAnimatePresence = lazy(() =>
-  import("framer-motion").then((module) => ({
-    default: module.AnimatePresence,
-  }))
-);
-
-// Preload critical animations with optimized features
-export const loadFramerMotion = () => {
-  return import("framer-motion");
-};
-
-// Use reduced motion for users who prefer it
-export const shouldReduceMotion = () => {
-  return (
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
-};
-
-// Motion variants for better performance
+// Motion variants for better performance (optimized for speed)
 export const fadeInUp = {
   hidden: {
-    opacity: 0,
-    y: 20,
+    opacity: 0.8, // Less dramatic starting opacity
+    y: 10, // Reduced movement
     transition: {
-      duration: 0.3,
+      duration: 0.2, // Smooth animation
       ease: "easeOut",
     },
   },
@@ -46,32 +12,48 @@ export const fadeInUp = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.5,
+      duration: 0.2, // Smooth animation
       ease: "easeOut",
     },
   },
 };
 
 export const staggerContainer = {
-  hidden: { opacity: 0 },
+  hidden: { opacity: 0.9 }, // Less dramatic
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
+      staggerChildren: 0.05, // Slightly slower stagger for smoother effect
+      delayChildren: 0.1, // Longer delay for better visual flow
     },
   },
 };
 
 export const scaleInOut = {
-  hidden: { scale: 0.8, opacity: 0 },
+  hidden: { scale: 0.95, opacity: 0.9 }, // Less dramatic
   show: {
     scale: 1,
     opacity: 1,
     transition: {
       type: "spring",
-      stiffness: 100,
-      damping: 15,
+      stiffness: 200, // Faster spring
+      damping: 15, // Less damping
+    },
+  },
+};
+
+// New optimized variant for text elements
+export const textFadeIn = {
+  hidden: {
+    opacity: 0.7, // High initial opacity to prevent flash
+    y: 5, // Minimal movement
+  },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.2, // Smooth animation
+      ease: "easeOut",
     },
   },
 };

@@ -11,9 +11,16 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    return null;
-  }
-
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
+  // Instead of returning null, return children with default theme to prevent flicker
+  return (
+    <NextThemesProvider
+      {...props}
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange={!mounted} // Only disable during hydration
+    >
+      {children}
+    </NextThemesProvider>
+  );
 }

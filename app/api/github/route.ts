@@ -441,33 +441,45 @@ async function fetchGitHubData(
       headers["Authorization"] = `token ${token}`;
     }
 
-    // Fetch user data
-    const userResponse = await fetch(
-      `https://api.github.com/users/${username}`,
-      {
-        headers,
-      }
-    );
+    // Create promises for parallel fetching
+    const userPromise = fetch(`https://api.github.com/users/${username}`, {
+      headers,
+    });
 
-    if (!userResponse.ok) {
-      throw new Error(`Failed to fetch user data: ${userResponse.status}`);
-    }
-
-    const user: GitHubUser = await userResponse.json();
-
-    // Fetch repositories
-    const reposResponse = await fetch(
+    const reposPromise = fetch(
       `https://api.github.com/users/${username}/repos?per_page=100&sort=updated`,
       {
         headers,
       }
     );
 
+    // Start contributions fetch in parallel
+    const contributionsPromise = fetchRealGitHubContributions(
+      username,
+      token,
+      year
+    );
+
+    // Execute all API calls in parallel
+    const [userResponse, reposResponse, contributions] = await Promise.all([
+      userPromise,
+      reposPromise,
+      contributionsPromise,
+    ]);
+
+    if (!userResponse.ok) {
+      throw new Error(`Failed to fetch user data: ${userResponse.status}`);
+    }
+
     if (!reposResponse.ok) {
       throw new Error(`Failed to fetch repositories: ${reposResponse.status}`);
     }
 
-    const repos: GitHubRepo[] = await reposResponse.json();
+    // Parse responses in parallel
+    const [user, repos] = await Promise.all([
+      userResponse.json() as Promise<GitHubUser>,
+      reposResponse.json() as Promise<GitHubRepo[]>,
+    ]);
 
     // Filter out private repos for public display
     const publicRepos = repos.filter((repo) => !repo.private);
@@ -508,13 +520,6 @@ async function fetchGitHubData(
       date: repo.updated_at.split("T")[0],
     }));
 
-    // Generate contribution data from real GitHub API
-    const contributions = await fetchRealGitHubContributions(
-      username,
-      token,
-      year
-    );
-
     return {
       user,
       repos: publicRepos,
@@ -538,21 +543,22 @@ export async function GET(request: Request) {
       ? parseInt(searchParams.get("year")!)
       : undefined;
 
+    // Add response caching headers
+    const cacheControl = "public, max-age=300, s-maxage=600"; // 5 min browser, 10 min CDN
+
     const githubStats = await fetchGitHubData(username, year);
 
-    return NextResponse.json(githubStats);
+    return NextResponse.json(githubStats, {
+      headers: {
+        "Cache-Control": cacheControl,
+        "CDN-Cache-Control": "max-age=600",
+        "Vercel-CDN-Cache-Control": "max-age=600",
+      },
+    });
   } catch (error) {
     console.error("GitHub API Error:", error);
 
     // Generate fallback contribution data that looks realistic
-    const mockRepos = [
-      { updated_at: "2025-07-27T00:00:00Z" }, // myportfolio recent
-      { updated_at: "2025-07-22T00:00:00Z" }, // pimpyourterm
-      { updated_at: "2025-07-20T00:00:00Z" }, // activity
-      { updated_at: "2025-06-15T00:00:00Z" }, // earlier activity
-      { updated_at: "2025-05-10T00:00:00Z" }, // more activity
-    ];
-
     const fallbackContributions = generateExactGitHubPattern();
 
     // Return fallback data based on your actual profile
@@ -598,6 +604,10 @@ export async function GET(request: Request) {
       contributions: fallbackContributions,
     };
 
-    return NextResponse.json(fallbackData);
+    return NextResponse.json(fallbackData, {
+      headers: {
+        "Cache-Control": "public, max-age=60", // Shorter cache for fallback
+      },
+    });
   }
 }

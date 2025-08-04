@@ -20,9 +20,9 @@ export function HeroSection({
 }: HeroSectionProps) {
   const heroAnimations = useMemo(
     () => ({
-      initial: { opacity: 0, x: -50 },
+      initial: { opacity: 0.8, x: -20 }, // Reduced initial opacity and movement
       animate: { opacity: 1, x: 0 },
-      transition: { duration: 0.5 },
+      transition: { duration: 0.2, ease: "easeOut" }, // Smooth animation
     }),
     []
   );
@@ -32,7 +32,7 @@ export function HeroSection({
       <div className="container px-4 md:px-6">
         <div className="flex flex-col-reverse md:flex-row items-center gap-12 md:gap-0">
           <motion.div
-            className="w-full md:w-1/2 space-y-6 text-center md:text-left relative z-20"
+            className="w-full md:w-1/2 space-y-6 text-center md:text-left relative z-20 hero-text"
             {...heroAnimations}
           >
             <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
@@ -102,9 +102,9 @@ export function HeroSection({
 
                 <motion.div
                   className="relative z-10 flex items-center justify-center"
-                  initial={{ opacity: 0, scale: 0.8 }}
+                  initial={{ opacity: 0.9, scale: 0.95 }} // Less dramatic initial state
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.7, delay: 0.4 }}
+                  transition={{ duration: 0.2, delay: 0.1 }} // Faster animation, shorter delay
                 >
                   <motion.div
                     className="relative w-[250px] h-[250px] md:w-[380px] md:h-[380px] rounded-full overflow-hidden border-4 border-background shadow-xl"
@@ -116,11 +116,11 @@ export function HeroSection({
                     }}
                     transition={{
                       type: "spring",
-                      stiffness: 75,
-                      damping: 30,
+                      stiffness: 120, // Slightly faster spring
+                      damping: 20, // Less damping for quicker response
                     }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.05, transition: { duration: 0.1 } }}
+                    whileTap={{ scale: 0.95, transition: { duration: 0.1 } }}
                   >
                     <OptimizedImage
                       src="/profile.png"

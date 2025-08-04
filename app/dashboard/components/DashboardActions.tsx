@@ -60,10 +60,7 @@ export const DashboardActions: React.FC<DashboardActionsProps> = ({
                 className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
                 disabled={isDeleting}
               >
-                {isDeleting ? (
-                  <div className="animate-spin h-4 w-4 border-2 border-white rounded-full border-t-transparent"></div>
-                ) : null}
-                Confirm Delete
+                {isDeleting ? "Deleting..." : "Confirm Delete"}
               </button>
             </div>
           </div>
@@ -73,10 +70,7 @@ export const DashboardActions: React.FC<DashboardActionsProps> = ({
             className="px-3 sm:px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
             disabled={isDeleting}
           >
-            {isDeleting ? (
-              <div className="animate-spin h-4 w-4 border-2 border-white rounded-full border-t-transparent"></div>
-            ) : null}
-            Delete All Data
+            {isDeleting ? "Deleting..." : "Delete All Data"}
           </button>
         )}
       </div>

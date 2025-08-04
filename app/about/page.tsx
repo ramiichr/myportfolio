@@ -17,13 +17,11 @@ export default function AboutPage() {
   const [skills, setSkills] = useState<Skill[]>([]);
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [education, setEducation] = useState<Education[]>([]);
-  const [loading, setLoading] = useState(true);
 
   // Fetch data from API
   useEffect(() => {
     async function fetchData() {
       try {
-        setLoading(true);
         const [profileData, skillsData, experiencesData, educationData] =
           await Promise.all([
             getProfile(language),
@@ -38,8 +36,6 @@ export default function AboutPage() {
         setEducation(educationData);
       } catch (error) {
         console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
       }
     }
 
@@ -52,20 +48,19 @@ export default function AboutPage() {
   };
 
   // Group skills by category
-  const skillsByCategory = skills.reduce((acc, skill) => {
-    if (!acc[skill.category]) {
-      acc[skill.category] = [];
-    }
-    acc[skill.category].push(skill);
-    return acc;
-  }, {} as Record<string, Skill[]>);
+  const skillsByCategory = skills.reduce(
+    (acc, skill) => {
+      if (!acc[skill.category]) {
+        acc[skill.category] = [];
+      }
+      acc[skill.category].push(skill);
+      return acc;
+    },
+    {} as Record<string, Skill[]>
+  );
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
+  if (!profile) {
+    return null;
   }
 
   return (
@@ -74,7 +69,7 @@ export default function AboutPage() {
         className="max-w-4xl mx-auto"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.2 }}
       >
         <div className="flex flex-col md:flex-row gap-12 items-center mb-16">
           <motion.div
@@ -82,7 +77,7 @@ export default function AboutPage() {
             variants={fadeIn}
             initial="hidden"
             animate="visible"
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.2, delay: 0.1 }}
           >
             <div className="relative w-64 h-64 mx-auto rounded-full overflow-hidden border-4 border-primary">
               <Image
@@ -100,7 +95,7 @@ export default function AboutPage() {
             variants={fadeIn}
             initial="hidden"
             animate="visible"
-            transition={{ duration: 0.5, delay: 0.4 }}
+            transition={{ duration: 0.2, delay: 0.15 }}
           >
             <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl mb-4">
               {translations.about.title}
@@ -139,7 +134,7 @@ export default function AboutPage() {
                     key={category}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: catIndex * 0.1 }}
+                    transition={{ duration: 0.2, delay: catIndex * 0.05 }}
                     className="mb-10"
                   >
                     <div className="flex items-center gap-3 mb-6">
@@ -147,8 +142,8 @@ export default function AboutPage() {
                         {category === "frontend"
                           ? translations.about.frontend
                           : category === "backend"
-                          ? translations.about.backend
-                          : translations.about.tools}
+                            ? translations.about.backend
+                            : translations.about.tools}
                       </h3>
                       <div className="h-[2px] flex-1 bg-primary/20 rounded-full"></div>
                     </div>
@@ -195,7 +190,7 @@ export default function AboutPage() {
               variants={fadeIn}
               initial="hidden"
               animate="visible"
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.2 }}
             >
               {experiences.map((exp, index) => (
                 <Card key={index}>
@@ -225,7 +220,7 @@ export default function AboutPage() {
               variants={fadeIn}
               initial="hidden"
               animate="visible"
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.2 }}
             >
               {education.map((edu, index) => (
                 <Card key={index}>

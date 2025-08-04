@@ -12,7 +12,7 @@ import {
 } from "./hooks/index";
 
 // Import components
-import { AuthForm, LoadingSpinner } from "./components/index";
+import { AuthForm } from "./components/index";
 import { VisitorListContainer } from "./components/VisitorList";
 import { DashboardActions } from "./components/DashboardActions";
 import { StatsCards } from "./components/StatsCards";
@@ -207,9 +207,7 @@ export default function DashboardPage() {
         </h1>
       </div>
 
-      {loading ? (
-        <LoadingSpinner message="Loading dashboard data..." />
-      ) : error ? (
+      {error ? (
         <ErrorDisplay
           error={error}
           inputToken={inputToken}

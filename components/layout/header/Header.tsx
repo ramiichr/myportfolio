@@ -17,8 +17,10 @@ export default function Header() {
   const { translations } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
@@ -42,13 +44,24 @@ export default function Header() {
     return null;
   }
 
-  const navigation: NavigationItem[] = [
-    { name: translations.navigation.home, href: "/" },
-    { name: translations.navigation.about, href: "/about" },
-    { name: translations.navigation.projects, href: "/projects" },
-    { name: translations.navigation.github, href: "/github" },
-    { name: translations.navigation.contact, href: "/contact" },
+  // Use default navigation during SSR/hydration to prevent mismatch
+  const defaultNavigation: NavigationItem[] = [
+    { name: "Home", href: "/" },
+    { name: "About", href: "/about" },
+    { name: "Projects", href: "/projects" },
+    { name: "GitHub", href: "/github" },
+    { name: "Contact", href: "/contact" },
   ];
+
+  const navigation: NavigationItem[] = mounted
+    ? [
+        { name: translations.navigation.home, href: "/" },
+        { name: translations.navigation.about, href: "/about" },
+        { name: translations.navigation.projects, href: "/projects" },
+        { name: translations.navigation.github, href: "/github" },
+        { name: translations.navigation.contact, href: "/contact" },
+      ]
+    : defaultNavigation;
 
   return (
     <header className="fixed w-full bg-background/80 backdrop-blur-sm z-50 border-b">

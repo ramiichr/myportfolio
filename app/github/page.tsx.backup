@@ -32,23 +32,8 @@ interface GitHubStats {
     followers: number;
     following: number;
     created_at: string;
-    updated_at: string;
-    bio: string | null;
-    location: string | null;
-    blog: string | null;
-    twitter_username: string | null;
-    company: string | null;
   };
-  repos: Array<{
-    name: string;
-    description: string | null;
-    stargazers_count: number;
-    forks_count: number;
-    language: string | null;
-    updated_at: string;
-    html_url: string;
-    private: boolean;
-  }>;
+  repos: any[];
   totalStars: number;
   totalForks: number;
   languages: Array<{ name: string; percentage: number; color: string }>;
@@ -78,6 +63,11 @@ export default function GitHubPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
+
+  // Ensure client-side hydration is complete
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [selectedYear, setSelectedYear] = useState<number>(
     new Date().getFullYear()
   );
@@ -85,17 +75,12 @@ export default function GitHubPage() {
   // Get username from URL params, fallback to profile's GitHub username or default
   const urlUsername = searchParams.get("username");
 
-  // Ensure client-side hydration is complete
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   useEffect(() => {
     async function fetchData() {
       try {
         setIsLoading(true);
         setError(null);
-
+        
         // Determine username first (use URL param or fallback)
         let usernameToFetch = urlUsername || "ramiichr";
 
@@ -136,11 +121,9 @@ export default function GitHubPage() {
 
         // If we didn't have a URL username, try to extract from profile
         if (!urlUsername && profileData?.social?.github) {
-          const match = profileData.social.github.match(
-            /github\.com\/([^\/]+)/
-          );
+          const match = profileData.social.github.match(/github\.com\/([^\/]+)/);
           const extractedUsername = match ? match[1] : null;
-
+          
           // If extracted username differs from fallback, refetch GitHub data
           if (extractedUsername && extractedUsername !== usernameToFetch) {
             const updatedGithubResponse = await fetch(
@@ -149,7 +132,7 @@ export default function GitHubPage() {
                 headers: { "Cache-Control": "max-age=300" },
               }
             );
-
+            
             if (updatedGithubResponse.ok) {
               const updatedGithubData = await updatedGithubResponse.json();
               setGithubStats(updatedGithubData);
@@ -259,142 +242,123 @@ export default function GitHubPage() {
         </motion.div>
 
         {/* GitHub Stats Cards */}
-        {canShowStats ? (
-          <motion.div
-            className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8 sm:mb-12"
-            variants={fadeIn}
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: 0.25, delay: 0.1 }}
-          >
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium leading-tight">
-                  {translations?.github?.stats?.repositories || "Repositories"}
-                </CardTitle>
-                <Code2 className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="text-xl sm:text-2xl font-bold">
-                  {githubStats?.user.public_repos || 0}
-                </div>
-              </CardContent>
-            </Card>
+        <motion.div
+          className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8 sm:mb-12"
+          variants={fadeIn}
+          initial="hidden"
+          animate="visible"
+          transition={{ duration: 0.25, delay: 0.1 }}
+        >
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-xs sm:text-sm font-medium leading-tight">
+                {translations?.github?.stats?.repositories || "Repositories"}
+              </CardTitle>
+              <Code2 className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="text-xl sm:text-2xl font-bold">
+                {githubStats?.user.public_repos || 0}
+              </div>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium leading-tight">
-                  {translations?.github?.stats?.stars || "Stars"}
-                </CardTitle>
-                <Star className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="text-xl sm:text-2xl font-bold">
-                  {githubStats?.totalStars || 0}
-                </div>
-              </CardContent>
-            </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-xs sm:text-sm font-medium leading-tight">
+                {translations?.github?.stats?.stars || "Stars"}
+              </CardTitle>
+              <Star className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="text-xl sm:text-2xl font-bold">
+                {githubStats?.totalStars || 0}
+              </div>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium leading-tight">
-                  {translations?.github?.stats?.forks || "Forks"}
-                </CardTitle>
-                <GitFork className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="text-xl sm:text-2xl font-bold">
-                  {githubStats?.totalForks || 0}
-                </div>
-              </CardContent>
-            </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-xs sm:text-sm font-medium leading-tight">
+                {translations?.github?.stats?.forks || "Forks"}
+              </CardTitle>
+              <GitFork className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="text-xl sm:text-2xl font-bold">
+                {githubStats?.totalForks || 0}
+              </div>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium leading-tight">
-                  {translations?.github?.stats?.followers || "Followers"}
-                </CardTitle>
-                <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="text-xl sm:text-2xl font-bold">
-                  {githubStats?.user.followers || 0}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ) : isLoading ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8 sm:mb-12">
-            {[...Array(4)].map((_, i) => (
-              <Card key={i}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <div className="h-4 bg-muted rounded w-20 animate-pulse" />
-                  <div className="h-4 w-4 bg-muted rounded animate-pulse" />
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="h-8 bg-muted rounded w-12 animate-pulse" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : null}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-xs sm:text-sm font-medium leading-tight">
+                {translations?.github?.stats?.followers || "Followers"}
+              </CardTitle>
+              <Github className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="text-xl sm:text-2xl font-bold">
+                {githubStats?.user.followers || 0}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-        {/* GitHub Contributions Calendar */}
-        {canShowCharts && (
-          <motion.div
-            className="mb-8 sm:mb-12"
-            variants={fadeIn}
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: 0.25, delay: 0.2 }}
-          >
-            <GitHubContributions
-              username={githubUsername}
-              title={
-                translations?.github?.contributionsTitle ||
-                `Contributions in ${selectedYear}`
-              }
-              className="w-full"
-              contributionsData={githubStats?.contributions}
-              selectedYear={selectedYear}
-              onYearChange={setSelectedYear}
-              showYearSelector={true}
-              userCreatedAt={githubStats?.user.created_at}
-            />
-          </motion.div>
-        )}
+        {/* Contributions Calendar */}
+        <motion.div
+          className="mb-8 sm:mb-12"
+          variants={fadeIn}
+          initial="hidden"
+          animate="visible"
+          transition={{ duration: 0.25, delay: 0.15 }}
+        >
+          <GitHubContributions
+            username={githubUsername}
+            title={
+              translations?.github?.contributionsTitle ||
+              "Contributions Calendar"
+            }
+            className="w-full"
+            contributionsData={githubStats?.contributions}
+            selectedYear={selectedYear}
+            onYearChange={setSelectedYear}
+            showYearSelector={true}
+            userCreatedAt={githubStats?.user.created_at}
+          />
+        </motion.div>
 
         {/* Latest Commits */}
-        {canShowCharts && (
-          <motion.div
-            className="mb-8 sm:mb-12"
-            variants={fadeIn}
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: 0.25, delay: 0.2 }}
-          >
-            <LatestCommits
-              username={githubUsername}
-              title={translations?.github?.commitsTitle || "Latest Commits"}
-            />
-          </motion.div>
-        )}
+        <motion.div
+          className="mb-8 sm:mb-12"
+          variants={fadeIn}
+          initial="hidden"
+          animate="visible"
+          transition={{ duration: 0.25, delay: 0.2 }}
+        >
+          <LatestCommits
+            username={githubUsername}
+            title={translations?.github?.commitsTitle || "Latest Commits"}
+            className="w-full"
+            maxCommits={10}
+          />
+        </motion.div>
 
         {/* Languages and Recent Activity */}
-        {canShowCharts && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+          {/* Most Used Languages */}
           <motion.div
-            className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8"
             variants={fadeIn}
             initial="hidden"
             animate="visible"
-            transition={{ duration: 0.25, delay: 0.3 }}
+            transition={{ duration: 0.25, delay: 0.25 }}
           >
-            {/* Top Languages */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg sm:text-xl font-semibold flex items-center gap-2">
-                  <Code2 className="h-5 w-5" />
-                  {translations?.github?.sections?.languages || "Top Languages"}
+                <CardTitle className="text-lg sm:text-xl">
+                  {translations?.github?.sections?.languages ||
+                    "Most Used Languages"}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -417,6 +381,7 @@ export default function GitHubPage() {
                             style={{
                               backgroundColor: lang.color,
                               width: `${lang.percentage}%`,
+                              animationDelay: `${index * 100}ms`,
                             }}
                           />
                         </div>
@@ -426,12 +391,18 @@ export default function GitHubPage() {
                 </div>
               </CardContent>
             </Card>
+          </motion.div>
 
-            {/* Recent Activity */}
+          {/* Recent Activity */}
+          <motion.div
+            variants={fadeIn}
+            initial="hidden"
+            animate="visible"
+            transition={{ duration: 0.25, delay: 0.3 }}
+          >
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg sm:text-xl font-semibold flex items-center gap-2">
-                  <Activity className="h-5 w-5" />
+                <CardTitle className="text-lg sm:text-xl">
                   {translations?.github?.sections?.activity ||
                     "Recent Activity"}
                 </CardTitle>
@@ -455,16 +426,21 @@ export default function GitHubPage() {
                         <div className="mt-1 flex-shrink-0">
                           <div className="w-2 h-2 bg-primary rounded-full" />
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-sm font-medium truncate">
-                            {activity.repo}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
+                            <Badge variant="outline" className="text-xs w-fit">
+                              {activity.type}
+                            </Badge>
+                            <span className="font-medium text-sm truncate">
+                              {activity.repo}
+                            </span>
                           </div>
-                          <div className="text-sm text-muted-foreground line-clamp-2">
+                          <p className="text-sm text-muted-foreground mb-1 break-words">
                             {activity.message}
-                          </div>
-                          <div className="text-xs text-muted-foreground mt-1">
-                            {activity.date}
-                          </div>
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(activity.date).toLocaleDateString()}
+                          </p>
                         </div>
                       </div>
                     )
@@ -473,7 +449,7 @@ export default function GitHubPage() {
               </CardContent>
             </Card>
           </motion.div>
-        )}
+        </div>
       </motion.div>
     </div>
   );

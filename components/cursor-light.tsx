@@ -77,7 +77,7 @@ export default function CursorLight() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.4 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.15 }}
             style={gradientStyle}
           />
         </>
