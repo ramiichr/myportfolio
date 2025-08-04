@@ -3,6 +3,8 @@
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/components/language-provider";
+import { useThemeShortcuts } from "@/hooks/use-keyboard-shortcuts";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -41,9 +43,10 @@ const languages: { code: Language; label: string; flag: string }[] = [
 
 const COLOR_THEME_KEY = "color-theme";
 
-export function ThemeToggle() {
+export function SettingsToggle() {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const { language, setLanguage, translations } = useLanguage();
+  const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
   const [colorTheme, setColorTheme] = useState<ColorTheme>("blue");
 
@@ -88,6 +91,46 @@ export function ThemeToggle() {
     }, 200);
   };
 
+  // Keyboard shortcuts
+  const toggleTheme = () => {
+    const themes = ["light", "dark", "system"] as const;
+    const currentIndex = themes.indexOf(theme as (typeof themes)[number]);
+    const nextIndex = (currentIndex + 1) % themes.length;
+    setTheme(themes[nextIndex]);
+
+    toast({
+      title: "Theme changed",
+      description: `Switched to ${themes[nextIndex]} theme`,
+      duration: 2000,
+    });
+  };
+
+  const nextColorTheme = () => {
+    const currentIndex = colorThemes.findIndex((t) => t.name === colorTheme);
+    const nextIndex = (currentIndex + 1) % colorThemes.length;
+    handleColorThemeChange(colorThemes[nextIndex].name);
+
+    toast({
+      title: "Color theme changed",
+      description: `Switched to ${colorThemes[nextIndex].label} color`,
+      duration: 2000,
+    });
+  };
+
+  const nextLanguage = () => {
+    const currentIndex = languages.findIndex((l) => l.code === language);
+    const nextIndex = (currentIndex + 1) % languages.length;
+    handleLanguageChange(languages[nextIndex].code);
+
+    toast({
+      title: "Language changed",
+      description: `Switched to ${languages[nextIndex].label}`,
+      duration: 2000,
+    });
+  };
+
+  useThemeShortcuts(toggleTheme, nextColorTheme, nextLanguage);
+
   if (!mounted) {
     return (
       <Button variant="outline" size="icon" className="transition-none">
@@ -105,9 +148,10 @@ export function ThemeToggle() {
           <span className="sr-only">Open settings</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="font-medium">
+      <DropdownMenuContent align="end" className="w-64">
+        <DropdownMenuLabel className="font-medium flex items-center justify-between">
           {translations.theme?.label || "Theme"}
+          <span className="text-xs text-muted-foreground">Ctrl+Alt+R</span>
         </DropdownMenuLabel>
         <DropdownMenuItem
           onClick={() => setTheme("light")}
@@ -136,8 +180,9 @@ export function ThemeToggle() {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuLabel className="font-medium">
+        <DropdownMenuLabel className="font-medium flex items-center justify-between">
           {translations.theme?.colorLabel || "Colors"}
+          <span className="text-xs text-muted-foreground">Ctrl+Alt+C</span>
         </DropdownMenuLabel>
         {colorThemes.map((themeOption) => (
           <DropdownMenuItem
@@ -169,8 +214,9 @@ export function ThemeToggle() {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuLabel className="font-medium">
+        <DropdownMenuLabel className="font-medium flex items-center justify-between">
           {translations.language?.label || "Language"}
+          <span className="text-xs text-muted-foreground">Ctrl+Alt+L</span>
         </DropdownMenuLabel>
         {languages.map((lang) => (
           <DropdownMenuItem

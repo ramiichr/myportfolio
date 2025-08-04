@@ -104,6 +104,8 @@ export const de = {
     rights: "Alle Rechte vorbehalten",
   },
   theme: {
+    label: "Design",
+    colorLabel: "Farben",
     light: "Hell",
     dark: "Dunkel",
     system: "System",
@@ -116,6 +118,7 @@ export const de = {
     },
   },
   language: {
+    label: "Sprache",
     en: "Englisch",
     de: "Deutsch",
     fr: "Französisch",

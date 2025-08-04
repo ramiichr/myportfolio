@@ -103,6 +103,8 @@ export const fr = {
     rights: "Tous droits réservés",
   },
   theme: {
+    label: "Thème",
+    colorLabel: "Couleurs",
     light: "Clair",
     dark: "Sombre",
     system: "Système",
@@ -115,6 +117,7 @@ export const fr = {
     },
   },
   language: {
+    label: "Langue",
     en: "Anglais",
     de: "Allemand",
     fr: "Français",

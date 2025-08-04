@@ -17,6 +17,7 @@ import { ResourcePreloader } from "@/components/resource-preloader";
 import { WebVitals } from "@/components/web-vitals";
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
 import { FontLoader } from "@/components/font-loader";
+import { Toaster } from "@/components/ui/toaster";
 import { Suspense } from "react";
 
 const inter = Inter({
@@ -264,6 +265,7 @@ export default function RootLayout({
                       <Footer />
                     </Suspense>
                   </div>
+                  <Toaster />
                 </ErrorBoundary>
               </PortfolioDataProvider>
             </GraphQLProvider>
