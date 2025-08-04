@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { useLanguage } from "@/components/language-provider";
@@ -71,6 +71,47 @@ interface GitHubStats {
 }
 
 export default function GitHubPage() {
+  return (
+    <Suspense fallback={<GitHubPageSkeleton />}>
+      <GitHubPageContent />
+    </Suspense>
+  );
+}
+
+function GitHubPageSkeleton() {
+  return (
+    <div className="container pt-32 pb-12 sm:pb-24 px-4 md:px-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header Skeleton */}
+        <div className="text-center mb-8 sm:mb-16">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <Github className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            <div className="h-8 sm:h-10 md:h-12 bg-muted rounded w-64 animate-pulse" />
+          </div>
+          <div className="h-4 bg-muted rounded w-96 mx-auto mb-6 animate-pulse" />
+          <div className="h-10 bg-muted rounded w-40 mx-auto animate-pulse" />
+        </div>
+
+        {/* Stats Skeleton */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-8 sm:mb-12">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div className="h-4 bg-muted rounded w-20 animate-pulse" />
+                <div className="h-4 w-4 bg-muted rounded animate-pulse" />
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="h-8 bg-muted rounded w-12 animate-pulse" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GitHubPageContent() {
   const { translations, language } = useLanguage();
   const searchParams = useSearchParams();
   const [profile, setProfile] = useState<Profile | null>(null);
