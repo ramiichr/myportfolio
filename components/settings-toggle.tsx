@@ -63,9 +63,15 @@ export function SettingsToggle() {
       if (e.key === COLOR_THEME_KEY) {
         const newTheme = (e.newValue as ColorTheme) || "blue";
         setColorTheme(newTheme);
-        requestAnimationFrame(() => {
-          document.documentElement.setAttribute("data-theme", newTheme);
-        });
+
+        // Temporarily disable transitions for instant theme change
+        document.documentElement.classList.add("theme-switching");
+        document.documentElement.setAttribute("data-theme", newTheme);
+
+        // Re-enable transitions after a minimal delay
+        setTimeout(() => {
+          document.documentElement.classList.remove("theme-switching");
+        }, 10);
       }
     };
 
@@ -76,9 +82,15 @@ export function SettingsToggle() {
   const handleColorThemeChange = (newColorTheme: ColorTheme) => {
     setColorTheme(newColorTheme);
     localStorage.setItem(COLOR_THEME_KEY, newColorTheme);
-    requestAnimationFrame(() => {
-      document.documentElement.setAttribute("data-theme", newColorTheme);
-    });
+
+    // Temporarily disable transitions for instant theme change
+    document.documentElement.classList.add("theme-switching");
+    document.documentElement.setAttribute("data-theme", newColorTheme);
+
+    // Re-enable transitions after a minimal delay
+    setTimeout(() => {
+      document.documentElement.classList.remove("theme-switching");
+    }, 10);
   };
 
   const handleLanguageChange = (newLang: Language) => {

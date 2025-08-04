@@ -1,8 +1,8 @@
 /* Critical CSS - Above the fold content */
 :root {
   color-scheme: light;
-  --transition-theme: background-color 0.2s ease, color 0.2s ease,
-    border-color 0.2s ease;
+  --transition-theme: background-color 0.1s ease, color 0.1s ease,
+    border-color 0.1s ease;
 
   /* Core layout variables */
   --background: 0 0% 100%;
@@ -181,11 +181,24 @@ main {
 
 /* Language transition optimization */
 [data-language] * {
-  transition: opacity 0.2s ease-out; /* Smooth transition */
+  transition: opacity 0.1s ease-out; /* Faster transition */
 }
 
 [data-language-switching="true"] * {
   opacity: 0.8; /* Less opacity change */
+}
+
+/* Theme change optimization - disable transitions during theme switching */
+.theme-switching * {
+  transition: none !important;
+}
+
+/* Re-enable transitions after theme switch */
+:root:not(.theme-switching) * {
+  transition-property: color, background-color, border-color, fill, stroke,
+    opacity;
+  transition-duration: 0.05s;
+  transition-timing-function: ease-out;
 }
 
 /* Prevent text shifting during font loads */
@@ -550,7 +563,7 @@ button,
   border-radius: inherit;
   z-index: -1;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.2s ease;
 }
 
 .skill-card-glow:hover::before {
@@ -596,7 +609,7 @@ button,
   width: 0;
   height: 2px;
   background: hsl(var(--primary));
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   opacity: 0;
 }
 
@@ -633,7 +646,7 @@ button,
     width: 0;
     height: 2px;
     background: hsl(var(--primary));
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     opacity: 0;
   }
 
@@ -673,7 +686,7 @@ textarea {
   transition-property: color, background-color, border-color, fill, stroke,
     opacity, box-shadow, transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 100ms;
+  transition-duration: 80ms;
 }
 
 /* Prevent content shift on mobile menu open */
