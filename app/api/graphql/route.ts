@@ -1,13 +1,25 @@
 import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { typeDefs } from "@/lib/graphql/schema";
 import { resolvers } from "@/lib/graphql/resolvers";
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-});
+let server: ApolloServer;
+
+try {
+  server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    introspection: true, // Enable introspection for debugging
+    formatError: (err) => {
+      console.error("GraphQL Error:", err);
+      return err;
+    },
+  });
+} catch (error) {
+  console.error("Error creating Apollo Server:", error);
+  throw error;
+}
 
 const handler = startServerAndCreateNextHandler(server, {
   context: async (req: NextRequest) => ({ req }),

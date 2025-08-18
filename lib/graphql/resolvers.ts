@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import { portfolioData } from "@/data/portfolio-data";
-
-const prisma = new PrismaClient();
 
 export const resolvers = {
   Query: {
